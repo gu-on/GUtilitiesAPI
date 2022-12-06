@@ -103,7 +103,7 @@ void MenuHook(const char* menuidstr, HMENU menu, int flag)
     mii.fMask = MIIM_TYPE | MIIM_ID;
     mii.fType = MFT_STRING;
     // menu name
-    mii.dwTypeData = (char*)ACTION;
+    mii.dwTypeData = (LPWSTR)ACTION;
     // menu command
     mii.wID = commandID;
     // insert as next menu item
