@@ -8,7 +8,8 @@ add_library(
 target_include_directories(
   reaper_plugin SYSTEM PRIVATE
   ${CMAKE_SOURCE_DIR}/include
-  ${CMAKE_SOURCE_DIR}/vendor 
+  ${CMAKE_SOURCE_DIR}/vendor
+  ${CMAKE_SOURCE_DIR}/vendor/mini/src
   ${CMAKE_SOURCE_DIR}/vendor/reaper-sdk/sdk)
 
 target_link_libraries(${PROJECT_NAME} reaper_plugin)
