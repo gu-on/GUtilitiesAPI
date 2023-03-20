@@ -3,6 +3,7 @@ add_library(
     main.cpp
     my_plugin.cpp
     api_creator.cpp
+    ini_file.cpp
 )
 
 target_include_directories(
