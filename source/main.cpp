@@ -6,6 +6,8 @@
 #include <memory>
 #include <vector>
 
+API Api{};
+
 class Item
 {
 public:
@@ -36,22 +38,42 @@ void ClearList()
 	}
 }
 
+int GU_Add(int x, int y)
+{
+	return x + y;
+}
+
+int LoadPlugin()
+{
+	std::unique_ptr<Item> item = std::make_unique<Item>();
+	list.push_back(std::move(item));
+	plugin_register("timer", (void*)ClearList);
+
+#ifdef _DEBUG
+	Api.Add({APIFUNC(GU_Add), "int", "int,int", "x,y", "Add x to y"});
+#endif
+	Api.Register();
+
+	return 1;
+}
+
+int UnloadPlugin()
+{
+	plugin_register("-timer", (void*)ClearList);
+	return 0;
+}
+
 extern "C"
 {
 	REAPER_PLUGIN_DLL_EXPORT int REAPER_PLUGIN_ENTRYPOINT(REAPER_PLUGIN_HINSTANCE hInstance, reaper_plugin_info_t* rec)
 	{
 		if (rec && REAPERAPI_LoadAPI(rec->GetFunc) == 0)
 		{
-			std::unique_ptr<Item> item = std::make_unique<Item>();
-			list.push_back(std::move(item));
-			rec->Register("timer", (void*)ClearList);
-			APICreator::Register();
-			return 1;
+			LoadPlugin();
 		}
 		else
 		{
-			rec->Register("-timer", (void*)ClearList);
-			return 0;
+			UnloadPlugin();
 		}
 	}
 }

@@ -3,28 +3,17 @@
 #include <api_creator.hpp>
 #include <ini_file.hpp>
 
-int TEST_Adder(int x, int y)
+void API::Add(structAPIdef apiDef)
 {
-	return x + y;
+	apiDefinitions.push_back(apiDef);
 }
 
-int TEST_Multiplier(int x, int y)
-{
-	return x * y;
-}
-
-// Array of function info structs
-
-structAPIdef arrayAPIdefs[] = {{APIFUNC(TEST_Adder), "int", "int,int", "x,y", "Add x to y"},
-
-							   {APIFUNC(TEST_Multiplier), "int", "int,int", "x,y", "Multiply x by y"}};
-
-void APICreator::Register()
+void API::Register()
 {
 	// Each function's defstring will temporarily be contructed in temp[]
 	char temp[1 << 14];
 
-	for (structAPIdef& f : arrayAPIdefs)
+	for (auto& f : apiDefinitions)
 	{
 		// REAPER uses a \0-separated string. sprintf cannot print \0, so must
 		// temporarily print \r and replace later.

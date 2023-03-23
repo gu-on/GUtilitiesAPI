@@ -23,5 +23,5 @@ std::string INIFile::Read(const std::string& category, const std::string& key)
 	file.read(ini);
 	const std::string value = ini.get(category).get(key);
 
-	return std::move(value);
+	return value;
 }
