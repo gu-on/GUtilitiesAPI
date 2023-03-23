@@ -1,26 +1,56 @@
-// declarations for registering and unregistering my plugin
 #include "api_creator.hpp"
-#include "my_plugin.hpp"
 
 #define REAPERAPI_IMPLEMENT
 #include <reaper_plugin_functions.h>
 
-REAPER_PLUGIN_HINSTANCE g_hInst; // used for dialogs, if any
+#include <memory>
+#include <vector>
+
+class Item
+{
+public:
+	Item()
+	{
+		ShowConsoleMsg("Created!\n");
+	};
+	~Item()
+	{
+		ShowConsoleMsg("Deleted!\n");
+	};
+};
+
+std::vector<std::unique_ptr<Item>> list{};
+
+void ClearList()
+{
+	static int counter{1};
+
+	++counter;
+
+	if (counter % 10 != 0)
+		return;
+
+	for (auto& item : list)
+	{
+		item.reset();
+	}
+}
 
 extern "C"
 {
 	REAPER_PLUGIN_DLL_EXPORT int REAPER_PLUGIN_ENTRYPOINT(REAPER_PLUGIN_HINSTANCE hInstance, reaper_plugin_info_t* rec)
 	{
-		g_hInst = hInstance;
 		if (rec && REAPERAPI_LoadAPI(rec->GetFunc) == 0)
 		{
-			RegisterMyPlugin();
+			std::unique_ptr<Item> item = std::make_unique<Item>();
+			list.push_back(std::move(item));
+			rec->Register("timer", (void*)ClearList);
 			APICreator::Register();
 			return 1;
 		}
 		else
 		{
-			UnregisterMyPlugin();
+			rec->Register("-timer", (void*)ClearList);
 			return 0;
 		}
 	}
