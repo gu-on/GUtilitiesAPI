@@ -1,6 +1,7 @@
-#include <api_creator.hpp>
 #include <reaper_plugin_functions.h>
-#include <stdio.h>
+
+#include <api_creator.hpp>
+#include <ini_file.hpp>
 
 int TEST_Adder(int x, int y)
 {
@@ -13,10 +14,10 @@ int TEST_Multiplier(int x, int y)
 }
 
 // Array of function info structs
-structAPIdef arrayAPIdefs[] = {
-	{APIFUNC(TEST_Adder), "int", "int,int", "x,y", "Add x to y"},
-	{APIFUNC(TEST_Multiplier), "int", "int,int", "x,y", "Multiply x by y"},
-};
+
+structAPIdef arrayAPIdefs[] = {{APIFUNC(TEST_Adder), "int", "int,int", "x,y", "Add x to y"},
+
+							   {APIFUNC(TEST_Multiplier), "int", "int,int", "x,y", "Multiply x by y"}};
 
 void APICreator::Register()
 {

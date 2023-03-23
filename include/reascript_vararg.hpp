@@ -48,7 +48,7 @@ template <typename R, typename... Args> struct ReaScriptAPI<R (*)(Args...)>
 		}
 	}
 
-  private:
+private:
 	template <size_t I> using NthType = typename std::tuple_element<I, std::tuple<Args...>>::type;
 
 	template <size_t... I> static auto makeTuple(void** argv, std::index_sequence<I...>)
