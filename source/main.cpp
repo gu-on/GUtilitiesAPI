@@ -1,4 +1,6 @@
-#include "api_creator.hpp"
+#include <api.hpp>
+#include <ini_file.hpp>
+#include <managed_object.hpp>
 
 #define REAPERAPI_IMPLEMENT
 #include <reaper_plugin_functions.h>
@@ -7,35 +9,31 @@
 #include <vector>
 
 API Api{};
+ObjectManager objectManager{};
 
-class Item
+INIFile* GU_ConfigFileCreate(const char* filePath)
 {
-public:
-	Item()
-	{
-		ShowConsoleMsg("Created!\n");
-	};
-	~Item()
-	{
-		ShowConsoleMsg("Deleted!\n");
-	};
-};
+	return dynamic_cast<INIFile*>(objectManager.Add(std::make_unique<INIFile>(filePath)));
+}
 
-std::vector<std::unique_ptr<Item>> list{};
-
-void ClearList()
+void GU_ConfigFileWrite(INIFile* ptr, const char* category, const char* key, const char* value)
 {
-	static int counter{1};
+	INIFile* ini = dynamic_cast<INIFile*>(objectManager.Get(ptr));
 
-	++counter;
-
-	if (counter % 10 != 0)
+	if (!ini)
 		return;
 
-	for (auto& item : list)
-	{
-		item.reset();
-	}
+	ini->Write(category, key, value);
+}
+
+const char* GU_ConfigFileRead(INIFile* ptr, const char* category, const char* key)
+{
+	INIFile* ini = dynamic_cast<INIFile*>(objectManager.Get(ptr));
+
+	if (!ini)
+		return "";
+
+	return ini->Read(category, key);
 }
 
 int GU_Add(int x, int y)
@@ -45,9 +43,13 @@ int GU_Add(int x, int y)
 
 int LoadPlugin()
 {
-	std::unique_ptr<Item> item = std::make_unique<Item>();
-	list.push_back(std::move(item));
-	plugin_register("timer", (void*)ClearList);
+	objectManager.Register();
+
+	Api.Add({APIFUNC(GU_ConfigFileCreate), "INIFile*", "const char*", "filePath", "Create a config file"});
+	Api.Add({APIFUNC(GU_ConfigFileWrite), "void", "INIFile*,const char*,const char*,const char*",
+			 "INIFile,category,key,value", "Write to a config file"});
+	Api.Add({APIFUNC(GU_ConfigFileRead), "const char*", "INIFile*,const char*,const char*", "INIFile,category,key",
+			 "Read value from config file"});
 
 #ifdef _DEBUG
 	Api.Add({APIFUNC(GU_Add), "int", "int,int", "x,y", "Add x to y"});
@@ -59,7 +61,7 @@ int LoadPlugin()
 
 int UnloadPlugin()
 {
-	plugin_register("-timer", (void*)ClearList);
+	objectManager.Deregister();
 	return 0;
 }
 
@@ -69,11 +71,11 @@ extern "C"
 	{
 		if (rec && REAPERAPI_LoadAPI(rec->GetFunc) == 0)
 		{
-			LoadPlugin();
+			return LoadPlugin();
 		}
 		else
 		{
-			UnloadPlugin();
+			return UnloadPlugin();
 		}
 	}
 }

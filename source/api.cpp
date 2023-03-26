@@ -1,7 +1,8 @@
 #include <reaper_plugin_functions.h>
 
-#include <api_creator.hpp>
+#include <api.hpp>
 #include <ini_file.hpp>
+#include <managed_object.hpp>
 
 void API::Add(structAPIdef apiDef)
 {

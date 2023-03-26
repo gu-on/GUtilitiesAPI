@@ -1,8 +1,9 @@
 add_library(
     reaper_plugin OBJECT
     main.cpp
-    api_creator.cpp
+    api.cpp
     ini_file.cpp
+    managed_object.cpp
 )
 
 target_include_directories(
