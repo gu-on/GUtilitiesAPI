@@ -1,14 +1,17 @@
 #include <managed_object.hpp>
 #include <reaper_plugin_functions.h>
 
-ManagedObject::ManagedObject(/* args */)
+ManagedObject::ManagedObject()
 {
-	ShowConsoleMsg("Created!");
 }
 
 ManagedObject::~ManagedObject()
 {
-	ShowConsoleMsg("Deleted!");
+}
+
+bool ManagedObject::ShouldClose()
+{
+	return true;
 }
 
 void ObjectManager::Register()

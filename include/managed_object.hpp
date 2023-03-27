@@ -5,15 +5,11 @@
 
 class ManagedObject
 {
-private:
-	/* data */
 public:
-	bool ShouldClose()
-	{
-		return true;
-	}
-	ManagedObject(/* args */);
+	ManagedObject();
 	virtual ~ManagedObject() = 0;
+
+	bool ShouldClose();
 };
 
 class ObjectManager

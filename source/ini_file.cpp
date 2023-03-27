@@ -7,8 +7,6 @@ INIFile::INIFile(const std::string& fileName) : FilePath(static_cast<std::string
 
 void INIFile::Write(const std::string& category, const std::string& key, const std::string& value)
 {
-	ShowConsoleMsg("Writing!");
-
 	const mINI::INIFile file(FilePath);
 	mINI::INIStructure ini;
 
@@ -19,8 +17,6 @@ void INIFile::Write(const std::string& category, const std::string& key, const s
 
 const char* INIFile::Read(const std::string& category, const std::string& key)
 {
-	ShowConsoleMsg("Reading!");
-
 	const mINI::INIFile file(FilePath);
 	mINI::INIStructure ini;
 
