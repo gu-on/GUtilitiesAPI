@@ -9,6 +9,16 @@ void API::Add(structAPIdef apiDef)
 	apiDefinitions.push_back(apiDef);
 }
 
+void API::Unregister()
+{
+	char temp[1 << 14];
+	for (auto& f : apiDefinitions)
+	{
+		snprintf(temp, sizeof(temp), "-%s", f.regkey_func);
+		plugin_register(temp, f.func);
+	}
+}
+
 void API::Register()
 {
 	// Each function's defstring will temporarily be contructed in temp[]

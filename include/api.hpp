@@ -43,5 +43,6 @@ private:
 
 public:
 	void Add(structAPIdef apiDef);
+	void Unregister();
 	void Register();
 };

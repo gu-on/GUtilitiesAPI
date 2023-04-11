@@ -5,9 +5,6 @@
 #define REAPERAPI_IMPLEMENT
 #include <reaper_plugin_functions.h>
 
-#include <memory>
-#include <vector>
-
 API Api{};
 ObjectManager objectManager{};
 
@@ -41,7 +38,7 @@ int GU_Add(int x, int y)
 	return x + y;
 }
 
-int LoadPlugin()
+int LoadPlugin(reaper_plugin_info_t* rec)
 {
 	objectManager.Register();
 
@@ -62,6 +59,8 @@ int LoadPlugin()
 int UnloadPlugin()
 {
 	objectManager.Deregister();
+	Api.Unregister();
+
 	return 0;
 }
 
@@ -71,7 +70,7 @@ extern "C"
 	{
 		if (rec && REAPERAPI_LoadAPI(rec->GetFunc) == 0)
 		{
-			return LoadPlugin();
+			return LoadPlugin(rec);
 		}
 		else
 		{
