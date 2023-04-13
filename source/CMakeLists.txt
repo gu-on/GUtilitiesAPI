@@ -3,7 +3,7 @@ add_library(
     main.cpp
     api.cpp
     ini_file.cpp
-    managed_object.cpp
+    api_cfg.cpp
 )
 
 target_include_directories(
