@@ -1,8 +1,7 @@
-#include <api.hpp>
-
 #define REAPERAPI_IMPLEMENT
 #include <reaper_plugin_functions.h>
 
+#include <api.hpp>
 #include <api_cfg.hpp>
 
 API Api{};
