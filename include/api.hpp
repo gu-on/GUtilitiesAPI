@@ -25,7 +25,8 @@ struct structAPIdef
 	const char* parm_types;
 	const char* parm_names;
 	const char* help;
-	char* defstring; // \0-separated string for APIdef... Will be concatenated and assigned while registering function
+	std::vector<char>
+		defstring; // \0-separated string for APIdef... Will be concatenated and assigned while registering function
 };
 
 // (This macro is copied from SWS.)
@@ -45,5 +46,4 @@ public:
 	void Add(structAPIdef apiDef);
 	void Unregister();
 	void Register();
-	
 };

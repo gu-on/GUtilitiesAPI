@@ -1,5 +1,3 @@
-#define _CRT_NONSTDC_NO_DEPRECATE
-
 #include <reaper_plugin_functions.h>
 
 #include <api.hpp>
@@ -7,6 +5,7 @@
 
 #include <cstring>
 #include <format>
+#include <ranges>
 
 void API::Add(structAPIdef apiDef)
 {
@@ -19,8 +18,6 @@ void API::Unregister()
 	{
 		std::string str = std::format("-{}", def.regkey_func);
 		plugin_register(str.c_str(), def.func);
-
-		free(def.defstring);
 	}
 
 	apiDefinitions.clear();
@@ -32,15 +29,11 @@ void API::Register()
 	{
 		std::string str = std::format("{}\n{}\n{}\n{}", def.ret_val, def.parm_types, def.parm_names, def.help);
 
-		def.defstring = strdup(str.data());
+		def.defstring.assign(str.begin(), str.end());
+		def.defstring.push_back('\0');
+		std::ranges::replace(def.defstring, '\n', '\0');
 
-		for (size_t i = 0; i < str.size(); i++)
-		{
-			if (def.defstring[i] == '\n')
-				def.defstring[i] = 0;
-		}
-
-		plugin_register(def.regkey_def, (void*)def.defstring);
+		plugin_register(def.regkey_def, (void*)def.defstring.data());
 		plugin_register(def.regkey_func, def.func);
 		plugin_register(def.regkey_vararg, def.func_vararg);
 	}
