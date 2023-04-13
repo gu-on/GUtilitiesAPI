@@ -13,7 +13,7 @@
 // stored in the defstring field.
 //      If compatilibity with SWS is not an issue, I would remove parm_names, parm_types and help, and simply define one
 //      \0-separated string from the start.
-struct structAPIdef
+struct APIDefinition
 {
 	void* func; // pointer to the function that other extensions use
 	const char* func_name;
@@ -31,7 +31,7 @@ struct structAPIdef
 
 // (This macro is copied from SWS.)
 // Macro to construct a comma-separated list of all the variants of a function name that are required for
-// plugin_register(), in the order required by structAPIdef in which these variants are stored. APIFUNC(funcName)
+// plugin_register(), in the order required by APIDefinition in which these variants are stored. APIFUNC(funcName)
 // becomes (void*)funcName, "funcName", (void*)__vararg_funcName, "APIvararg_funcName", "API_funcName",
 // "APIdef_funcName"
 #define APIFUNC(x)                                                                                                     \
@@ -40,10 +40,10 @@ struct structAPIdef
 class API
 {
 private:
-	std::vector<structAPIdef> apiDefinitions{};
+	std::vector<APIDefinition> apiDefinitions{};
 
 public:
-	void Add(structAPIdef apiDef);
+	void Add(APIDefinition apiDef);
 	void Unregister();
 	void Register();
 };

@@ -7,9 +7,9 @@
 #include <format>
 #include <ranges>
 
-void API::Add(structAPIdef apiDef)
+void API::Add(APIDefinition def)
 {
-	apiDefinitions.push_back(apiDef);
+	apiDefinitions.push_back(def);
 }
 
 void API::Unregister()
