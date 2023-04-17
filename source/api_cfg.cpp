@@ -1,3 +1,5 @@
+#include <reaper_plugin_functions.h>
+
 #include <api_cfg.hpp>
 #include <ini_file.hpp>
 #include <string>
@@ -14,4 +16,9 @@ const char* GU_ConfigFileRead(const char* filePath, const char* category, const 
 	static std::string cache{};
 	cache = ini.Read(category, key);
 	return cache.c_str();
+}
+
+void GU_PrintMessage()
+{
+	ShowConsoleMsg("hello");
 }

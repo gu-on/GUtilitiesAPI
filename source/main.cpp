@@ -9,10 +9,10 @@ API Api{};
 int LoadPlugin(reaper_plugin_info_t* rec)
 {
 	Api.Add({APIFUNC(GU_ConfigFileWrite), "void", "const char*,const char*,const char*,const char*",
-			 "file path,category,key,value", "Write value a config file at file path under category at key"});
-
-	Api.Add({APIFUNC(GU_ConfigFileRead), "const char*", "const char*,const char*,const char*", "file path,category,key",
-			 "Read value from config file at file path under category at key"});
+			 "filePath,category,key,value", "write file"});
+	Api.Add({APIFUNC(GU_ConfigFileRead), "const char*", "const char*,const char*,const char*", "filePath,category,key",
+			 "read file"});
+	Api.Add({APIFUNC(GU_PrintMessage), "void", "", "", "example text"});
 
 	Api.Register();
 
