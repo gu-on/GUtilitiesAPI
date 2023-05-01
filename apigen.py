@@ -5,8 +5,8 @@ def parse_header_file(header_file):
     with open(header_file, 'r') as file:
         lines = file.readlines()
 
-    cur_comment = ""
-    decl = ""
+    comment = ''
+    decl = ''
     api_calls = []
 
     for i, line, in enumerate(lines):
@@ -15,12 +15,12 @@ def parse_header_file(header_file):
             continue
 
         if line.startswith('//'):
-            if (cur_comment):  # add empty space to multiline comments
-                cur_comment += ' '
-            cur_comment += line.lstrip('//').strip()
+            if comment:  # add empty space to multiline comments
+                comment += ' '
+            comment += line.lstrip('//').strip()
             continue
 
-        if (decl):  # add empty space to multiline declarations
+        if decl:  # add empty space to multiline declarations
             decl += ' '
         decl += line.strip()
 
@@ -31,12 +31,12 @@ def parse_header_file(header_file):
 
             params = decl[start+1:end]
 
-            param_types = ""
-            param_names = ""
+            param_types = ''
+            param_names = ''
 
-            if (params):
+            if params:
                 # Split the string into a list of parameter strings
-                param_list = params.split(",")
+                param_list = params.split(',')
 
                 # Extract the types and variable names from each parameter string
                 types = []
@@ -44,12 +44,12 @@ def parse_header_file(header_file):
 
                 for param in param_list:
                     parts = param.split()
-                    types.append(" ".join(parts[:-1]))
+                    types.append(' '.join(parts[:-1]))
                     names.append(parts[-1])
 
                 # Combine the types and names into two comma-separated strings
-                param_types = ",".join(types)
-                param_names = ",".join(names)
+                param_types = ','.join(types)
+                param_names = ','.join(names)
 
             # extract func_name
             end = decl.find('(')
@@ -57,17 +57,17 @@ def parse_header_file(header_file):
             func_name = decl[start+1:end]
             ret_type = decl[0:start]
 
-            f_str = f"Func Name: {func_name}\nRet Type: {ret_type}\nParams: {params}\nParam Types: {param_types}\nParam Names: {param_names}\nHelp: {cur_comment}"
-            print(f_str)
+            print(
+                f"Func Name: {func_name}\nRet Type: {ret_type}\nParams: {params}\nParam Types: {param_types}\nParam Names: {param_names}\nHelp: {comment}")
 
             api_calls.append({
-                'help': cur_comment,
+                'help': comment,
                 'ret_type': ret_type,
                 'func_name': func_name,
                 'param_types': param_types,
                 'param_names': param_names,
             })
-            cur_comment = ""
+            comment = ""
             decl = ""
             print("\n")
 
