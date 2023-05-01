@@ -8,12 +8,11 @@ API Api{};
 
 int LoadPlugin(reaper_plugin_info_t* rec)
 {
-	Api.Add({APIFUNC(GU_ConfigFileWrite), "void", "const char*,const char*,const char*,const char*",
+	Api.Add({APIFUNC(GU_ConfigFileWrite), "bool", "const char*,const char*,const char*,const char*",
 			 "filePath,category,key,value", "write file"});
-	Api.Add({APIFUNC(GU_ConfigFileRead), "const char*", "const char*,const char*,const char*", "filePath,category,key",
-			 "read file"});
-	Api.Add({APIFUNC(GU_PrintMessage), "void", "", "", "example text"});
-
+	Api.Add({APIFUNC(GU_ConfigFileRead), "bool", "const char*,const char*,const char*,char*,int",
+			 "filePath,category,key,valueOut,valueOut_sz", "read file"});
+	Api.Add({APIFUNC(GU_PrintMessage), "void", "", "", "Test function that prints \"hello\""});
 	Api.Register();
 
 	return 1;

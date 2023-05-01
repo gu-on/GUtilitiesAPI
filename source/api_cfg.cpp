@@ -4,18 +4,27 @@
 #include <ini_file.hpp>
 #include <string>
 
-void GU_ConfigFileWrite(const char* filePath, const char* category, const char* key, const char* value)
+bool GU_ConfigFileWrite(const char* filePath, const char* category, const char* key, const char* value)
 {
+	if (!filePath || !category || !key || !value)
+		return false;
+
 	INIFile ini{filePath};
-	ini.Write(category, key, value);
+	return ini.Write(category, key, value);
 }
 
-const char* GU_ConfigFileRead(const char* filePath, const char* category, const char* key)
+bool GU_ConfigFileRead(const char* filePath, const char* category, const char* key, char* valueOut, int valueOut_sz)
 {
+	if (!filePath || !category || !key)
+		return false;
+
 	INIFile ini{filePath};
-	static std::string cache{};
-	cache = ini.Read(category, key);
-	return cache.c_str();
+	std::string temp{};
+	bool isSuccessful = ini.Read(category, key, temp);
+
+	snprintf(valueOut, valueOut_sz, "%s", temp.c_str());
+
+	return isSuccessful;
 }
 
 void GU_PrintMessage()

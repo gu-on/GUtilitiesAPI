@@ -1,25 +1,42 @@
-#include "ini_file.hpp"
+#include <ini_file.hpp>
 #include <reaper_plugin_functions.h>
 
-INIFile::INIFile(const std::string& filePath) : FilePath(filePath)
+namespace fs = std::filesystem;
+
+std::string INIFile::GetFormattedFileName(std::string fileName)
+{
+	std::erase_if(fileName, [](char c) { return !std::isalnum(c) && c != '_' && c != '\\' && c != '/'; });
+	return std::string(GetResourcePath()) + "//" + fileName + ".ini";
+}
+
+INIFile::INIFile(const std::string& fileName) : FilePath(GetFormattedFileName(fileName))
 {
 }
 
-void INIFile::Write(const std::string& category, const std::string& key, const std::string& value)
+bool INIFile::Write(const std::string& category, const std::string& key, const std::string& value)
 {
 	const mINI::INIFile file(FilePath);
+
 	mINI::INIStructure ini;
 
 	file.read(ini);
 	ini[category][key] = value;
 	file.write(ini);
+
+	return fs::exists(FilePath) && fs::is_regular_file(FilePath);
 }
 
-std::string INIFile::Read(const std::string& category, const std::string& key)
+bool INIFile::Read(const std::string& category, const std::string& key, std::string& value)
 {
 	const mINI::INIFile file(FilePath);
+
+	if (!std::filesystem::exists(FilePath))
+		return FAIL;
+
 	mINI::INIStructure ini;
 
 	file.read(ini);
-	return ini.get(category).get(key);
+	value = ini.get(category).get(key);
+
+	return PASS;
 }
