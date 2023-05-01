@@ -1,47 +1,77 @@
+import sys
+
+
 def parse_header_file(header_file):
     with open(header_file, 'r') as file:
         lines = file.readlines()
 
+    cur_comment = ""
+    decl = ""
     api_calls = []
 
-    for i, line in enumerate(lines):
+    for i, line, in enumerate(lines):
         line = line.strip()
-        if not line:  # Ignore empty lines
+        if not line:  # ignore empty lines
             continue
 
         if line.startswith('//'):
-            description = line.lstrip('//').strip()
-            func_line = lines[i + 1].strip()
-            tokens = func_line.split()
-            index = 0
+            if (cur_comment):  # add empty space to multiline comments
+                cur_comment += ' '
+            cur_comment += line.lstrip('//').strip()
+            continue
 
-            # Extract return type
-            ret_type = ''
-            while '*' in tokens[index] or tokens[index].isalpha():
-                ret_type += tokens[index] + ' '
-                index += 1
-            ret_type = ret_type.strip()
+        if (decl):  # add empty space to multiline declarations
+            decl += ' '
+        decl += line.strip()
 
-            # Extract function name
-            func_name = tokens[index].split('(')[0]
-            index += 1
+        if line.endswith(';'):
+            # extract params
+            start = decl.find('(')
+            end = decl.find(')')
 
-            # Extract parameters
-            params = func_line[func_line.find(
-                '(') + 1:func_line.find(')')].split(',')
-            params = [param.strip() for param in params if param.strip()]
-            param_types = ','.join([' '.join(p.split()[:-1]) for p in params])
-            param_names = ','.join([p.split()[-1] for p in params])
+            params = decl[start+1:end]
+
+            param_types = ""
+            param_names = ""
+
+            if (params):
+                # Split the string into a list of parameter strings
+                param_list = params.split(", ")
+
+                # Extract the types and variable names from each parameter string
+                types = []
+                names = []
+
+                for param in param_list:
+                    parts = param.split()
+                    types.append(" ".join(parts[:-1]))
+                    names.append(parts[-1])
+
+                # Combine the types and names into two comma-separated strings
+                param_types = ",".join(types)
+                param_names = ",".join(names)
+
+            # extract func_name
+            end = decl.find('(')
+            start = decl[:end].rfind(' ')
+            func_name = decl[start+1:end]
+            ret_type = decl[0:start]
+
+            f_str = f"Func Name: {func_name}\nRet Type: {ret_type}\nParams: {params}\nParam Types: {param_types}\nParam Names: {param_names}\nHelp: {cur_comment}"
+            print(f_str)
 
             api_calls.append({
-                'description': description,
+                'help': cur_comment,
                 'ret_type': ret_type,
                 'func_name': func_name,
-                'params': params,
                 'param_types': param_types,
                 'param_names': param_names,
             })
-    file.close()
+            cur_comment = ""
+            decl = ""
+            print("\n")
+
+    file.close
     return api_calls
 
 
@@ -49,7 +79,7 @@ def generate_code(api_calls):
     code = []
     for call in api_calls:
         code.append(
-            f'Api.Add({{APIFUNC({call["func_name"]}), "{call["ret_type"]}", "{call["param_types"]}", "{call["param_names"]}", "{call["description"]}"}});'
+            f'Api.Add({{APIFUNC({call["func_name"]}), "{call["ret_type"]}", "{call["param_types"]}", "{call["param_names"]}", "{call["help"]}"}});'
         )
 
     return '\n'.join(code)
@@ -88,8 +118,8 @@ def update_main_cpp_file(main_cpp_file, generated_code):
     file.close()
 
 
-main_cpp_file = 'source/main.cpp'
-header_file = 'include/api_cfg.hpp'
+header_file = sys.argv[1]
+main_cpp_file = sys.argv[2]
 
 api_calls = parse_header_file(header_file)
 output_code = generate_code(api_calls)
