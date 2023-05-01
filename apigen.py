@@ -36,7 +36,7 @@ def parse_header_file(header_file):
 
             if (params):
                 # Split the string into a list of parameter strings
-                param_list = params.split(", ")
+                param_list = params.split(",")
 
                 # Extract the types and variable names from each parameter string
                 types = []
