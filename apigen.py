@@ -11,7 +11,11 @@ def parse_header_file(header_file):
 
     for i, line, in enumerate(lines):
         line = line.strip()
+
         if not line:  # ignore empty lines
+            continue
+
+        if line.startswith('#'):  # ignore #includes
             continue
 
         if line.startswith('//'):
@@ -57,8 +61,7 @@ def parse_header_file(header_file):
             func_name = decl[start+1:end]
             ret_type = decl[0:start]
 
-            print(
-                f"Func Name: {func_name}\nRet Type: {ret_type}\nParams: {params}\nParam Types: {param_types}\nParam Names: {param_names}\nHelp: {comment}")
+            # print(f"Func Name: {func_name}\nRet Type: {ret_type}\nParams: {params}\nParam Types: {param_types}\nParam Names: {param_names}\nHelp: {comment}")
 
             api_calls.append({
                 'help': comment,
@@ -69,7 +72,8 @@ def parse_header_file(header_file):
             })
             comment = ""
             decl = ""
-            print("\n")
+
+            # print("\n")
 
     file.close
     return api_calls

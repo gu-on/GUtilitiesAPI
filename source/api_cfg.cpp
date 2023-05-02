@@ -1,6 +1,7 @@
 #include <reaper_plugin_functions.h>
 
 #include <api_cfg.hpp>
+#include <audio_source.hpp>
 #include <ini_file.hpp>
 #include <string>
 
@@ -27,7 +28,66 @@ bool GU_ConfigFileRead(const char* filePath, const char* category, const char* k
 	return isSuccessful;
 }
 
-void GU_PrintMessage()
+bool GU_IsMono(PCM_source* source)
 {
-	ShowConsoleMsg("hello");
+	if (!source)
+		return false;
+
+	return AudioSource{source}.IsMono();
+}
+
+bool GU_IsFirstSampleZero(PCM_source* source)
+{
+	if (!source)
+		return false;
+
+	return AudioSource{source}.IsFirstSampleZero();
+}
+
+bool GU_IsLastSampleZero(PCM_source* source)
+{
+	if (!source)
+		return false;
+
+	return AudioSource{source}.IsLastSampleZero();
+}
+
+int GU_CountSamplesTilPeak(PCM_source* source, int bufferSize, const double threshold)
+{
+	if (!source)
+		return -1;
+
+	return AudioSource{source}.CountSamplesTilPeak(bufferSize, threshold);
+}
+
+int GU_CountSamplesTilRMS(PCM_source* source, const int bufferSize, const double threshold)
+{
+	if (!source)
+		return -1;
+
+	return AudioSource{source}.CountSamplesTilRMS(bufferSize, threshold);
+}
+
+int GU_CountSamplesTilPeakR(PCM_source* source, const int bufferSize, const double threshold)
+{
+	if (!source)
+		return -1;
+
+	return AudioSource{source}.CountSamplesTilPeakR(bufferSize, threshold);
+}
+
+int GU_CountSamplesTilRMSR(PCM_source* source, const int bufferSize, const double threshold)
+{
+	if (!source)
+		return -1;
+
+	return AudioSource{source}.CountSamplesTilRMSR(bufferSize, threshold);
+}
+
+bool GU_HasRegion(PCM_source* source)
+{
+	if (!source)
+		return false;
+
+	return AudioSource{source}.HasRegion();
 }

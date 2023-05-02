@@ -1,6 +1,21 @@
+#include <reaper_plugin.h>
 // write file
 bool GU_ConfigFileWrite(const char* filePath, const char* category, const char* key, const char* value);
 // read file
 bool GU_ConfigFileRead(const char* filePath, const char* category, const char* key, char* valueOut, int valueOut_sz);
-// Test function that prints \"hello\"
-void GU_PrintMessage();
+// Checks if PCM_source is mono
+bool GU_IsMono(PCM_source* source);
+// Checks if first sample in PCM_source is 0
+bool GU_IsFirstSampleZero(PCM_source* source);
+// Checks if last sample in PCM_source is 0
+bool GU_IsLastSampleZero(PCM_source* source);
+// Count number of samples in PCM_source from start til peak threshold is breached. Returns -1 if invalid
+int GU_CountSamplesTilPeak(PCM_source* source, int bufferSize, double threshold);
+// Count number of samples in PCM_source from start til RMS threshold is breached. Returns -1 if invalid
+int GU_CountSamplesTilRMS(PCM_source* source, int bufferSize, double threshold);
+// Count number of samples in PCM_source from end til peak threshold is breached. Returns -1 if invalid
+int GU_CountSamplesTilPeakR(PCM_source* source, int bufferSize, double threshold);
+// Count number of samples in PCM_source from end til RMS threshold is breached. Returns -1 if invalid
+int GU_CountSamplesTilRMSR(PCM_source* source, int bufferSize, double threshold);
+// Check if PCM_source has embedded Media Cue Markers
+bool GU_HasRegion(PCM_source* source);

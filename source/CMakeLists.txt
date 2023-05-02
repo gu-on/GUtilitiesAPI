@@ -10,9 +10,12 @@ add_custom_command(
 add_library(
     reaper_plugin OBJECT
     main.cpp
+    maths.cpp
     api.cpp
     ini_file.cpp
     api_cfg.cpp
+    audio_source.cpp
+    audio_buffer.cpp
 )
 
 target_include_directories(
