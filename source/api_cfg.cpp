@@ -2,7 +2,9 @@
 
 #include <api_cfg.hpp>
 #include <audio_source.hpp>
+#include <filesystem.hpp>
 #include <ini_file.hpp>
+
 #include <string>
 
 bool GU_ConfigFileWrite(const char* filePath, const char* category, const char* key, const char* value)
@@ -90,4 +92,28 @@ bool GU_HasRegion(PCM_source* source)
 		return false;
 
 	return AudioSource{source}.HasRegion();
+}
+
+int GU_CountMediaFilesRecursive(const char* filePath, double* fileSizeOut)
+{
+	if (!filePath)
+	{
+		*fileSizeOut = 0;
+		return -1;
+	}
+
+	FileSystem fileSystem{filePath};
+	auto mediaFileInfo = fileSystem.CalculateMediaFileInfoRecursive();
+	*fileSizeOut = mediaFileInfo.FileSize;
+
+	return mediaFileInfo.Count;
+}
+
+void GU_ImportMediaFile(const char* filePath, int index)
+{
+	if (!filePath)
+		return;
+
+	FileSystem fileSystem{filePath};
+	fileSystem.ImportMediaFile(index);
 }

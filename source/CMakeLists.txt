@@ -14,6 +14,7 @@ add_library(
     api.cpp
     ini_file.cpp
     api_cfg.cpp
+    filesystem.cpp
     audio_source.cpp
     audio_buffer.cpp
 )

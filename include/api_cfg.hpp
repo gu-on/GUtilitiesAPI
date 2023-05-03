@@ -19,3 +19,8 @@ int GU_CountSamplesTilPeakR(PCM_source* source, int bufferSize, double threshold
 int GU_CountSamplesTilRMSR(PCM_source* source, int bufferSize, double threshold);
 // Check if PCM_source has embedded Media Cue Markers
 bool GU_HasRegion(PCM_source* source);
+// Recursively count all media files within a given folder. Returns -1 if filePath is invalid. Can also retrieve
+// fileSize sum in megabytes
+int GU_CountMediaFilesRecursive(const char* filePath, double* fileSizeOut);
+// Import media file from filePath at index
+void GU_ImportMediaFile(const char* filePath, int index);
