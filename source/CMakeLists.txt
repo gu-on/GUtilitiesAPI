@@ -11,6 +11,7 @@ add_library(
     reaper_plugin OBJECT
     main.cpp
     maths.cpp
+    profiler.cpp
     api.cpp
     ini_file.cpp
     api_cfg.cpp

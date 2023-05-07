@@ -4,7 +4,10 @@
 #include <audio_source.hpp>
 #include <filesystem.hpp>
 #include <ini_file.hpp>
+#include <profiler.hpp>
 
+#include <chrono>
+#include <format>
 #include <string>
 
 bool GU_ConfigFileWrite(const char* filePath, const char* category, const char* key, const char* value)
@@ -94,26 +97,38 @@ bool GU_HasRegion(PCM_source* source)
 	return AudioSource{source}.HasRegion();
 }
 
-int GU_CountMediaFilesRecursive(const char* filePath, double* fileSizeOut)
+int GU_CountMediaFilesRecursive(const char* filePath, int flags, double* fileSizeOut)
 {
+#ifdef _DEBUG
+	Profiler profiler{"GU_CountMediaFilesRecursive"};
+#endif
+
 	if (!filePath)
 	{
-		*fileSizeOut = 0;
-		return -1;
+		*fileSizeOut = FileSystem::MediaFileError.FileSize;
+		return FileSystem::MediaFileError.Count;
 	}
 
-	FileSystem fileSystem{filePath};
+	FileSystem fileSystem{filePath, flags};
 	auto mediaFileInfo = fileSystem.CalculateMediaFileInfoRecursive();
 	*fileSizeOut = mediaFileInfo.FileSize;
 
 	return mediaFileInfo.Count;
 }
 
-void GU_ImportMediaFile(const char* filePath, int index)
-{
-	if (!filePath)
-		return;
+static std::string currentMediaFile{};
 
-	FileSystem fileSystem{filePath};
-	fileSystem.ImportMediaFile(index);
+const char* GU_EnumerateMediaFilesRecursive(const char* path, const int flags)
+{
+#ifdef _DEBUG
+	Profiler profiler{"GU_EnumerateMediaFilesRecursive"};
+#endif
+
+	if (!path)
+		return "";
+
+	FileSystem fileSystem{path, flags};
+	currentMediaFile = fileSystem.GetNextMediaFilePath();
+
+	return currentMediaFile.c_str();
 }

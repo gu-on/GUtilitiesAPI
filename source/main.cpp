@@ -18,8 +18,8 @@ int LoadPlugin(reaper_plugin_info_t* rec)
 	Api.Add({APIFUNC(GU_CountSamplesTilPeakR), "int", "PCM_source*,int,double", "source,bufferSize,threshold", "Count number of samples in PCM_source from end til peak threshold is breached. Returns -1 if invalid"});
 	Api.Add({APIFUNC(GU_CountSamplesTilRMSR), "int", "PCM_source*,int,double", "source,bufferSize,threshold", "Count number of samples in PCM_source from end til RMS threshold is breached. Returns -1 if invalid"});
 	Api.Add({APIFUNC(GU_HasRegion), "bool", "PCM_source*", "source", "Check if PCM_source has embedded Media Cue Markers"});
-	Api.Add({APIFUNC(GU_CountMediaFilesRecursive), "int", "const char*,double*", "filePath,fileSizeOut", "Recursively count all media files within a given folder. Returns -1 if filePath is invalid. Can also retrieve fileSize sum in megabytes"});
-	Api.Add({APIFUNC(GU_ImportMediaFile), "void", "const char*,int", "filePath,index", "Import media file from filePath at index"});
+	Api.Add({APIFUNC(GU_CountMediaFilesRecursive), "int", "const char*,int,double*", "filePath,flags,fileSizeOut", "Recursively count all media files within a given folder. Returns -1 if filePath is invalid. Can also retrieve fileSize sum in megabytes"});
+	Api.Add({APIFUNC(GU_EnumerateMediaFilesRecursive), "const char*", "const char*,int", "path,flags", "Import media file from filePath at index"});
 	Api.Register();
 
 	return 1;

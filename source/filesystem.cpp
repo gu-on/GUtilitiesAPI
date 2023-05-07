@@ -1,6 +1,10 @@
 #include <filesystem.hpp>
 
 #include <algorithm>
+#include <cctype>
+#include <chrono>
+#include <format>
+#include <functional>
 #include <ranges>
 #include <vector>
 
@@ -12,47 +16,40 @@ MediaFileInfoStats FileSystem::CalculateMediaFileInfoRecursive()
 
 	if (!IsValidPath())
 	{
-		mediaFileInfo.Count = -1;
-		return mediaFileInfo;
+		Reset();
+		return MediaFileError;
 	}
 
-	for (auto it = DirectoryIterator(FilePath); it != DirectoryIterator(); ++it)
+	for (Iterator = DirectoryIterator(FilePath); Iterator != DirectoryIterator(); ++Iterator)
 	{
-		if (it->is_regular_file() && IsMediaFile(it->path().extension().string()))
+		if (Iterator->is_regular_file() && IsMediaFile(Iterator->path().extension().string()))
 		{
 			++mediaFileInfo.Count;
-			mediaFileInfo.FileSize += it->file_size();
+			mediaFileInfo.FileSize += Iterator->file_size();
 		}
 	}
 
 	mediaFileInfo.FileSize /= (1 << 20); // convert bytes to megabytes
 
+	Reset();
 	return mediaFileInfo;
 }
 
-void FileSystem::ImportMediaFile(int index)
+FileSystem::FileSystem(const std::string filePath, const int flags)
 {
-	auto path = GetMediaFilePath(index);
+	FilePath = filePath;
 
-	if (path.empty())
+	if (Flags != flags || (Flags & static_cast<int>(MediaType::RESET)) == 0)
 	{
-		MB("Index is invalid - Cannot Import Media File", "Error", MB_OK);
-		return;
+		Flags = flags;
+		Reset();
 	}
 
-	bool* isQn{};
-
-	auto* track = GetTrack(nullptr, 0);
-	auto* item = AddMediaItemToTrack(track);
-	auto* take = AddTakeToMediaItem(item);
-	PCM_source* source = PCM_Source_CreateFromFile(path.c_str());
-	auto length = GetMediaSourceLength(source, isQn);
-	SetMediaItemInfo_Value(item, "D_LENGTH", length);
-	SetMediaItemTake_Source(take, source);
-}
-
-FileSystem::FileSystem(std::string filePath) : FilePath(filePath)
-{
+	if (auto hash = Hasher(FilePath); FilePathHash != hash)
+	{
+		FilePathHash = hash;
+		Iterator = DirectoryIterator(FilePath);
+	}
 }
 
 bool FileSystem::IsValidPath()
@@ -60,25 +57,41 @@ bool FileSystem::IsValidPath()
 	return !FilePath.empty() && std::filesystem::exists(FilePath);
 }
 
-std::string FileSystem::GetMediaFilePath(int index)
+std::string FileSystem::GetNextMediaFilePath()
 {
-	int count{};
-	for (auto it = DirectoryIterator(FilePath); it != DirectoryIterator(); ++it)
+	if (!IsValidPath() || Iterator == DirectoryIterator())
 	{
-		if (it->is_regular_file() && IsMediaFile(it->path().extension().string()))
-		{
-			if (count++ == index)
-				return it->path().string();
-		}
+		Reset();
+		return NULLSTRING;
 	}
 
-	return std::string();
+	while (Iterator != DirectoryIterator() && Iterator->is_regular_file() &&
+		   !IsMediaFile(Iterator->path().extension().string()))
+	{
+		++Iterator;
+	}
+
+	if (Iterator == DirectoryIterator())
+	{
+		Reset();
+		return NULLSTRING;
+	}
+
+	std::string temp{Iterator->path().string()};
+	++Iterator;
+
+	return temp;
 }
 
 bool FileSystem::IsMediaFile(std::string fileExtension)
 {
-	std::ranges::transform(fileExtension, fileExtension.begin(), toupper);
+	std::ranges::transform(fileExtension, fileExtension.begin(), [](unsigned char c) { return std::toupper(c); });
 
 	return std::ranges::any_of(VALID_AUDIO_FILE_FORMATS,
 							   [&fileExtension](const char* c) { return fileExtension == c; });
+}
+
+void FileSystem::Reset()
+{
+	FilePathHash = 0;
 }

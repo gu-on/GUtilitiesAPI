@@ -21,6 +21,6 @@ int GU_CountSamplesTilRMSR(PCM_source* source, int bufferSize, double threshold)
 bool GU_HasRegion(PCM_source* source);
 // Recursively count all media files within a given folder. Returns -1 if filePath is invalid. Can also retrieve
 // fileSize sum in megabytes
-int GU_CountMediaFilesRecursive(const char* filePath, double* fileSizeOut);
+int GU_CountMediaFilesRecursive(const char* filePath, int flags, double* fileSizeOut);
 // Import media file from filePath at index
-void GU_ImportMediaFile(const char* filePath, int index);
+const char* GU_EnumerateMediaFilesRecursive(const char* path, int flags);
