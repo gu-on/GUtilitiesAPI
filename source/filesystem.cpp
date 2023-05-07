@@ -22,7 +22,7 @@ MediaFileInfoStats FileSystem::CalculateMediaFileInfoRecursive()
 
 	for (Iterator = DirectoryIterator(FilePath); Iterator != DirectoryIterator(); ++Iterator)
 	{
-		if (Iterator->is_regular_file() && IsMediaFile(Iterator->path().extension().string()))
+		if (Iterator->is_regular_file() && IsFlaggedExtension(Iterator->path().extension().string()))
 		{
 			++mediaFileInfo.Count;
 			mediaFileInfo.FileSize += Iterator->file_size();
@@ -39,16 +39,21 @@ FileSystem::FileSystem(const std::string filePath, const int flags)
 {
 	FilePath = filePath;
 
-	if (Flags != flags || (Flags & static_cast<int>(MediaType::RESET)) == 0)
-	{
-		Flags = flags;
-		Reset();
-	}
-
-	if (auto hash = Hasher(FilePath); FilePathHash != hash)
+	if (auto hash = Hasher(FilePath); FilePathHash != hash || Flags != flags)
 	{
 		FilePathHash = hash;
 		Iterator = DirectoryIterator(FilePath);
+
+		Flags = flags;
+
+		if (static_cast<int>(Flags) == 0)
+		{
+			CreateDefaultFlagsList();
+		}
+		else
+		{
+			CreateCustomFlagsList();
+		}
 	}
 }
 
@@ -66,7 +71,7 @@ std::string FileSystem::GetNextMediaFilePath()
 	}
 
 	while (Iterator != DirectoryIterator() && Iterator->is_regular_file() &&
-		   !IsMediaFile(Iterator->path().extension().string()))
+		   !IsFlaggedExtension(Iterator->path().extension().string()))
 	{
 		++Iterator;
 	}
@@ -83,15 +88,39 @@ std::string FileSystem::GetNextMediaFilePath()
 	return temp;
 }
 
-bool FileSystem::IsMediaFile(std::string fileExtension)
+bool FileSystem::IsFlaggedExtension(std::string fileExtension)
 {
 	std::ranges::transform(fileExtension, fileExtension.begin(), [](unsigned char c) { return std::toupper(c); });
 
-	return std::ranges::any_of(VALID_AUDIO_FILE_FORMATS,
-							   [&fileExtension](const char* c) { return fileExtension == c; });
+	return std::ranges::any_of(FlagsToCheck, [&fileExtension](const std::string& s) { return fileExtension == s; });
 }
 
 void FileSystem::Reset()
 {
 	FilePathHash = 0;
+}
+
+void FileSystem::CreateCustomFlagsList()
+{
+	FlagsToCheck.clear();
+
+	for (const auto& [flag, vector] : MediaTypeMappings)
+	{
+		if ((static_cast<MediaType>(Flags) & flag) == flag)
+		{
+			for (const auto& name : vector)
+			{
+				FlagsToCheck.push_back(name);
+			}
+		}
+	}
+}
+
+void FileSystem::CreateDefaultFlagsList()
+{
+	FlagsToCheck.clear();
+	for (const auto& ext : VALID_AUDIO_FILE_FORMATS)
+	{
+		FlagsToCheck.push_back(ext);
+	}
 }

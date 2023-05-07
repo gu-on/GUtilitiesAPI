@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <filesystem>
 #include <string>
 
@@ -8,7 +9,7 @@ static constexpr const char* VALID_AUDIO_FILE_FORMATS[] = {".WAV", ".AIFF", ".FL
 
 enum class MediaType : uint32_t
 {
-	ALL = 0, // used to reset FilePathHash
+	ALL = 0,
 	WAV = 1 << 0,
 	AIFF = 1 << 1,
 	FLAC = 1 << 2,
@@ -17,8 +18,24 @@ enum class MediaType : uint32_t
 	BWF = 1 << 5,
 	W64 = 1 << 6,
 	WAVPACK = 1 << 7,
-	RESET = 1 << 8,
+	RESET = 1 << 8
 };
+
+inline MediaType operator|(MediaType a, MediaType b)
+{
+	return static_cast<MediaType>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
+}
+
+inline MediaType operator&(MediaType a, MediaType b)
+{
+	return static_cast<MediaType>(static_cast<uint32_t>(a) & static_cast<uint32_t>(b));
+}
+
+inline MediaType& operator|=(MediaType& a, MediaType b)
+{
+	a = a | b;
+	return a;
+}
 
 struct MediaFileInfoStats
 {
@@ -48,12 +65,25 @@ public:
 
 private:
 	bool IsValidPath();
-	bool IsMediaFile(std::string fileExtension);
+	bool IsFlaggedExtension(std::string fileExtension);
 	void Reset();
+	void CreateCustomFlagsList();
+	void CreateDefaultFlagsList();
+
+	const std::array<std::pair<MediaType, std::vector<std::string>>, 8> MediaTypeMappings = {
+		std::make_pair(MediaType::WAV, std::vector<std::string>{".WAV"}),
+		std::make_pair(MediaType::AIFF, std::vector<std::string>{".AIFF", ".AIF"}),
+		std::make_pair(MediaType::FLAC, std::vector<std::string>{".FLAC"}),
+		std::make_pair(MediaType::MP3, std::vector<std::string>{".MP3"}),
+		std::make_pair(MediaType::OGG, std::vector<std::string>{".OGG"}),
+		std::make_pair(MediaType::BWF, std::vector<std::string>{".BWF"}),
+		std::make_pair(MediaType::W64, std::vector<std::string>{".W64"}),
+		std::make_pair(MediaType::WAVPACK, std::vector<std::string>{".WAVPACK"})};
 
 	// Statically pin to access between calls
 	static inline std::string FilePath{};
 	static inline int Flags{};
+	static inline std::vector<std::string> FlagsToCheck{};
 	static inline std::hash<std::string> Hasher{};
 	static inline std::size_t FilePathHash{};
 	static inline DirectoryIterator Iterator{};
