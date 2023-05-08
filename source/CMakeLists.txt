@@ -11,6 +11,7 @@ add_library(
     reaper_plugin OBJECT
     main.cpp
     maths.cpp
+    time_printer.cpp
     profiler.cpp
     api.cpp
     ini_file.cpp
@@ -18,6 +19,7 @@ add_library(
     filesystem.cpp
     audio_source.cpp
     audio_buffer.cpp
+    wildcard_parser.cpp
 )
 
 target_include_directories(

@@ -1,8 +1,9 @@
 #pragma once
 
 #include <audio_source.hpp>
-#include <functional>
 #include <reaper_plugin.h>
+
+#include <functional>
 
 class AudioBuffer
 {

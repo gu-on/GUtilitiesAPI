@@ -142,6 +142,11 @@ std::vector<CueMarker> AudioSource::GetMediaCues() const
 	return temp;
 }
 
+double AudioSource::GetNormalization(int normalizationType) const
+{
+	return 20 * log10(CalculateNormalization(AudioPtr, normalizationType, 0, 0, 0)) * -1;
+}
+
 AudioSource::AudioSource(PCM_source* source) : AudioPtr((assert(source != nullptr), source))
 {
 }

@@ -24,3 +24,5 @@ bool GU_HasRegion(PCM_source* source);
 int GU_CountMediaFilesRecursive(const char* filePath, int flags, double* fileSizeOut);
 // Import media file from filePath at index
 const char* GU_EnumerateMediaFilesRecursive(const char* path, int flags);
+// Renames take based on wildcards
+void GU_TakeWildcardRename(MediaItem_Take* take, const char* input);

@@ -5,6 +5,7 @@
 #include <filesystem.hpp>
 #include <ini_file.hpp>
 #include <profiler.hpp>
+#include <wildcard_parser.hpp>
 
 #include <chrono>
 #include <format>
@@ -131,4 +132,17 @@ const char* GU_EnumerateMediaFilesRecursive(const char* path, const int flags)
 	currentMediaFile = fileSystem.GetNextMediaFilePath();
 
 	return currentMediaFile.c_str();
+}
+
+void GU_TakeWildcardRename(MediaItem_Take* take, const char* input)
+{
+#ifdef _DEBUG
+	Profiler profiler{"GU_TakeWildcardRename"};
+#endif
+
+	if (!take || !input)
+		return;
+
+	WildcardParser wildcardParser{};
+	wildcardParser.RenameTake(take, input);
 }

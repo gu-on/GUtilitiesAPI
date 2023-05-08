@@ -1,6 +1,7 @@
 #pragma once
 
 #include <reaper_plugin_functions.h>
+
 #include <string>
 #include <vector>
 
@@ -49,6 +50,35 @@ private:
 	PCM_source* AudioPtr{};
 
 public:
+	enum class NormalizationType
+	{
+		LUFS_I,
+		RMS,
+		PEAK,
+		TRUE_PEAK,
+		LUFS_M,
+		LUFS_S
+	};
+
+	[[nodiscard]] double GetNormalization(int normalizationType) const;
+
+	[[nodiscard]] double GetLUFS() const
+	{
+		return GetNormalization(static_cast<int>(NormalizationType::LUFS_I));
+	}
+	[[nodiscard]] double GetRMS() const
+	{
+		return GetNormalization(static_cast<int>(NormalizationType::RMS));
+	}
+	[[nodiscard]] double GetPeak() const
+	{
+		return GetNormalization(static_cast<int>(NormalizationType::PEAK));
+	}
+	[[nodiscard]] double GetTruePeak() const
+	{
+		return GetNormalization(static_cast<int>(NormalizationType::TRUE_PEAK));
+	}
+
 	AudioSource() = delete;
 	explicit AudioSource(PCM_source* source);
 };

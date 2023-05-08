@@ -20,6 +20,7 @@ int LoadPlugin(reaper_plugin_info_t* rec)
 	Api.Add({APIFUNC(GU_HasRegion), "bool", "PCM_source*", "source", "Check if PCM_source has embedded Media Cue Markers"});
 	Api.Add({APIFUNC(GU_CountMediaFilesRecursive), "int", "const char*,int,double*", "filePath,flags,fileSizeOut", "Recursively count all media files within a given folder. Returns -1 if filePath is invalid. Can also retrieve fileSize sum in megabytes"});
 	Api.Add({APIFUNC(GU_EnumerateMediaFilesRecursive), "const char*", "const char*,int", "path,flags", "Import media file from filePath at index"});
+	Api.Add({APIFUNC(GU_TakeWildcardRename), "void", "MediaItem_Take*,const char*", "take,input", "Renames take based on wildcards"});
 	Api.Register();
 
 	return 1;
