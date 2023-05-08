@@ -10,6 +10,7 @@ add_custom_command(
 add_library(
     reaper_plugin OBJECT
     main.cpp
+    reaper_wrapper.cpp
     maths.cpp
     time_printer.cpp
     profiler.cpp

@@ -9,110 +9,73 @@
 #include <map>
 #include <string>
 
-void WildcardParser::RenameTake(MediaItem_Take* take, std::string input)
+void WildcardParser::RenameTake(MediaItem_Take* takePtr, std::string input)
 {
-	std::string::size_type pos;
-
-	MediaItem* item = GetMediaItemTake_Item(take);
-	MediaTrack* track = GetMediaItemTake_Track(take);
-	PCM_source* pcm_source = GetMediaItemTake_Source(take);
-	AudioSource source{pcm_source};
+	Take take{takePtr};
+	Item item = take.GetItem();
+	Track track = take.GetTrack();
+	AudioSource source = take.GetSource();
+	Project project{};
 
 	// clang-format off
 	std::vector<std::pair<std::string, std::function<std::string()>>> wildcardReplacements =
 	{
 		{"$year2", [&] { return TimePrinter::PrintYear2(); }},
 		{"$year", [&] { return TimePrinter::PrintYear(); }},
-		{"$tracktop", [&] { return PrintOutermostTrackParentName(track); }},
-		{"$tracknumber", [&] { return PrintTrackNumber(track); }},
-		{"$track", [&] { return PrintTrackName(track); }},
-		{"$timesig", [&] { return ""; }},
+		{"$tracktop", [&] { return std::get<0>(track.GetOutermostAncestor()).GetName(); }},
+		{"$tracknumber", [&] { return std::to_string(track.GetNumber()); }},
+		{"$track", [&] { return track.GetName(); }},
+		{"$timesig", [&] { return project.GetTimeSig(item.GetPosition()); }},
 		{"$time", [&] { return TimePrinter::PrintTime(); }},
-		{"$tempo", [&] { return ""; }},
+		{"$tempo", [&] { return std::to_string(project.GetTempo(item.GetPosition())); }},
 		{"$second", [&] { return TimePrinter::PrintSeconds(); }},
 		{"$rms", [&] { return std::format("{:.1f}", source.GetRMS()); }},
-		{"$region", [&] { return ""; }},
-		{"$project", [&] { return PrintProjectName(); }},
+		{"$region", [&] { return project.GetRegionName(item.GetPosition()); }},
+		{"$project", [&] { return project.GetName(); }},
 		{"$peak", [&] { return std::format("{:.1f}", source.GetPeak()); }},
 		{"$monthname", [&] { return TimePrinter::PrintMonthName(); }},
 		{"$month", [&] { return TimePrinter::PrintMonth(); }},
 		{"$minute", [&] { return TimePrinter::PrintMinutes(); }},
-		{"$marker", [&] { return ""; }},
+		{"$marker", [&] { return project.GetMarkerName(item.GetPosition()); }},
 		{"$lufs", [&] { return std::format("{:.1f}", source.GetLUFS()); }},
 		{"$itemnumberontrack", [&] { return ""; }},
 		{"$itemnumber", [&] { return ""; }},
-		{"$itemnotes", [&] { return PrintItemNotes(item); }},
-		{"$itemcount", [&] { return PrintSelectedItemCount(); }},
-		{"$item", [&] { return PrintActiveTakeName(take); }},
+		{"$itemnotes", [&] { return item.GetNotes(); }},
+		{"$itemcount", [&] { return std::to_string(project.CountSelectedItems()); }},
+		{"$item", [&] { return take.GetName(); }},
 		{"$hour12", [&] { return TimePrinter::PrintHours12(); }},
 		{"$hour", [&] { return TimePrinter::PrintHours(); }},
-		{"$fx", [&] { return ""; }},
+		{"$fx", [&] { return take.GetFXNames(); }},
 		{"$dayname", [&] { return TimePrinter::PrintDayName(); }},
 		{"$day", [&] { return TimePrinter::PrintDay(); }},
 		{"$date", [&] { return TimePrinter::PrintDate(); }},
-		{"$author", [&] { return PrintProjectAuthor(); }},
+		{"$author", [&] { return project.GetAuthor(); }},
 		{"$ampm", [&] { return TimePrinter::PrintAmPm(); }},
 	};
 	// clang-format on
+
+	std::string::size_type pos;
 
 	for (const auto& [wildcard, func] : wildcardReplacements)
 	{
 		while ((pos = input.find(wildcard)) != std::string::npos)
 		{
-			input.replace(pos, wildcard.length(), func());
+			auto temp = func();
+			auto totalLength = pos + temp.length();
+
+			if (totalLength > REAPER_NAMES_MAX_LENGTH)
+			{
+				// todo: return failure condition
+				return;
+			}
+
+			input.replace(pos, wildcard.length(), temp);
 		}
 	}
 
-	GetSetMediaItemTakeInfo_String(take, "P_NAME", const_cast<char*>(input.c_str()), true);
+	take.SetName(input);
 }
 
-std::string WildcardParser::PrintProjectName()
+void WildcardParser::RenameItem(MediaItem* item, std::string input)
 {
-	GetProjectName(THIS_PROJ, OutString, CHAR_STRING_SIZE);
-	return OutString;
-}
-
-std::string WildcardParser::PrintProjectAuthor()
-{
-	GetSetProjectAuthor(THIS_PROJ, false, OutString, CHAR_STRING_SIZE);
-	return OutString;
-}
-
-std::string WildcardParser::PrintOutermostTrackParentName(MediaTrack* track)
-{
-	MediaTrack* parent = track;
-
-	while (GetParentTrack(parent))
-		parent = GetParentTrack(parent);
-
-	return PrintTrackName(parent);
-}
-
-std::string WildcardParser::PrintTrackName(MediaTrack* track)
-{
-	GetSetMediaTrackInfo_String(track, "P_NAME", OutString, false);
-	return OutString;
-}
-
-std::string WildcardParser::PrintTrackNumber(MediaTrack* track)
-{
-	return std::to_string(GetMediaTrackInfo_Value(track, "IP_TRACKNUMBER"));
-}
-
-std::string WildcardParser::PrintItemNotes(MediaItem* item)
-{
-	GetSetMediaItemInfo_String(item, "P_NOTES", OutString, false);
-	return OutString;
-}
-
-std::string WildcardParser::PrintSelectedItemCount()
-{
-	int count = CountSelectedMediaItems(THIS_PROJ);
-	return std::to_string(count);
-}
-
-std::string WildcardParser::PrintActiveTakeName(MediaItem_Take* take)
-{
-	GetSetMediaItemTakeInfo_String(take, "P_NAME", OutString, false);
-	return OutString;
 }
