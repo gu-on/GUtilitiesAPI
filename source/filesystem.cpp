@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <cctype>
 #include <chrono>
-#include <format>
 #include <functional>
 #include <ranges>
 #include <vector>
