@@ -4,7 +4,7 @@
 #include <time_printer.hpp>
 
 #include <chrono>
-#include <format>
+#include <fmt/core.h>
 #include <functional>
 #include <map>
 #include <string>
@@ -63,15 +63,15 @@ void WildcardParser::RenameTake(MediaItem_Take* takePtr, std::string input)
 		{"$time", [&] { return TimePrinter::PrintTime(); }},
 		{"$tempo", [&] { return std::to_string(project.GetTempo(item.GetPosition())); }},
 		{"$second", [&] { return TimePrinter::PrintSeconds(); }},
-		{"$rms", [&] { return std::format("{:.1f}", source.GetRMS()); }},
+		{"$rms", [&] { return fmt::format("{:.1f}", source.GetRMS()); }},
 		{"$region", [&] { return project.GetRegionName(item.GetPosition()); }},
 		{"$project", [&] { return project.GetName(); }},
-		{"$peak", [&] { return std::format("{:.1f}", source.GetPeak()); }},
+		{"$peak", [&] { return fmt::format("{:.1f}", source.GetPeak()); }},
 		{"$monthname", [&] { return TimePrinter::PrintMonthName(); }},
 		{"$month", [&] { return TimePrinter::PrintMonth(); }},
 		{"$minute", [&] { return TimePrinter::PrintMinutes(); }},
 		{"$marker", [&] { return project.GetMarkerName(item.GetPosition()); }},
-		{"$lufs", [&] { return std::format("{:.1f}", source.GetLUFS()); }},
+		{"$lufs", [&] { return fmt::format("{:.1f}", source.GetLUFS()); }},
 		{"$itemnumberontrack", [&] { return std::to_string(itemNumberOnTrack); }},
 		{"$itemnumber", [&] { return std::to_string(itemNumber); }},
 		{"$itemnotes", [&] { return item.GetNotes(); }},

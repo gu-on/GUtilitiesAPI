@@ -4,7 +4,7 @@
 #include <ini_file.hpp>
 
 #include <cstring>
-#include <format>
+#include <fmt/core.h>
 #include <ranges>
 
 void API::Add(APIDefinition def)
@@ -16,7 +16,7 @@ void API::Unregister()
 {
 	for (auto& def : apiDefinitions)
 	{
-		std::string str = std::format("-{}", def.regkey_func);
+		std::string str = fmt::format("-{}", def.regkey_func);
 		plugin_register(str.c_str(), def.func);
 	}
 
@@ -27,7 +27,7 @@ void API::Register()
 {
 	for (auto& def : apiDefinitions)
 	{
-		std::string str = std::format("{}\n{}\n{}\n{}", def.ret_val, def.parm_types, def.parm_names, def.help);
+		std::string str = fmt::format("{}\n{}\n{}\n{}", def.ret_val, def.parm_types, def.parm_names, def.help);
 
 		def.defstring.assign(str.begin(), str.end());
 		def.defstring.push_back('\0');

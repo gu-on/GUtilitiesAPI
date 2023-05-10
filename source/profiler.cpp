@@ -2,7 +2,7 @@
 
 #include <reaper_plugin_functions.h>
 
-#include <format>
+#include <fmt/core.h>
 
 Profiler::Profiler(std::string name)
 {
@@ -13,5 +13,5 @@ Profiler::Profiler(std::string name)
 Profiler::~Profiler()
 {
 	auto elapsedTime = duration_cast<microseconds>(steady_clock::now() - StartTime).count() * 0.0001;
-	ShowConsoleMsg(std::format("{}: took {:.3f} ms \n", Name, elapsedTime).c_str());
+	ShowConsoleMsg(fmt::format("{}: took {:.3f} ms \n", Name, elapsedTime).c_str());
 }

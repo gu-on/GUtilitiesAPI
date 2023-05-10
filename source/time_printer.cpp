@@ -1,7 +1,7 @@
 #include <time_printer.hpp>
 
 #include <cassert>
-#include <format>
+#include <fmt/core.h>
 
 std::chrono::year_month_day TimePrinter::GetCurrentYMD()
 {
@@ -44,31 +44,31 @@ std::string TimePrinter::PrintAmPm()
 std::string TimePrinter::PrintHMS()
 {
 	const auto hms = GetCurrentHMS();
-	return std::format("{}-{}-{}", hms.hours().count(), hms.minutes().count(), hms.seconds().count());
+	return fmt::format("{}-{}-{}", hms.hours().count(), hms.minutes().count(), hms.seconds().count());
 }
 
 std::string TimePrinter::PrintHours()
 {
 	const auto hour = GetCurrentHMS().hours().count();
-	return std::format("{:02}", hour);
+	return fmt::format("{:02}", hour);
 }
 
 std::string TimePrinter::PrintHours12()
 {
 	const auto hour = make12(GetCurrentHMS().hours()).count();
-	return std::format("{:02}", hour);
+	return fmt::format("{:02}", hour);
 }
 
 std::string TimePrinter::PrintMinutes()
 {
 	const auto minutes = GetCurrentHMS().minutes().count();
-	return std::format("{:02}", minutes);
+	return fmt::format("{:02}", minutes);
 }
 
 std::string TimePrinter::PrintSeconds()
 {
 	const unsigned seconds = static_cast<unsigned>(GetCurrentHMS().seconds().count());
-	return std::format("{:02}", seconds);
+	return fmt::format("{:02}", seconds);
 }
 
 std::string TimePrinter::PrintYear()
@@ -84,7 +84,7 @@ std::string TimePrinter::PrintYear2()
 std::string TimePrinter::PrintMonth()
 {
 	const unsigned month = static_cast<unsigned>(GetCurrentYMD().month());
-	return std::format("{:02}", month);
+	return fmt::format("{:02}", month);
 }
 
 std::string TimePrinter::PrintMonthName()
@@ -97,7 +97,7 @@ std::string TimePrinter::PrintMonthName()
 std::string TimePrinter::PrintDay()
 {
 	const unsigned day = static_cast<unsigned>(GetCurrentYMD().day());
-	return std::format("{:02}", day);
+	return fmt::format("{:02}", day);
 }
 
 std::string TimePrinter::PrintDayName()
@@ -109,10 +109,10 @@ std::string TimePrinter::PrintDayName()
 
 std::string TimePrinter::PrintDate()
 {
-	return std::format("{}-{}-{}", PrintYear(), PrintMonth(), PrintDay());
+	return fmt::format("{}-{}-{}", PrintYear(), PrintMonth(), PrintDay());
 }
 
 std::string TimePrinter::PrintTime()
 {
-	return std::format("{}-{}-{}", PrintHours(), PrintMinutes(), PrintSeconds());
+	return fmt::format("{}-{}-{}", PrintHours(), PrintMinutes(), PrintSeconds());
 }
