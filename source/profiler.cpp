@@ -3,7 +3,6 @@
 #include <reaper_plugin_functions.h>
 
 #include <fmt/core.h>
-#include <string>
 
 Profiler::Profiler(std::string name)
 {
