@@ -5,7 +5,6 @@
 #include <chrono>
 #include <functional>
 #include <ranges>
-#include <vector>
 
 #include <reaper_plugin_functions.h>
 

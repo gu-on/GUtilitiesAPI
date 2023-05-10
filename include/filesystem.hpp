@@ -3,6 +3,7 @@
 #include <array>
 #include <filesystem>
 #include <string>
+#include <vector>
 
 static constexpr const char* VALID_AUDIO_FILE_FORMATS[] = {".WAV", ".AIFF", ".FLAC", ".MP3",
 														   ".OGG", ".BWF",	".W64",	 ".WAVPACK"};
