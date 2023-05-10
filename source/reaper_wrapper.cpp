@@ -94,10 +94,12 @@ Take Item::CreateNewTake(const std::string& filePath) const
 
 void Item::SetPosition(double position) const
 {
+	SetMediaItemInfo_Value(Ptr, "D_POSITION", position);
 }
 
 void Item::SetLength(double length) const
 {
+	SetMediaItemInfo_Value(Ptr, "D_LENGTH", length);
 }
 
 Item::Item(MediaItem* item) : Ptr((assert(item != nullptr), item))

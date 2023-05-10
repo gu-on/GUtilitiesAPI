@@ -26,7 +26,7 @@ struct APIDefinition
 	const char* parm_names;
 	const char* help;
 	std::vector<char>
-		defstring; // \0-separated string for APIdef... Will be concatenated and assigned while registering function
+		defstring{}; // \0-separated string for APIdef... Will be concatenated and assigned while registering function
 };
 
 // (This macro is copied from SWS.)
