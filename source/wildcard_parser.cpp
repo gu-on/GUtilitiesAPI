@@ -20,7 +20,6 @@ void WildcardParser::RenameTake(MediaItem_Take* takePtr, std::string input)
 	static int currentState{};
 	currentState = project.GetState();
 
-	static int itemCount{};
 	static int itemNumber{};
 	static int itemNumberOnTrack{};
 	static MediaItem_Take* lastTakePtr{};
@@ -108,8 +107,4 @@ void WildcardParser::RenameTake(MediaItem_Take* takePtr, std::string input)
 	}
 
 	take.SetName(input);
-}
-
-void WildcardParser::RenameItem(MediaItem* item, std::string input)
-{
 }
