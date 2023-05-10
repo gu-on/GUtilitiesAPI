@@ -70,3 +70,4 @@ if (MSVC AND CMAKE_BUILD_TYPE MATCHES RELEASE)
 endif ()
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/source)
+add_subdirectory(${CMAKE_SOURCE_DIR}/vendor/fmt)

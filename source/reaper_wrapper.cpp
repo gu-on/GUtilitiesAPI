@@ -1,7 +1,7 @@
 #include <reaper_wrapper.hpp>
 
 #include <cassert>
-#include <format>
+#include <fmt/core.h>
 
 std::string Track::GetName() const
 {
@@ -246,7 +246,7 @@ int Project::GetTempo(const double timelinePos) const
 std::string Project::GetTimeSig(double timelinePos)
 {
 	const auto [BPM, TimeSigNum, TimeSigDen] = GetTempoAndTimeSignature(timelinePos);
-	return std::format("{}-{}", TimeSigNum, TimeSigDen);
+	return fmt::format("{}-{}", TimeSigNum, TimeSigDen);
 }
 
 int Project::CountSelectedItems() const

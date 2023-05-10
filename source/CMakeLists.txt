@@ -28,6 +28,7 @@ target_include_directories(
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/vendor
   ${CMAKE_SOURCE_DIR}/vendor/mini/src
+  ${CMAKE_SOURCE_DIR}/vendor/fmt/include
   ${CMAKE_SOURCE_DIR}/vendor/reaper-sdk/sdk)
 
 target_link_libraries(${PROJECT_NAME} reaper_plugin)
@@ -46,6 +47,8 @@ endif()
 
 find_package(WDL REQUIRED)
 target_link_libraries(reaper_plugin WDL::WDL)
+
+target_link_libraries(reaper_plugin fmt)
 
 if(NOT WIN32)
   find_package(SWELL REQUIRED)
