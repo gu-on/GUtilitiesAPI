@@ -17,6 +17,40 @@ void WildcardParser::RenameTake(MediaItem_Take* takePtr, std::string input)
 	AudioSource source = take.GetSource();
 	Project project{};
 
+	static int currentState{};
+	currentState = project.GetState();
+
+	static int itemCount{};
+	static int itemNumber{};
+	static int itemNumberOnTrack{};
+	static MediaItem_Take* lastTakePtr{};
+
+	if (static int LastState; LastState != currentState)
+	{
+		LastState = currentState;
+		itemNumber = 0;
+		itemNumberOnTrack = 0;
+		lastTakePtr = nullptr;
+	}
+
+	++itemNumber;
+
+	if (lastTakePtr)
+	{
+		Take lastTake{lastTakePtr};
+		Track lastTrack = lastTake.GetTrack();
+
+		if (lastTrack != track)
+		{
+			itemNumberOnTrack = 0;
+		}
+	}
+
+	lastTakePtr = takePtr;
+	++itemNumberOnTrack;
+
+	// get project state
+
 	// clang-format off
 	std::vector<std::pair<std::string, std::function<std::string()>>> wildcardReplacements =
 	{
@@ -38,8 +72,8 @@ void WildcardParser::RenameTake(MediaItem_Take* takePtr, std::string input)
 		{"$minute", [&] { return TimePrinter::PrintMinutes(); }},
 		{"$marker", [&] { return project.GetMarkerName(item.GetPosition()); }},
 		{"$lufs", [&] { return std::format("{:.1f}", source.GetLUFS()); }},
-		{"$itemnumberontrack", [&] { return ""; }},
-		{"$itemnumber", [&] { return ""; }},
+		{"$itemnumberontrack", [&] { return std::to_string(itemNumberOnTrack); }},
+		{"$itemnumber", [&] { return std::to_string(itemNumber); }},
 		{"$itemnotes", [&] { return item.GetNotes(); }},
 		{"$itemcount", [&] { return std::to_string(project.CountSelectedItems()); }},
 		{"$item", [&] { return take.GetName(); }},

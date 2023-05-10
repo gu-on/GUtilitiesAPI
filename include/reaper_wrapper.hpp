@@ -22,6 +22,7 @@ struct MusicNotation
 class Project
 {
 public:
+	[[nodiscard]] int GetState() const;
 	[[nodiscard]] std::string GetName() const;
 	[[nodiscard]] std::string GetAuthor() const;
 	[[nodiscard]] static std::string ExtractFileName(const std::string& filePath);
@@ -30,6 +31,7 @@ public:
 	[[nodiscard]] std::string GetMarkerName(const double timelinePos);
 	[[nodiscard]] int GetTempo(double timelinePos) const;
 	[[nodiscard]] std::string GetTimeSig(double timelinePos);
+
 	[[nodiscard]] int CountSelectedItems() const;
 
 private:
@@ -57,11 +59,16 @@ public:
 	Item CreateNewItem(const std::string& filePath, double position);
 
 private:
+	MediaTrack* Ptr;
+
 public:
 	Track() = delete;
 	Track(MediaTrack* track);
 
-	MediaTrack* Ptr;
+	bool operator==(const Track& other) const
+	{
+		return other.Ptr == this->Ptr;
+	}
 };
 
 class Item

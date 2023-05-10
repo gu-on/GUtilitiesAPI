@@ -177,6 +177,11 @@ Take::Take(MediaItem_Take* take) : Ptr((assert(take != nullptr), take))
 {
 }
 
+int Project::GetState() const
+{
+	return GetProjectStateChangeCount(Ptr);
+}
+
 std::string Project::GetName() const
 {
 	char outString[REAPER_NAMES_MAX_LENGTH];
