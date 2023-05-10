@@ -8,7 +8,6 @@
 #include <wildcard_parser.hpp>
 
 #include <chrono>
-#include <format>
 #include <string>
 
 bool GU_ConfigFileWrite(const char* filePath, const char* category, const char* key, const char* value)
