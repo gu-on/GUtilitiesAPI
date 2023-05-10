@@ -7,8 +7,10 @@ std::chrono::year_month_day TimePrinter::GetCurrentYMD()
 {
 	using namespace std::chrono;
 
-	const auto now = zoned_time{current_zone(), system_clock::now()}.get_local_time();
-	const auto ld = floor<days>(now);
+	const auto now = system_clock::now();
+	const auto currentZone = current_zone();
+	const auto zonedTime = zoned_time<std::chrono::system_clock::duration>{currentZone, now}.get_local_time();
+	const auto ld = floor<days>(zonedTime);
 	const auto ymd = year_month_day{ld};
 
 	return ymd;
