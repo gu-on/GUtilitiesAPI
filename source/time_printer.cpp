@@ -105,7 +105,7 @@ std::string TimePrinter::PrintDay()
 std::string TimePrinter::PrintDayName()
 {
 	const auto weekday = GetCurrentYMD().day;
-	assert(weekday <= (sizeof(DAY_NAMES) / sizeof(const char*)));
+	assert(static_cast<size_t>(weekday) <= (sizeof(DAY_NAMES) / sizeof(const char*)));
 	return DAY_NAMES[weekday];
 }
 
