@@ -3,108 +3,100 @@
 #include <cassert>
 #include <fmt/core.h>
 
-std::chrono::year_month_day TimePrinter::GetCurrentYMD()
+YY_MM_DD TimePrinter::GetCurrentYMD()
 {
-	using namespace std::chrono;
+	auto now = std::chrono::system_clock::now();
+	std::time_t current_time = std::chrono::system_clock::to_time_t(now);
+	std::tm local_time;
+	localtime_s(&local_time, &current_time);
 
-	const auto now = system_clock::now();
-	const auto currentZone = current_zone();
-	const auto zonedTime = zoned_time<std::chrono::system_clock::duration>{currentZone, now}.get_local_time();
-	const auto ld = floor<days>(zonedTime);
-	const auto ymd = year_month_day{ld};
+	YY_MM_DD ymd{};
+	ymd.year = local_time.tm_year + 1900; // tm_year = years since 1900
+	ymd.month = local_time.tm_mon + 1;	  // in range 0 - 11
+	ymd.day = local_time.tm_mday;
 
 	return ymd;
 }
 
-std::chrono::hh_mm_ss<std::chrono::duration<long long, std::ratio<1, 10000000>>> TimePrinter::GetCurrentHMS()
+HH_MM_SS TimePrinter::GetCurrentHMS()
 {
-	using namespace std::chrono;
+	auto now = std::chrono::system_clock::now();
+	std::time_t current_time = std::chrono::system_clock::to_time_t(now);
+	std::tm local_time;
+	localtime_s(&local_time, &current_time);
 
-	const auto now = system_clock::now();
-	const auto ld = floor<days>(now);
-	const auto hms = hh_mm_ss{now - ld};
+	HH_MM_SS hms{};
+	hms.hours = local_time.tm_hour;
+	hms.minutes = local_time.tm_min;
+	hms.seconds = local_time.tm_sec;
 
 	return hms;
 }
 
-std::chrono::weekday TimePrinter::GetCurrentWeekday()
-{
-	using namespace std::chrono;
-
-	const auto now = zoned_time{current_zone(), system_clock::now()}.get_local_time();
-	const auto ld = floor<days>(now);
-	const weekday weekday{ld};
-
-	return weekday;
-}
-
 std::string TimePrinter::PrintAmPm()
 {
-	return is_am(GetCurrentHMS().hours()) ? "AM" : "PM";
+	return (GetCurrentHMS().hours >= 12) ? "PM" : "AM";
 }
 
 std::string TimePrinter::PrintHMS()
 {
 	const auto hms = GetCurrentHMS();
-	return fmt::format("{}-{}-{}", hms.hours().count(), hms.minutes().count(), hms.seconds().count());
+	return fmt::format("{}-{}-{}", hms.hours, hms.minutes, hms.seconds);
 }
 
 std::string TimePrinter::PrintHours()
 {
-	const auto hour = GetCurrentHMS().hours().count();
+	const auto hour = GetCurrentHMS().hours;
 	return fmt::format("{:02}", hour);
 }
 
 std::string TimePrinter::PrintHours12()
 {
-	const auto hour = make12(GetCurrentHMS().hours()).count();
+	auto hms = GetCurrentHMS();
+	const auto hour = hms.hours >= 12 ? hms.hours - 12 : hms.hours;
 	return fmt::format("{:02}", hour);
 }
 
 std::string TimePrinter::PrintMinutes()
 {
-	const auto minutes = GetCurrentHMS().minutes().count();
-	return fmt::format("{:02}", minutes);
+	return fmt::format("{:02}", GetCurrentHMS().minutes);
 }
 
 std::string TimePrinter::PrintSeconds()
 {
-	const unsigned seconds = static_cast<unsigned>(GetCurrentHMS().seconds().count());
-	return fmt::format("{:02}", seconds);
+	return fmt::format("{:02}", GetCurrentHMS().seconds);
 }
 
 std::string TimePrinter::PrintYear()
 {
-	return std::to_string(static_cast<int>(GetCurrentYMD().year()));
+	return std::to_string(GetCurrentYMD().year);
 }
 
 std::string TimePrinter::PrintYear2()
 {
-	return std::to_string(static_cast<int>(GetCurrentYMD().year()) % 100);
+	return std::to_string(GetCurrentYMD().year % 100);
 }
 
 std::string TimePrinter::PrintMonth()
 {
-	const unsigned month = static_cast<unsigned>(GetCurrentYMD().month());
-	return fmt::format("{:02}", month);
+	return fmt::format("{:02}", GetCurrentYMD().month);
 }
 
 std::string TimePrinter::PrintMonthName()
 {
-	const unsigned month = static_cast<unsigned>(GetCurrentYMD().month());
+	const unsigned month = static_cast<unsigned>(GetCurrentYMD().month);
 	assert(month <= (sizeof(MONTH_NAMES) / sizeof(const char*)));
 	return MONTH_NAMES[month];
 }
 
 std::string TimePrinter::PrintDay()
 {
-	const unsigned day = static_cast<unsigned>(GetCurrentYMD().day());
-	return fmt::format("{:02}", day);
+	return fmt::format("{:02}", GetCurrentYMD().day);
 }
 
 std::string TimePrinter::PrintDayName()
 {
-	const auto weekday = GetCurrentWeekday().c_encoding();
+	const auto weekday = GetCurrentYMD().day;
 	assert(weekday <= (sizeof(DAY_NAMES) / sizeof(const char*)));
 	return DAY_NAMES[weekday];
 }

@@ -7,15 +7,28 @@ constexpr const char* DAY_NAMES[] = {"sun", "mon", "tue", "wed", "thu", "fri", "
 constexpr const char* MONTH_NAMES[] = {"_",	  "jan", "feb", "mar", "apr", "may", "jun",
 									   "jul", "aug", "sep", "oct", "nov", "dec"};
 
+struct HH_MM_SS
+{
+	int hours{};
+	int minutes{};
+	int seconds{};
+};
+
+struct YY_MM_DD
+{
+	int year{};
+	int month{};
+	int day{};
+};
+
 class TimePrinter
 {
 private:
 	static constexpr intmax_t MAX = 10'000'000;
 
 public:
-	[[nodiscard]] static std::chrono::year_month_day GetCurrentYMD();
-	[[nodiscard]] static std::chrono::hh_mm_ss<std::chrono::duration<long long, std::ratio<1, MAX>>> GetCurrentHMS();
-	[[nodiscard]] static std::chrono::weekday GetCurrentWeekday();
+	[[nodiscard]] static YY_MM_DD GetCurrentYMD();
+	[[nodiscard]] static HH_MM_SS GetCurrentHMS();
 
 	[[nodiscard]] static std::string PrintAmPm();
 	[[nodiscard]] static std::string PrintHMS();
