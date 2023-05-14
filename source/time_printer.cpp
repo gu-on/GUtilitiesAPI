@@ -8,7 +8,11 @@ YY_MM_DD TimePrinter::GetCurrentYMD()
 	auto now = std::chrono::system_clock::now();
 	std::time_t current_time = std::chrono::system_clock::to_time_t(now);
 	std::tm local_time;
+#ifdef _WIN32
 	localtime_s(&local_time, &current_time);
+#else
+	localtime_r(&current_time, &local_time);
+#endif
 
 	YY_MM_DD ymd{};
 	ymd.year = local_time.tm_year + 1900; // tm_year = years since 1900
@@ -23,7 +27,11 @@ HH_MM_SS TimePrinter::GetCurrentHMS()
 	auto now = std::chrono::system_clock::now();
 	std::time_t current_time = std::chrono::system_clock::to_time_t(now);
 	std::tm local_time;
+#ifdef _WIN32
 	localtime_s(&local_time, &current_time);
+#else
+	localtime_r(&current_time, &local_time);
+#endif
 
 	HH_MM_SS hms{};
 	hms.hours = local_time.tm_hour;
