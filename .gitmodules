@@ -7,3 +7,6 @@
 [submodule "fmt"]
 	path = vendor/fmt
 	url = https://github.com/fmtlib/fmt.git
+[submodule "vendor/reaper-sdk"]
+	path = vendor/reaper-sdk
+	url = https://github.com/gu-on/reaper-sdk.git
