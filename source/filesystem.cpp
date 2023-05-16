@@ -4,7 +4,6 @@
 #include <cctype>
 #include <chrono>
 #include <functional>
-#include <ranges>
 
 #include <reaper_plugin_functions.h>
 
@@ -88,9 +87,9 @@ std::string FileSystem::GetNextMediaFilePath()
 
 bool FileSystem::IsFlaggedExtension(std::string fileExtension)
 {
-	std::ranges::transform(fileExtension, fileExtension.begin(), [](unsigned char c) { return std::toupper(c); });
+	std::transform(fileExtension.begin(), fileExtension.end(), fileExtension.begin(), [](unsigned char c) { return std::toupper(c); });
 
-	return std::ranges::any_of(FlagsToCheck, [&fileExtension](const std::string& s) { return fileExtension == s; });
+	return std::any_of(FlagsToCheck.begin(), FlagsToCheck.end(), [&fileExtension](const std::string& s) { return fileExtension == s; });
 }
 
 void FileSystem::Reset()

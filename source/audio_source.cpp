@@ -119,7 +119,9 @@ int AudioSource::CountSamplesTilRMSR(const int bufferSize, const double threshol
 
 bool AudioSource::HasRegion() const
 {
-	return std::ranges::any_of(GetMediaCues(), [&](const auto& marker) { return marker.IsRegion; });
+	auto mediaCues = GetMediaCues();
+	
+	return std::any_of(mediaCues.begin(), mediaCues.end(), [&](const auto& marker) { return marker.IsRegion; });
 }
 
 std::vector<CueMarker> AudioSource::GetMediaCues() const

@@ -3,9 +3,9 @@
 #include <api.hpp>
 #include <ini_file.hpp>
 
+#include <algorithm>
 #include <cstring>
 #include <fmt/core.h>
-#include <ranges>
 
 void API::Add(APIDefinition def)
 {
@@ -31,7 +31,7 @@ void API::Register()
 
 		def.defstring.assign(str.begin(), str.end());
 		def.defstring.push_back('\0');
-		std::ranges::replace(def.defstring, '\n', '\0');
+		std::replace(def.defstring.begin(), def.defstring.end(), '\n', '\0');
 
 		plugin_register(def.regkey_def, (void*)def.defstring.data());
 		plugin_register(def.regkey_func, def.func);
