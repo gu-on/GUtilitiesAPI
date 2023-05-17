@@ -93,7 +93,7 @@ def update_main_cpp_file(main_cpp_file, generated_code):
     with open(main_cpp_file, 'r') as file:
         lines = file.readlines()
 
-    start_marker = "int LoadPlugin(reaper_plugin_info_t* rec)"
+    start_marker = "int LoadPlugin()"
     end_marker = "Api.Register();"
 
     start_index = None
