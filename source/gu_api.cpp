@@ -1,6 +1,6 @@
 #include <reaper_plugin_functions.h>
 
-#include <api_cfg.hpp>
+#include <gu_api.hpp>
 #include <gu_audio_source.hpp>
 #include <gu_filesystem.hpp>
 #include <gu_ini_file.hpp>
@@ -116,13 +116,13 @@ int GU_CountMediaFilesRecursive(const char* filePath, int flags, double* fileSiz
 	return mediaFileInfo.Count;
 }
 
-static std::string currentMediaFile{};
-
 const char* GU_EnumerateMediaFilesRecursive(const char* path, const int flags)
 {
 #ifdef _DEBUG
 	Profiler profiler{"GU_EnumerateMediaFilesRecursive"};
 #endif
+
+	static std::string currentMediaFile{};
 
 	if (!path)
 		return "";
@@ -133,15 +133,20 @@ const char* GU_EnumerateMediaFilesRecursive(const char* path, const int flags)
 	return currentMediaFile.c_str();
 }
 
-void GU_TakeWildcardRename(MediaItem_Take* take, const char* input)
+const char* GU_WildcardParseTake(MediaItem_Take* take, const char* input)
 {
 #ifdef _DEBUG
-	Profiler profiler{"GU_TakeWildcardRename"};
+	Profiler profiler{"GU_WildcardParseTake"};
 #endif
 
+	static std::string output{};
+	output.clear();
+
 	if (!take || !input)
-		return;
+		return "";
 
 	WildcardParser wildcardParser{};
-	wildcardParser.RenameTake(take, input);
+	output = wildcardParser.ParseTakeName(take, input);
+
+	return output.c_str();
 }

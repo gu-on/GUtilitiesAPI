@@ -9,7 +9,7 @@
 #include <map>
 #include <string>
 
-void WildcardParser::RenameTake(MediaItem_Take* takePtr, std::string input)
+std::string WildcardParser::ParseTakeName(MediaItem_Take* takePtr, std::string input)
 {
 	Take take{takePtr};
 	Item item = take.GetItem();
@@ -99,12 +99,12 @@ void WildcardParser::RenameTake(MediaItem_Take* takePtr, std::string input)
 			if (totalLength > REAPER_NAMES_MAX_LENGTH)
 			{
 				// todo: return failure condition
-				return;
+				return std::string();
 			}
 
 			input.replace(pos, wildcard.length(), temp);
 		}
 	}
 
-	take.SetName(input);
+	return input;
 }

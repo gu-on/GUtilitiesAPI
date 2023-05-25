@@ -8,5 +8,5 @@
 class WildcardParser
 {
 public:
-	void RenameTake(MediaItem_Take* take, std::string input);
+	std::string ParseTakeName(MediaItem_Take* take, std::string input);
 };

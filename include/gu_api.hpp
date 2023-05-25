@@ -1,9 +1,9 @@
 #include <reaper_plugin.h>
-// write file
+// Write config file to Reaper's resource folder
 bool GU_ConfigFileWrite(const char* filePath, const char* category, const char* key, const char* value);
-// read file
+// Read config file to Reaper's resource folder
 bool GU_ConfigFileRead(const char* filePath, const char* category, const char* key, char* valueOut, int valueOut_sz);
-// Checks if PCM_source is mono
+// Checks if PCM_source is mono by comparing all channels
 bool GU_IsMono(PCM_source* source);
 // Checks if first sample in PCM_source is 0
 bool GU_IsFirstSampleZero(PCM_source* source);
@@ -25,4 +25,4 @@ int GU_CountMediaFilesRecursive(const char* filePath, int flags, double* fileSiz
 // Import media file from filePath at index
 const char* GU_EnumerateMediaFilesRecursive(const char* path, int flags);
 // Renames take based on wildcards
-void GU_TakeWildcardRename(MediaItem_Take* take, const char* input);
+const char* GU_WildcardParseTake(MediaItem_Take* take, const char* input);
