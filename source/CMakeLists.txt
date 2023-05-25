@@ -1,26 +1,26 @@
 find_package(Python3 COMPONENTS Interpreter)
 
 add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
-  COMMAND Python3::Interpreter ${CMAKE_SOURCE_DIR}/apigen.py ${CMAKE_SOURCE_DIR}/include/api_cfg.hpp ${CMAKE_SOURCE_DIR}/source/main.cpp
+  OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/gu_main.cpp
+  COMMAND Python3::Interpreter ${CMAKE_SOURCE_DIR}/apigen.py ${CMAKE_SOURCE_DIR}/include/api_cfg.hpp ${CMAKE_SOURCE_DIR}/source/gu_main.cpp
   COMMENT "Generating main.cpp using apigen.py script"
   DEPENDS ${CMAKE_SOURCE_DIR}/apigen.py ${CMAKE_SOURCE_DIR}/include/api_cfg.hpp
 )
 
 add_library(
     reaper_plugin OBJECT
-    main.cpp
-    reaper_wrapper.cpp
-    maths.cpp
-    time_printer.cpp
-    profiler.cpp
     api.cpp
-    ini_file.cpp
     api_cfg.cpp
-    filesystem.cpp
-    audio_source.cpp
-    audio_buffer.cpp
-    wildcard_parser.cpp
+    gu_main.cpp
+    gu_reaper_wrapper.cpp
+    gu_maths.cpp
+    gu_time_printer.cpp
+    gu_profiler.cpp
+    gu_ini_file.cpp
+    gu_filesystem.cpp
+    gu_audio_source.cpp
+    gu_audio_buffer.cpp
+    gu_wildcard_parser.cpp
 )
 
 target_include_directories(

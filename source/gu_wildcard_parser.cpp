@@ -1,7 +1,7 @@
-#include <wildcard_parser.hpp>
+#include <gu_wildcard_parser.hpp>
 
-#include <audio_source.hpp>
-#include <time_printer.hpp>
+#include <gu_audio_source.hpp>
+#include <gu_time_printer.hpp>
 
 #include <chrono>
 #include <fmt/core.h>

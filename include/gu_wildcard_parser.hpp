@@ -1,7 +1,7 @@
 #pragma once
 
+#include <gu_reaper_wrapper.hpp>
 #include <reaper_plugin_functions.h>
-#include <reaper_wrapper.hpp>
 
 #include <string>
 

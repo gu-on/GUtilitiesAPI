@@ -1,11 +1,11 @@
 #include <reaper_plugin_functions.h>
 
 #include <api_cfg.hpp>
-#include <audio_source.hpp>
-#include <filesystem.hpp>
-#include <ini_file.hpp>
-#include <profiler.hpp>
-#include <wildcard_parser.hpp>
+#include <gu_audio_source.hpp>
+#include <gu_filesystem.hpp>
+#include <gu_ini_file.hpp>
+#include <gu_profiler.hpp>
+#include <gu_wildcard_parser.hpp>
 
 #include <chrono>
 #include <string>

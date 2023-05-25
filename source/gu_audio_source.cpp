@@ -1,9 +1,9 @@
-#include <audio_source.hpp>
+#include <gu_audio_buffer.hpp>
+#include <gu_audio_source.hpp>
+#include <gu_maths.hpp>
 
 #include <algorithm>
-#include <audio_buffer.hpp>
 #include <cassert>
-#include <maths.hpp>
 
 bool AudioSource::IsMono(int bufferSize) const
 {
@@ -120,7 +120,7 @@ int AudioSource::CountSamplesTilRMSR(const int bufferSize, const double threshol
 bool AudioSource::HasRegion() const
 {
 	auto mediaCues = GetMediaCues();
-	
+
 	return std::any_of(mediaCues.begin(), mediaCues.end(), [&](const auto& marker) { return marker.IsRegion; });
 }
 

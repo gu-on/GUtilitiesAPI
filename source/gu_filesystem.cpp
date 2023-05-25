@@ -1,11 +1,10 @@
-#include <filesystem.hpp>
+#include <gu_filesystem.hpp>
+#include <reaper_plugin_functions.h>
 
 #include <algorithm>
 #include <cctype>
 #include <chrono>
 #include <functional>
-
-#include <reaper_plugin_functions.h>
 
 MediaFileInfoStats FileSystem::CalculateMediaFileInfoRecursive()
 {
@@ -87,9 +86,11 @@ std::string FileSystem::GetNextMediaFilePath()
 
 bool FileSystem::IsFlaggedExtension(std::string fileExtension)
 {
-	std::transform(fileExtension.begin(), fileExtension.end(), fileExtension.begin(), [](unsigned char c) { return std::toupper(c); });
+	std::transform(fileExtension.begin(), fileExtension.end(), fileExtension.begin(),
+				   [](unsigned char c) { return std::toupper(c); });
 
-	return std::any_of(FlagsToCheck.begin(), FlagsToCheck.end(), [&fileExtension](const std::string& s) { return fileExtension == s; });
+	return std::any_of(FlagsToCheck.begin(), FlagsToCheck.end(),
+					   [&fileExtension](const std::string& s) { return fileExtension == s; });
 }
 
 void FileSystem::Reset()

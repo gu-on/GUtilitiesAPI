@@ -1,5 +1,4 @@
-#include <profiler.hpp>
-
+#include <gu_profiler.hpp>
 #include <reaper_plugin_functions.h>
 
 #include <fmt/core.h>

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <filesystem>
 #include <mini/ini.h>
 #include <string>

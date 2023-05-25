@@ -1,6 +1,6 @@
 #pragma once
 
-#include <audio_source.hpp>
+#include <gu_audio_source.hpp>
 #include <reaper_plugin_functions.h>
 
 #include <string>
