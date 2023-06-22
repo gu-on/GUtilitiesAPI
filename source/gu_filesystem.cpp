@@ -35,6 +35,9 @@ FileSystem::FileSystem(const std::string filePath, const int flags)
 {
 	FilePath = filePath;
 
+	if (!std::filesystem::exists(FilePath))
+		return;
+
 	if (auto hash = Hasher(FilePath); FilePathHash != hash || Flags != flags)
 	{
 		FilePathHash = hash;
