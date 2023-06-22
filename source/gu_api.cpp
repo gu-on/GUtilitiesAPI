@@ -10,21 +10,21 @@
 #include <chrono>
 #include <string>
 
-bool GU_ConfigFileWrite(const char* filePath, const char* category, const char* key, const char* value)
+bool GU_ConfigFileWrite(const char* fileName, const char* category, const char* key, const char* value)
 {
-	if (!filePath || !category || !key || !value)
+	if (!fileName || !category || !key || !value)
 		return false;
 
-	INIFile ini{filePath};
+	INIFile ini{fileName};
 	return ini.Write(category, key, value);
 }
 
-bool GU_ConfigFileRead(const char* filePath, const char* category, const char* key, char* valueOut, int valueOut_sz)
+bool GU_ConfigFileRead(const char* fileName, const char* category, const char* key, char* valueOut, int valueOut_sz)
 {
-	if (!filePath || !category || !key)
+	if (!fileName || !category || !key)
 		return false;
 
-	INIFile ini{filePath};
+	INIFile ini{fileName};
 	std::string temp{};
 	bool isSuccessful = ini.Read(category, key, temp);
 

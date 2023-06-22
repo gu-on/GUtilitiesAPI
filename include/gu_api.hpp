@@ -1,8 +1,8 @@
 #include <reaper_plugin.h>
 // Write config file to Reaper's resource folder
-bool GU_ConfigFileWrite(const char* filePath, const char* category, const char* key, const char* value);
-// Read config file to Reaper's resource folder
-bool GU_ConfigFileRead(const char* filePath, const char* category, const char* key, char* valueOut, int valueOut_sz);
+bool GU_ConfigFileWrite(const char* fileName, const char* category, const char* key, const char* value);
+// Read config file from Reaper's resource folder
+bool GU_ConfigFileRead(const char* fileName, const char* category, const char* key, char* valueOut, int valueOut_sz);
 // Checks if PCM_source is mono by comparing all channels
 bool GU_IsMono(PCM_source* source);
 // Checks if first sample in PCM_source is 0

@@ -9,8 +9,8 @@ API Api{};
 // clang-format off
 int LoadPlugin()
 {
-	Api.Add({APIFUNC(GU_ConfigFileWrite), "bool", "const char*,const char*,const char*,const char*", "filePath,category,key,value", "Write config file to Reaper's resource folder"});
-	Api.Add({APIFUNC(GU_ConfigFileRead), "bool", "const char*,const char*,const char*,char*,int", "filePath,category,key,valueOut,valueOut_sz", "Read config file to Reaper's resource folder"});
+	Api.Add({APIFUNC(GU_ConfigFileWrite), "bool", "const char*,const char*,const char*,const char*", "fileName,category,key,value", "Write config file to Reaper's resource folder"});
+	Api.Add({APIFUNC(GU_ConfigFileRead), "bool", "const char*,const char*,const char*,char*,int", "fileName,category,key,valueOut,valueOut_sz", "Read config file from Reaper's resource folder"});
 	Api.Add({APIFUNC(GU_IsMono), "bool", "PCM_source*", "source", "Checks if PCM_source is mono by comparing all channels"});
 	Api.Add({APIFUNC(GU_IsFirstSampleZero), "bool", "PCM_source*", "source", "Checks if first sample in PCM_source is 0"});
 	Api.Add({APIFUNC(GU_IsLastSampleZero), "bool", "PCM_source*", "source", "Checks if last sample in PCM_source is 0"});
