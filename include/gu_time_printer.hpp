@@ -27,8 +27,10 @@ private:
 	static constexpr intmax_t MAX = 10'000'000;
 
 public:
+	[[nodiscard]] static std::tm GetCurrentTime();
 	[[nodiscard]] static YY_MM_DD GetCurrentYMD();
 	[[nodiscard]] static HH_MM_SS GetCurrentHMS();
+	[[nodiscard]] static int GetCurrentDayOfTheWeek();
 
 	[[nodiscard]] static std::string PrintAmPm();
 	[[nodiscard]] static std::string PrintHMS();

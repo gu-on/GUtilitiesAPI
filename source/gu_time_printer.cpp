@@ -3,7 +3,7 @@
 #include <cassert>
 #include <fmt/core.h>
 
-YY_MM_DD TimePrinter::GetCurrentYMD()
+std::tm TimePrinter::GetCurrentTime()
 {
 	auto now = std::chrono::system_clock::now();
 	std::time_t current_time = std::chrono::system_clock::to_time_t(now);
@@ -13,6 +13,13 @@ YY_MM_DD TimePrinter::GetCurrentYMD()
 #else
 	localtime_r(&current_time, &local_time);
 #endif
+
+	return local_time;
+}
+
+YY_MM_DD TimePrinter::GetCurrentYMD()
+{
+	auto local_time = GetCurrentTime();
 
 	YY_MM_DD ymd{};
 	ymd.year = local_time.tm_year + 1900; // tm_year = years since 1900
@@ -24,14 +31,7 @@ YY_MM_DD TimePrinter::GetCurrentYMD()
 
 HH_MM_SS TimePrinter::GetCurrentHMS()
 {
-	auto now = std::chrono::system_clock::now();
-	std::time_t current_time = std::chrono::system_clock::to_time_t(now);
-	std::tm local_time;
-#ifdef _WIN32
-	localtime_s(&local_time, &current_time);
-#else
-	localtime_r(&current_time, &local_time);
-#endif
+	auto local_time = GetCurrentTime();
 
 	HH_MM_SS hms{};
 	hms.hours = local_time.tm_hour;
@@ -39,6 +39,13 @@ HH_MM_SS TimePrinter::GetCurrentHMS()
 	hms.seconds = local_time.tm_sec;
 
 	return hms;
+}
+
+int TimePrinter::GetCurrentDayOfTheWeek()
+{
+	auto local_time = GetCurrentTime();
+
+	return local_time.tm_wday;
 }
 
 std::string TimePrinter::PrintAmPm()
@@ -104,7 +111,7 @@ std::string TimePrinter::PrintDay()
 
 std::string TimePrinter::PrintDayName()
 {
-	const auto weekday = GetCurrentYMD().day;
+	const auto weekday = GetCurrentDayOfTheWeek();
 	assert(static_cast<size_t>(weekday) <= (sizeof(DAY_NAMES) / sizeof(const char*)));
 	return DAY_NAMES[weekday];
 }
