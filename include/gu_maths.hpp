@@ -1,6 +1,8 @@
 #pragma once
 
+#include <algorithm>
 #include <cmath>
+#include <string>
 
 class Maths
 {
@@ -18,5 +20,13 @@ public:
 	[[nodiscard]] static bool IsNearlyEqual(const double x, const double y, const double eps = 0.00001)
 	{
 		return fabs(x - y) < eps;
+	}
+
+	[[nodiscard]] static bool IsNumber(const std::string& str)
+	{
+		if (str.empty())
+			return false;
+
+		return std::ranges::all_of(str.begin(), str.end(), [](const char c) { return std::isdigit(c); });
 	}
 };
