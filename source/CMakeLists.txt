@@ -47,7 +47,7 @@ endif()
 find_package(WDL REQUIRED)
 target_link_libraries(reaper_plugin WDL::WDL)
 
-target_link_libraries(reaper_plugin fmt)
+target_link_libraries(reaper_plugin fmt::fmt)
 
 if(NOT WIN32)
   find_package(SWELL REQUIRED)
