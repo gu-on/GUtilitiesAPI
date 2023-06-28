@@ -17,7 +17,7 @@ add_library(
     gu_time_printer.cpp
     gu_profiler.cpp
     gu_ini_file.cpp
-    gu_filesystem.cpp
+    gu_recursive_importer.cpp
     gu_audio_source.cpp
     gu_audio_buffer.cpp
     gu_wildcard_parser.cpp

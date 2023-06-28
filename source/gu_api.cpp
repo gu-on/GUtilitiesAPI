@@ -2,9 +2,9 @@
 
 #include <gu_api.hpp>
 #include <gu_audio_source.hpp>
-#include <gu_filesystem.hpp>
 #include <gu_ini_file.hpp>
 #include <gu_profiler.hpp>
+#include <gu_recursive_importer.hpp>
 #include <gu_wildcard_parser.hpp>
 
 #include <chrono>
@@ -105,12 +105,12 @@ int GU_CountMediaFilesRecursive(const char* filePath, int flags, double* fileSiz
 
 	if (!filePath)
 	{
-		*fileSizeOut = FileSystem::MediaFileError.FileSize;
-		return FileSystem::MediaFileError.Count;
+		*fileSizeOut = RecursiveImporter::MediaFileError.FileSize;
+		return RecursiveImporter::MediaFileError.Count;
 	}
 
-	FileSystem fileSystem{filePath, flags};
-	auto mediaFileInfo = fileSystem.CalculateMediaFileInfoRecursive();
+	RecursiveImporter recursiveImporter{filePath, flags};
+	auto mediaFileInfo = recursiveImporter.CalculateMediaFileInfo();
 	*fileSizeOut = mediaFileInfo.FileSize;
 
 	return mediaFileInfo.Count;
@@ -127,8 +127,8 @@ const char* GU_EnumerateMediaFilesRecursive(const char* path, const int flags)
 	if (!path)
 		return "";
 
-	FileSystem fileSystem{path, flags};
-	currentMediaFile = fileSystem.GetNextMediaFilePath();
+	RecursiveImporter recursiveImporter{path, flags};
+	currentMediaFile = recursiveImporter.GetNextMediaFilePath();
 
 	return currentMediaFile.c_str();
 }

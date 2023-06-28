@@ -51,18 +51,18 @@ struct MediaFileInfoStats
 	};
 };
 
-class FileSystem
+class RecursiveImporter
 {
 private:
 	typedef std::filesystem::recursive_directory_iterator DirectoryIterator;
 
 public:
-	MediaFileInfoStats CalculateMediaFileInfoRecursive();
+	MediaFileInfoStats CalculateMediaFileInfo();
 	std::string GetNextMediaFilePath();
 	static inline MediaFileInfoStats MediaFileError{-1, 0};
 
-	FileSystem() = delete;
-	explicit FileSystem(const std::string filePath, int flags);
+	RecursiveImporter() = delete;
+	explicit RecursiveImporter(const std::string filePath, int flags);
 
 private:
 	bool IsValidPath();

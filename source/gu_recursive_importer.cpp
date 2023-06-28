@@ -1,4 +1,4 @@
-#include <gu_filesystem.hpp>
+#include <gu_recursive_importer.hpp>
 #include <reaper_plugin_functions.h>
 
 #include <algorithm>
@@ -6,7 +6,7 @@
 #include <chrono>
 #include <functional>
 
-MediaFileInfoStats FileSystem::CalculateMediaFileInfoRecursive()
+MediaFileInfoStats RecursiveImporter::CalculateMediaFileInfo()
 {
 	MediaFileInfoStats mediaFileInfo{};
 
@@ -31,7 +31,7 @@ MediaFileInfoStats FileSystem::CalculateMediaFileInfoRecursive()
 	return mediaFileInfo;
 }
 
-FileSystem::FileSystem(const std::string filePath, const int flags)
+RecursiveImporter::RecursiveImporter(const std::string filePath, const int flags)
 {
 	FilePath = filePath;
 
@@ -56,12 +56,12 @@ FileSystem::FileSystem(const std::string filePath, const int flags)
 	}
 }
 
-bool FileSystem::IsValidPath()
+bool RecursiveImporter::IsValidPath()
 {
 	return !FilePath.empty() && std::filesystem::exists(FilePath);
 }
 
-std::string FileSystem::GetNextMediaFilePath()
+std::string RecursiveImporter::GetNextMediaFilePath()
 {
 	if (!IsValidPath() || Iterator == DirectoryIterator())
 	{
@@ -87,7 +87,7 @@ std::string FileSystem::GetNextMediaFilePath()
 	return temp;
 }
 
-bool FileSystem::IsFlaggedExtension(std::string fileExtension)
+bool RecursiveImporter::IsFlaggedExtension(std::string fileExtension)
 {
 	std::transform(fileExtension.begin(), fileExtension.end(), fileExtension.begin(),
 				   [](unsigned char c) { return std::toupper(c); });
@@ -96,12 +96,12 @@ bool FileSystem::IsFlaggedExtension(std::string fileExtension)
 					   [&fileExtension](const std::string& s) { return fileExtension == s; });
 }
 
-void FileSystem::Reset()
+void RecursiveImporter::Reset()
 {
 	FilePathHash = 0;
 }
 
-void FileSystem::CreateCustomFlagsList()
+void RecursiveImporter::CreateCustomFlagsList()
 {
 	FlagsToCheck.clear();
 
@@ -117,7 +117,7 @@ void FileSystem::CreateCustomFlagsList()
 	}
 }
 
-void FileSystem::CreateDefaultFlagsList()
+void RecursiveImporter::CreateDefaultFlagsList()
 {
 	FlagsToCheck.clear();
 	for (const auto& ext : VALID_AUDIO_FILE_FORMATS)
