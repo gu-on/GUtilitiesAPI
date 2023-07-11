@@ -26,3 +26,5 @@ int GU_CountMediaFilesRecursive(const char* filePath, int flags, double* fileSiz
 const char* GU_EnumerateMediaFilesRecursive(const char* path, int flags);
 // Renames take based on wildcards
 const char* GU_WildcardParseTake(MediaItem_Take* take, const char* input);
+// Returns the path of a file from a given directory
+const char* GU_FindFileDirectoryInPath(const char* fileName, const char* directory);

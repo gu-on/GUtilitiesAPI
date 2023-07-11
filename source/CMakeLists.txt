@@ -13,6 +13,7 @@ add_library(
     gu_api.cpp
     gu_main.cpp
     gu_reaper_wrapper.cpp
+    gu_file_finder.cpp
     gu_maths.cpp
     gu_time_printer.cpp
     gu_profiler.cpp

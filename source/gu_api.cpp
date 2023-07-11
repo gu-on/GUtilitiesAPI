@@ -2,6 +2,7 @@
 
 #include <gu_api.hpp>
 #include <gu_audio_source.hpp>
+#include <gu_file_finder.hpp>
 #include <gu_ini_file.hpp>
 #include <gu_profiler.hpp>
 #include <gu_recursive_importer.hpp>
@@ -147,6 +148,20 @@ const char* GU_WildcardParseTake(MediaItem_Take* take, const char* input)
 
 	WildcardParser wildcardParser{};
 	output = wildcardParser.ParseTakeName(take, input);
+
+	return output.c_str();
+}
+
+const char* GU_FindFileDirectoryInPath(const char* fileName, const char* directory)
+{
+	static std::string output{};
+	output.clear();
+
+	if (!fileName || !directory)
+		return "";
+
+	FileFinder fileFinder{};
+	output = fileFinder.FindFileInDirectory(fileName, directory);
 
 	return output.c_str();
 }
