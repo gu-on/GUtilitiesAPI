@@ -29,18 +29,9 @@ public:
 	[[nodiscard]] bool HasRegion() const;
 
 	[[nodiscard]] std::vector<CueMarker> GetMediaCues() const;
-	[[nodiscard]] int GetChannelCount() const
-	{
-		return AudioPtr->GetNumChannels();
-	}
-	void GetSamples(PCM_source_transfer_t& buffer) const
-	{
-		AudioPtr->GetSamples(&buffer);
-	}
-	[[nodiscard]] int GetSampleRate() const
-	{
-		return static_cast<int>(AudioPtr->GetSampleRate());
-	}
+	[[nodiscard]] int GetChannelCount() const { return AudioPtr->GetNumChannels(); }
+	void GetSamples(PCM_source_transfer_t& buffer) const { AudioPtr->GetSamples(&buffer); }
+	[[nodiscard]] int GetSampleRate() const { return static_cast<int>(AudioPtr->GetSampleRate()); }
 	[[nodiscard]] int GetLengthInSamples() const
 	{
 		return static_cast<int>(AudioPtr->GetLength() * AudioPtr->GetSampleRate());
@@ -62,18 +53,9 @@ public:
 
 	[[nodiscard]] double GetNormalization(int normalizationType) const;
 
-	[[nodiscard]] double GetLUFS() const
-	{
-		return GetNormalization(static_cast<int>(NormalizationType::LUFS_I));
-	}
-	[[nodiscard]] double GetRMS() const
-	{
-		return GetNormalization(static_cast<int>(NormalizationType::RMS));
-	}
-	[[nodiscard]] double GetPeak() const
-	{
-		return GetNormalization(static_cast<int>(NormalizationType::PEAK));
-	}
+	[[nodiscard]] double GetLUFS() const { return GetNormalization(static_cast<int>(NormalizationType::LUFS_I)); }
+	[[nodiscard]] double GetRMS() const { return GetNormalization(static_cast<int>(NormalizationType::RMS)); }
+	[[nodiscard]] double GetPeak() const { return GetNormalization(static_cast<int>(NormalizationType::PEAK)); }
 	[[nodiscard]] double GetTruePeak() const
 	{
 		return GetNormalization(static_cast<int>(NormalizationType::TRUE_PEAK));
