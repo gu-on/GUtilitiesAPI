@@ -154,6 +154,10 @@ const char* GU_WildcardParseTake(MediaItem_Take* take, const char* input)
 
 const char* GU_FindFileDirectoryInPath(const char* fileName, const char* directory)
 {
+#ifdef _DEBUG
+	Profiler profiler{"GU_FindFileDirectoryInPath"};
+#endif
+
 	static std::string output{};
 	output.clear();
 
