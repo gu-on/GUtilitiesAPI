@@ -42,7 +42,7 @@ for:
       i686)
         install-deps i386 g++-multilib
         export TOOLCHAIN=cmake/linux-cross.cmake \
-               TOOLCHAIN_PREFIX=i386-linux-gnu
+               TOOLCHAIN_PREFIX=i686-linux-gnu
         ;;
       armv7l)
         install-deps armhf g++-arm-linux-gnueabihf
