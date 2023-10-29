@@ -5,7 +5,10 @@ namespace fs = std::filesystem;
 
 std::string INIFile::GetFormattedFileName(std::string fileName)
 {
-	std::erase_if(fileName, [](char c) { return !std::isalnum(c) && c != '_' && c != '\\' && c != '/'; });
+	fileName.erase(std::remove_if(fileName.begin(), fileName.end(),
+								  [](char c) { return !std::isalnum(c) && c != '_' && c != '\\' && c != '/'; }),
+				   fileName.end());
+
 	return std::string(GetResourcePath()) + "//GUtilities//" + fileName + ".ini";
 }
 

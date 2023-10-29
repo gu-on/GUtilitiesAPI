@@ -27,6 +27,6 @@ public:
 		if (str.empty())
 			return false;
 
-		return std::ranges::all_of(str.begin(), str.end(), [](const char c) { return std::isdigit(c); });
+		return std::all_of(str.begin(), str.end(), [](char c) { return std::isdigit(static_cast<unsigned char>(c)); });
 	}
 };

@@ -65,10 +65,8 @@ public:
 	Track() = delete;
 	Track(MediaTrack* track);
 
-	bool operator==(const Track& other) const
-	{
-		return other.Ptr == this->Ptr;
-	}
+	bool operator==(const Track& other) const { return other.Ptr == this->Ptr; }
+	bool operator!=(const Track& other) const { return other.Ptr != this->Ptr; }
 };
 
 class Item
