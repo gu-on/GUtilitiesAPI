@@ -1,6 +1,6 @@
 # GUtilitiesAPI
 
-GUtilitiesAPI is a reworking of [GUtilities] (https://github.com/gu-on/GUtilities/), where the backend and frontend concerns have been separated. Additionally, Mac and Linux support is now also provided. 
+GUtilitiesAPI is a reworking of [GUtilities](https://github.com/gu-on/GUtilities/), where the backend and frontend concerns have been separated. Additionally, Mac and Linux support is now also provided. 
 
 ## Installation guide
 It's recommended to read all steps in advance before beginning installation.
