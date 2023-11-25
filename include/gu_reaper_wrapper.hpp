@@ -74,7 +74,7 @@ private:
 
 public:
 	Project() = default;
-	explicit Project::Project(ReaProject* project) : Ptr(project) {}
+	explicit Project(ReaProject* project) : Ptr(project) {}
 };
 
 class Track
