@@ -65,9 +65,7 @@ Item Track::CreateNewItem(const std::string& filePath, const double position)
 	return item;
 }
 
-Track::Track(MediaTrack* track) : Ptr((assert(track != nullptr), track))
-{
-}
+Track::Track(MediaTrack* track) : Ptr((assert(track != nullptr), track)) {}
 
 std::string Item::GetNotes() const
 {
@@ -102,9 +100,7 @@ void Item::SetLength(double length) const
 	SetMediaItemInfo_Value(Ptr, "D_LENGTH", length);
 }
 
-Item::Item(MediaItem* item) : Ptr((assert(item != nullptr), item))
-{
-}
+Item::Item(MediaItem* item) : Ptr((assert(item != nullptr), item)) {}
 
 PCM_source* Take::SetAudioSource(const std::string& filePath)
 {
@@ -134,9 +130,8 @@ double Take::GetSourceLength()
 	return GetMediaSourceLength(source, lengthIsQNOut);
 }
 
-std::string Take::GetFXNames()
+std::string Take::GetFXNames(const std::string& separator)
 {
-	static constexpr const char* separator = "-";
 	std::string output{};
 	int count = TakeFX_GetCount(Ptr);
 
@@ -175,9 +170,7 @@ AudioSource Take::GetSource()
 	return AudioSource{GetMediaItemTake_Source(Ptr)};
 }
 
-Take::Take(MediaItem_Take* take) : Ptr((assert(take != nullptr), take))
-{
-}
+Take::Take(MediaItem_Take* take) : Ptr((assert(take != nullptr), take)) {}
 
 int Project::GetState() const
 {
@@ -256,6 +249,51 @@ int Project::CountSelectedItems() const
 	return CountSelectedMediaItems(Ptr);
 }
 
+std::vector<Region> Project::GetRegions()
+{
+	std::vector<Region> regions{};
+	const int count = CountProjectMarkers(Ptr, nullptr, nullptr);
+
+	for (int i = 0; i < count; ++i)
+	{
+		bool isRegion;
+		double startPos;
+		double endPos;
+		const char* name;
+		int index;
+		EnumProjectMarkers(i, &isRegion, &startPos, &endPos, &name, &index);
+
+		if (!isRegion)
+			continue;
+
+		Region region{index, name, startPos, endPos};
+		regions.push_back(region);
+	}
+
+	return regions;
+}
+
+std::string Project::GetRegionNameByKey(const std::string& key, const double itemPos)
+{
+	std::vector<Region> regions = GetRegions();
+
+	for (const auto& region : regions)
+	{
+		if (region.EndPos <= itemPos || region.StartPos > itemPos)
+			continue;
+
+		if (std::string tag = region.GetTag(); !tag.empty())
+		{
+			if (region.GetKey() != key)
+				continue;
+
+			return tag;
+		}
+	}
+
+	return "";
+}
+
 MusicNotation Project::GetTempoAndTimeSignature(double timelinePos) const
 {
 	double bpm{};
@@ -294,6 +332,24 @@ MusicNotation Project::GetTempoAndTimeSignature(double timelinePos) const
 	return ms;
 }
 
-Project::Project(ReaProject* project) : Ptr(project)
+std::string Marker::GetTag() const
 {
+	const std::string::size_type startPos = Name.find("=");
+
+	if (startPos == std::string::npos)
+		return "";
+
+	const size_t endPos = Name.length() - startPos + 1;
+	return Name.substr(startPos + 1, endPos);
+}
+
+std::string Marker::GetKey() const
+{
+	const std::string::size_type endPos = Name.find("=");
+
+	if (endPos == std::string::npos)
+		return "";
+
+	const size_t startPos = 0;
+	return Name.substr(startPos, endPos);
 }

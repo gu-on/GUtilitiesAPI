@@ -19,6 +19,36 @@ struct MusicNotation
 	int TimeSigDen{};
 };
 
+struct Marker
+{
+	int Index{};
+	std::string Name;
+	double StartPos{};
+
+	Marker() = delete;
+	Marker(const int index, std::string name, const double startPos)
+	{
+		Index = index;
+		Name = std::move(name);
+		StartPos = startPos;
+	}
+
+	[[nodiscard]] std::string GetTag() const;
+	[[nodiscard]] std::string GetKey() const;
+};
+
+struct Region : public Marker
+{
+	double EndPos{};
+
+	Region() = delete;
+	Region(const int index, std::string name, const double startPos, const double endPos)
+		: Marker(index, name, startPos)
+	{
+		EndPos = endPos;
+	}
+};
+
 class Project
 {
 public:
@@ -34,6 +64,9 @@ public:
 
 	[[nodiscard]] int CountSelectedItems() const;
 
+	[[nodiscard]] std::vector<Region> GetRegions();
+	[[nodiscard]] std::string GetRegionNameByKey(const std::string& key, const double timelinePos);
+
 private:
 	ReaProject* Ptr;
 
@@ -41,7 +74,7 @@ private:
 
 public:
 	Project() = default;
-	explicit Project(ReaProject* project);
+	explicit Project::Project(ReaProject* project) : Ptr(project) {}
 };
 
 class Track
@@ -95,7 +128,7 @@ public:
 
 	[[nodiscard]] std::string GetName();
 	[[nodiscard]] double GetSourceLength();
-	[[nodiscard]] std::string GetFXNames();
+	[[nodiscard]] std::string GetFXNames(const std::string& separator = "-");
 
 	[[nodiscard]] Track GetTrack();
 	[[nodiscard]] Item GetItem();
