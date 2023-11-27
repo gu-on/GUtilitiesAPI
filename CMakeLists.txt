@@ -50,7 +50,7 @@ add_library(${PROJECT_NAME} SHARED)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
   PREFIX "" # disable the "lib" prefix
-  OUTPUT_NAME "reaper_myplugin-${ARCH_NAME}"
+  OUTPUT_NAME "reaper_gutilitiesapi-${ARCH_NAME}"
 )
 set(REAPER_USER_PLUGINS "UserPlugins")
 
