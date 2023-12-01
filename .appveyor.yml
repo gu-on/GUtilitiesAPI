@@ -147,7 +147,7 @@ deploy:
   # encrypt it with Appveyor > Account > Tools > Encrypt YAML
   # replace this value with your encrypted token
   auth_token:
-    secure: Rk8do2Q/etdabjwIABBRdTJu1a4wYVu9Ltz8HJuC0wc3rz+hHUMGa3N7vTlsrd7z
+    secure: o55HSvCnXfZ+Ghcswts4Oq0qyAaVR/QkvzGzXzvtriSg5I9iOZr9d21MfJsA0/5Q
   artifact: /.*\.(dll|dylib|so|lua)/
   # upload only tagged commit builds to release draft
   on:
