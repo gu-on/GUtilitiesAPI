@@ -5,19 +5,23 @@ version: "{build}-{branch}"
 before_build:
   - git submodule update --init --recursive --depth 1
 build_script:
+  - export VCPKG_OVERLAY_TRIPLETS=cmake/vcpkg-triplets
   - cmake -B build -DCMAKE_BUILD_TYPE=Release
-    -DVCPKG_TARGET_TRIPLET=$TRIPLET -DCMAKE_TOOLCHAIN_FILE=$TOOLCHAIN
+    -DCMAKE_TOOLCHAIN_FILE=~/vcpkg/scripts/buildsystems/vcpkg.cmake
+    -DVCPKG_TARGET_TRIPLET=arch-env -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$TOOLCHAIN
     -DCMAKE_OSX_ARCHITECTURES=$ARCH -DCMAKE_OSX_DEPLOYMENT_TARGET=$DEPLOY_TARGET
   - cmake --build build
-  - '[ "$ARCH" != `uname -m` ] || cmake --build build'
 
 test_script:
-  - ctest -C Release --test-dir build --output-on-failure
+  - '[ "$ARCH" = "arm64" ] || ctest -C Release --test-dir build --output-on-failure'
 
 for:
   - matrix: { only: [appveyor_build_worker_image: &linux Ubuntu2004] }
+    cache:
+      - build/vcpkg_installed -> vcpkg.json, cmake/vcpkg-triplets/arch-env.cmake
     install: |-
       set -e
+
       sudo sed -i '/arch=/! s/^deb/deb [arch=amd64,i386]/' /etc/apt/sources.list
       awk '
       $3 !~ /ubuntu\.com/ { next }
@@ -28,33 +32,37 @@ for:
 
       install-deps() {
         local arch="$1"; shift
-        local native=("$@")
-        # local target=(libboost-dev)
+        local native=("$@" php-cli qemu-user-binfmt)
+        local target=(
+          libboost-dev libcurl4-openssl-dev libsqlite3-dev libssl-dev
+          libxml2-dev zlib1g-dev
+        )
+
         sudo dpkg --add-architecture $arch
         sudo apt-get update -qq
         sudo apt-get install -qq aptitude > /dev/null
-        # sudo aptitude install -yR ${native[@]} ${target[@]/%/:$arch} > /dev/null
-        sudo aptitude install -yR ${native[@]} > /dev/null
+        sudo aptitude install -yR ${native[@]} ${target[@]/%/:$arch} > /dev/null
       }
 
       sudo update-alternatives --set gcc /usr/bin/gcc-9
+
       case $ARCH in
       x86_64)
         install-deps amd64
         ;;
       i686)
         install-deps i386 g++-multilib
-        export TOOLCHAIN=cmake/linux-cross.cmake \
+        export TOOLCHAIN=$(pwd)/cmake/linux-cross.cmake \
                TOOLCHAIN_PREFIX=i386-linux-gnu
         ;;
       armv7l)
         install-deps armhf g++-arm-linux-gnueabihf
-        export TOOLCHAIN=cmake/linux-cross.cmake \
+        export TOOLCHAIN=$(pwd)/cmake/linux-cross.cmake \
                TOOLCHAIN_PREFIX=arm-linux-gnueabihf
         ;;
       aarch64)
         install-deps arm64 g++-aarch64-linux-gnu
-        export TOOLCHAIN=cmake/linux-cross.cmake \
+        export TOOLCHAIN=$(pwd)/cmake/linux-cross.cmake \
                TOOLCHAIN_PREFIX=aarch64-linux-gnu
         ;;
       esac
@@ -70,7 +78,7 @@ for:
           ],
       }
     cache:
-      - build/vcpkg_installed -> vcpkg.json, cmake/vcpkg-triplets/auto-osx.cmake
+      - build/vcpkg_installed -> vcpkg.json, cmake/vcpkg-triplets/arch-env.cmake
     install:
       - TRIPLET=auto-osx TOOLCHAIN=~/vcpkg/scripts/buildsystems/vcpkg.cmake
       - export VCPKG_OVERLAY_TRIPLETS=cmake/vcpkg-triplets
