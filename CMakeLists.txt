@@ -57,20 +57,6 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_MINSIZEREL     ON)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE        ON)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO ON)
 
-add_library(${PROJECT_NAME} SHARED)
-
-set_target_properties(${PROJECT_NAME} PROPERTIES
-  PREFIX "" # disable the "lib" prefix
-  OUTPUT_NAME "reaper_gutilitiesapi-${ARCH_NAME}"
-)
-set(REAPER_USER_PLUGINS "UserPlugins")
-
-install(TARGETS ${PROJECT_NAME}
-  CONFIGURATIONS Debug Release
-  RUNTIME DESTINATION "${REAPER_USER_PLUGINS}" # Windows .dll
-  LIBRARY DESTINATION "${REAPER_USER_PLUGINS}" # Linux .so/macOS .dylib
-)
-
 if (MSVC AND CMAKE_BUILD_TYPE MATCHES RELEASE)
     set_target_properties( ${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
     set_target_properties( ${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR} )
@@ -80,6 +66,19 @@ if (MSVC AND CMAKE_BUILD_TYPE MATCHES RELEASE)
     # etc for the other available configuration types (MinSizeRel, RelWithDebInfo)
 endif ()
 
+add_library(${PROJECT_NAME} SHARED)
+set_target_properties(${PROJECT_NAME} PROPERTIES
+  PREFIX "" # disable the "lib" prefix
+  OUTPUT_NAME "reaper_gutilitiesapi-${ARCH_NAME}"
+)
+
 add_subdirectory(${CMAKE_SOURCE_DIR}/source)
 add_subdirectory(${CMAKE_SOURCE_DIR}/vendor/fmt EXCLUDE_FROM_ALL)
 add_subdirectory(${CMAKE_SOURCE_DIR}/test)
+
+set(REAPER_USER_PLUGINS "UserPlugins")
+install(TARGETS ${PROJECT_NAME}
+  CONFIGURATIONS Debug Release
+  RUNTIME DESTINATION "${REAPER_USER_PLUGINS}" # Windows .dll
+  LIBRARY DESTINATION "${REAPER_USER_PLUGINS}" # Linux .so/macOS .dylib
+)
