@@ -11,6 +11,9 @@ build_script:
   - cmake --build build
   - '[ "$ARCH" != `uname -m` ] || cmake --build build'
 
+test_script:
+  - ctest -C Release --test-dir build
+
 for:
   - matrix: { only: [appveyor_build_worker_image: &linux Ubuntu2004] }
     install: |-

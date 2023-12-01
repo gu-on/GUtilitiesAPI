@@ -4,6 +4,7 @@ project(reaper_myplugin LANGUAGES CXX)
 include(CheckCompilerFlag)
 include(CheckIncludeFileCXX)
 include(CheckLinkerFlag)
+include(CTest)
 
 if (MSVC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.14)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /experimental:external /external:W0 ")
@@ -71,3 +72,4 @@ endif ()
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/source)
 add_subdirectory(${CMAKE_SOURCE_DIR}/vendor/fmt EXCLUDE_FROM_ALL)
+add_subdirectory(${CMAKE_SOURCE_DIR}/test)
