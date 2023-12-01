@@ -4,14 +4,16 @@
 #include <mini/ini.h>
 #include <string>
 
+namespace fs = std::filesystem;
+
 class INIFile final
 {
 private:
 	static constexpr bool PASS = true;
 	static constexpr bool FAIL = false;
 
-	std::string GetFormattedFileName(std::string fileName);
-	const std::string FilePath{};
+	fs::path GetFormattedFilePath(std::string fileName);
+	const fs::path FilePath{};
 
 public:
 	INIFile() = delete;
