@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 
-static constexpr const char* VALID_AUDIO_FILE_FORMATS[] = {".WAV", ".AIFF", ".FLAC", ".MP3",
-														   ".OGG", ".BWF",	".W64",	 ".WAVPACK"};
+static constexpr const char* VALID_FILE_FORMATS[] = {".WAV", ".AIFF", ".FLAC",	  ".MP3", ".OGG",
+													 ".BWF", ".W64",  ".WAVPACK", ".GIF", "MP4"};
 
 enum class MediaType : uint32_t
 {
@@ -19,7 +19,9 @@ enum class MediaType : uint32_t
 	BWF = 1 << 5,
 	W64 = 1 << 6,
 	WAVPACK = 1 << 7,
-	RESET = 1 << 8
+	GIF = 1 << 8,
+	MP4 = 1 << 9,
+	RESET = 1 << 10
 };
 
 inline MediaType operator|(MediaType a, MediaType b)
@@ -71,7 +73,7 @@ private:
 	void CreateCustomFlagsList();
 	void CreateDefaultFlagsList();
 
-	const std::array<std::pair<MediaType, std::vector<std::string>>, 8> MediaTypeMappings = {
+	const std::array<std::pair<MediaType, std::vector<std::string>>, 10> MediaTypeMappings = {
 		std::make_pair(MediaType::WAV, std::vector<std::string>{".WAV"}),
 		std::make_pair(MediaType::AIFF, std::vector<std::string>{".AIFF", ".AIF"}),
 		std::make_pair(MediaType::FLAC, std::vector<std::string>{".FLAC"}),
@@ -79,7 +81,9 @@ private:
 		std::make_pair(MediaType::OGG, std::vector<std::string>{".OGG"}),
 		std::make_pair(MediaType::BWF, std::vector<std::string>{".BWF"}),
 		std::make_pair(MediaType::W64, std::vector<std::string>{".W64"}),
-		std::make_pair(MediaType::WAVPACK, std::vector<std::string>{".WAVPACK"})};
+		std::make_pair(MediaType::WAVPACK, std::vector<std::string>{".WAVPACK"}),
+		std::make_pair(MediaType::GIF, std::vector<std::string>{".GIF"}),
+		std::make_pair(MediaType::MP4, std::vector<std::string>{".MP4"})};
 
 	// Statically pin to access between calls
 	static inline std::string FilePath{};

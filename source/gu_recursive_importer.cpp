@@ -120,7 +120,7 @@ void RecursiveImporter::CreateCustomFlagsList()
 void RecursiveImporter::CreateDefaultFlagsList()
 {
 	FlagsToCheck.clear();
-	for (const auto& ext : VALID_AUDIO_FILE_FORMATS)
+	for (const auto& ext : VALID_FILE_FORMATS)
 	{
 		FlagsToCheck.push_back(ext);
 	}
