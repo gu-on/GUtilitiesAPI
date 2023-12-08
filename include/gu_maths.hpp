@@ -22,7 +22,7 @@ public:
 		return fabs(x - y) < eps;
 	}
 
-	[[nodiscard]] static bool IsNumber(const std::string& str)
+	[[nodiscard]] static bool IsNaturalNumber(const std::string& str)
 	{
 		if (str.empty())
 			return false;

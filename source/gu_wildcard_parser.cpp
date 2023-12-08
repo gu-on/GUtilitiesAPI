@@ -50,7 +50,7 @@ void WildcardParser::ParseWildcardsBracketsInt(std::string& input, WildcardInfo&
 			auto startPos = findPos + wildcard.length();
 			std::string selector = input.substr(startPos, endBracket - startPos);
 
-			if (Maths::IsNumber(selector))
+			if (Maths::IsNaturalNumber(selector))
 			{
 				input.replace(findPos, endBracket - findPos + 1, func(std::stoi(selector)));
 				continue;
