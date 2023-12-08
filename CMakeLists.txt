@@ -9,7 +9,7 @@ if(DEFINED ENV{VCPKG_DEFAULT_TRIPLET} AND NOT DEFINED VCPKG_TARGET_TRIPLET)
   set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}" CACHE STRING "")
 endif()
 
-project(reaper_myplugin LANGUAGES CXX)
+project(reaper_gutilities LANGUAGES CXX)
 
 include(CheckCompilerFlag)
 include(CheckIncludeFileCXX)
@@ -74,7 +74,10 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/source)
 add_subdirectory(${CMAKE_SOURCE_DIR}/vendor/fmt EXCLUDE_FROM_ALL)
-add_subdirectory(${CMAKE_SOURCE_DIR}/test)
+
+enable_testing()
+
+add_subdirectory(${CMAKE_SOURCE_DIR}/tests)
 
 set(REAPER_USER_PLUGINS "UserPlugins")
 install(TARGETS ${PROJECT_NAME}
