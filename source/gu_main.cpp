@@ -3,6 +3,7 @@
 
 #include <api_manager.hpp>
 #include <gu_api.hpp>
+#include <gu_ini_file.hpp>
 
 API Api{};
 
@@ -43,6 +44,12 @@ extern "C"
 	{
 		if (rec && REAPERAPI_LoadAPI(rec->GetFunc) == 0)
 		{
+			INIFile ini{"GUtilities"};
+#ifdef _DEBUG
+			ini.Write("debug", "enabled", "true");
+#else
+			ini.Write("debug", "enabled", "false");
+#endif
 			return LoadPlugin();
 		}
 		else
