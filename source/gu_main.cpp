@@ -24,6 +24,7 @@ int LoadPlugin()
 	Api.Add({APIFUNC(GU_EnumerateMediaFilesRecursive), "const char*", "const char*,int", "path,flags", "Import media file from filePath at index"});
 	Api.Add({APIFUNC(GU_WildcardParseTake), "const char*", "MediaItem_Take*,const char*", "take,input", "Renames take based on wildcards"});
 	Api.Add({APIFUNC(GU_FindFileDirectoryInPath), "const char*", "const char*,const char*", "fileName,directory", "Returns the path of a file from a given directory"});
+	Api.Add({APIFUNC(GU_FS_PathExists), "bool", "const char*", "path", "Check if FS Exists"});
 	Api.Register();
 
 	return 1;

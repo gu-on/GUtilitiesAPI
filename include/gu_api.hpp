@@ -28,3 +28,5 @@ const char* GU_EnumerateMediaFilesRecursive(const char* path, int flags);
 const char* GU_WildcardParseTake(MediaItem_Take* take, const char* input);
 // Returns the path of a file from a given directory
 const char* GU_FindFileDirectoryInPath(const char* fileName, const char* directory);
+// Check if FS Exists
+bool GU_FS_PathExists(const char* path);

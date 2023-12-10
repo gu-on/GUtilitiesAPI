@@ -9,6 +9,7 @@
 #include <gu_wildcard_parser.hpp>
 
 #include <chrono>
+#include <filesystem>
 #include <string>
 
 bool GU_ConfigFileWrite(const char* fileName, const char* category, const char* key, const char* value)
@@ -168,4 +169,18 @@ const char* GU_FindFileDirectoryInPath(const char* fileName, const char* directo
 	output = fileFinder.FindFileInDirectory(fileName, directory);
 
 	return output.c_str();
+}
+
+bool GU_FS_PathExists(const char* path)
+{
+#ifdef _DEBUG
+	Profiler profiler{"GU_FS_PathExists"};
+#endif
+
+	if (!path)
+		return false;
+
+	std::filesystem::path filePath{path};
+
+	return std::filesystem::exists(filePath);
 }
