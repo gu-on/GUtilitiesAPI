@@ -20,8 +20,7 @@ class AudioSource
 
 public:
 	[[nodiscard]] bool IsMono(int bufferSize = 1024) const;
-	[[nodiscard]] bool IsFirstSampleZero() const;
-	[[nodiscard]] bool IsLastSampleZero() const;
+	[[nodiscard]] bool IsSampleZero(int position) const;
 	[[nodiscard]] int CountSamplesTilPeak(int bufferSize, double threshold) const;
 	[[nodiscard]] int CountSamplesTilPeakR(int bufferSize, double threshold) const;
 	[[nodiscard]] int CountSamplesTilRMS(int bufferSize, double threshold) const;

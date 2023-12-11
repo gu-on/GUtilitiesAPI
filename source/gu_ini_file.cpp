@@ -9,10 +9,10 @@ fs::path INIFile::GetFormattedFilePath(std::string fileName)
 								  [](char c) { return !std::isalnum(c) && c != '_' && c != '\\' && c != '/'; }),
 				   fileName.end());
 
-	static constexpr const char* SCRIPTFOLDER = "GUtilities";
+	static constexpr const char* CONFIGFOLDER = "GUtilities";
 	static constexpr const char* CONFIGEXTENSION = ".ini";
 
-	return fs::path(GetResourcePath()) / fs::path(SCRIPTFOLDER) / fs::path(fileName + CONFIGEXTENSION);
+	return fs::path(GetResourcePath()) / fs::path(CONFIGFOLDER) / fs::path(fileName + CONFIGEXTENSION);
 }
 
 INIFile::INIFile(const std::string& fileName) : FilePath(GetFormattedFilePath(fileName)) {}

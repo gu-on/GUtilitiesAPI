@@ -12,7 +12,7 @@
 #include <filesystem>
 #include <string>
 
-bool GU_ConfigFileWrite(const char* fileName, const char* category, const char* key, const char* value)
+bool GU_Config_Write(const char* fileName, const char* category, const char* key, const char* value)
 {
 	if (!fileName || !category || !key || !value)
 		return false;
@@ -21,7 +21,7 @@ bool GU_ConfigFileWrite(const char* fileName, const char* category, const char* 
 	return ini.Write(category, key, value);
 }
 
-bool GU_ConfigFileRead(const char* fileName, const char* category, const char* key, char* valueOut, int valueOut_sz)
+bool GU_Config_Read(const char* fileName, const char* category, const char* key, char* valueOut, int valueOut_sz)
 {
 	if (!fileName || !category || !key)
 		return false;
@@ -35,7 +35,7 @@ bool GU_ConfigFileRead(const char* fileName, const char* category, const char* k
 	return isSuccessful;
 }
 
-bool GU_IsMono(PCM_source* source)
+bool GU_PCM_Source_IsMono(PCM_source* source)
 {
 	if (!source)
 		return false;
@@ -43,23 +43,15 @@ bool GU_IsMono(PCM_source* source)
 	return AudioSource{source}.IsMono();
 }
 
-bool GU_IsFirstSampleZero(PCM_source* source)
+bool GU_PCM_Source_IsSampleZero(PCM_source* source, int position)
 {
 	if (!source)
 		return false;
 
-	return AudioSource{source}.IsFirstSampleZero();
+	return AudioSource{source}.IsSampleZero(position);
 }
 
-bool GU_IsLastSampleZero(PCM_source* source)
-{
-	if (!source)
-		return false;
-
-	return AudioSource{source}.IsLastSampleZero();
-}
-
-int GU_CountSamplesTilPeak(PCM_source* source, int bufferSize, const double threshold)
+int GU_PCM_Source_CountSamplesTilPeak(PCM_source* source, int bufferSize, const double threshold)
 {
 	if (!source)
 		return -1;
@@ -67,7 +59,7 @@ int GU_CountSamplesTilPeak(PCM_source* source, int bufferSize, const double thre
 	return AudioSource{source}.CountSamplesTilPeak(bufferSize, threshold);
 }
 
-int GU_CountSamplesTilRMS(PCM_source* source, const int bufferSize, const double threshold)
+int GU_PCM_Source_CountSamplesTilRMS(PCM_source* source, const int bufferSize, const double threshold)
 {
 	if (!source)
 		return -1;
@@ -75,7 +67,7 @@ int GU_CountSamplesTilRMS(PCM_source* source, const int bufferSize, const double
 	return AudioSource{source}.CountSamplesTilRMS(bufferSize, threshold);
 }
 
-int GU_CountSamplesTilPeakR(PCM_source* source, const int bufferSize, const double threshold)
+int GU_PCM_Source_CountSamplesTilPeakR(PCM_source* source, const int bufferSize, const double threshold)
 {
 	if (!source)
 		return -1;
@@ -83,7 +75,7 @@ int GU_CountSamplesTilPeakR(PCM_source* source, const int bufferSize, const doub
 	return AudioSource{source}.CountSamplesTilPeakR(bufferSize, threshold);
 }
 
-int GU_CountSamplesTilRMSR(PCM_source* source, const int bufferSize, const double threshold)
+int GU_PCM_Source_CountSamplesTilRMSR(PCM_source* source, const int bufferSize, const double threshold)
 {
 	if (!source)
 		return -1;
@@ -91,48 +83,12 @@ int GU_CountSamplesTilRMSR(PCM_source* source, const int bufferSize, const doubl
 	return AudioSource{source}.CountSamplesTilRMSR(bufferSize, threshold);
 }
 
-bool GU_HasRegion(PCM_source* source)
+bool GU_PCM_Source_HasRegion(PCM_source* source)
 {
 	if (!source)
 		return false;
 
 	return AudioSource{source}.HasRegion();
-}
-
-int GU_CountMediaFilesRecursive(const char* filePath, int flags, double* fileSizeOut)
-{
-#ifdef _DEBUG
-	Profiler profiler{"GU_CountMediaFilesRecursive"};
-#endif
-
-	if (!filePath)
-	{
-		*fileSizeOut = RecursiveImporter::MediaFileError.FileSize;
-		return RecursiveImporter::MediaFileError.Count;
-	}
-
-	RecursiveImporter recursiveImporter{filePath, flags};
-	auto mediaFileInfo = recursiveImporter.CalculateMediaFileInfo();
-	*fileSizeOut = mediaFileInfo.FileSize;
-
-	return mediaFileInfo.Count;
-}
-
-const char* GU_EnumerateMediaFilesRecursive(const char* path, const int flags)
-{
-#ifdef _DEBUG
-	Profiler profiler{"GU_EnumerateMediaFilesRecursive"};
-#endif
-
-	static std::string currentMediaFile{};
-
-	if (!path)
-		return "";
-
-	RecursiveImporter recursiveImporter{path, flags};
-	currentMediaFile = recursiveImporter.GetNextMediaFilePath();
-
-	return currentMediaFile.c_str();
 }
 
 const char* GU_WildcardParseTake(MediaItem_Take* take, const char* input)
@@ -153,10 +109,46 @@ const char* GU_WildcardParseTake(MediaItem_Take* take, const char* input)
 	return output.c_str();
 }
 
-const char* GU_FindFileDirectoryInPath(const char* fileName, const char* directory)
+int GU_Filesystem_CountMediaFiles(const char* filePath, int flags, double* fileSizeOut)
 {
 #ifdef _DEBUG
-	Profiler profiler{"GU_FindFileDirectoryInPath"};
+	Profiler profiler{"GU_Filesystem_CountMediaFiles"};
+#endif
+
+	if (!filePath)
+	{
+		*fileSizeOut = RecursiveImporter::MediaFileError.FileSize;
+		return RecursiveImporter::MediaFileError.Count;
+	}
+
+	RecursiveImporter recursiveImporter{filePath, flags};
+	auto mediaFileInfo = recursiveImporter.CalculateMediaFileInfo();
+	*fileSizeOut = mediaFileInfo.FileSize;
+
+	return mediaFileInfo.Count;
+}
+
+const char* GU_Filesystem_EnumerateMediaFiles(const char* path, const int flags)
+{
+#ifdef _DEBUG
+	Profiler profiler{"GU_Filesystem_EnumerateMediaFiles"};
+#endif
+
+	static std::string currentMediaFile{};
+
+	if (!path)
+		return "";
+
+	RecursiveImporter recursiveImporter{path, flags};
+	currentMediaFile = recursiveImporter.GetNextMediaFilePath();
+
+	return currentMediaFile.c_str();
+}
+
+const char* GU_Filesystem_FindFileInPath(const char* fileName, const char* directory)
+{
+#ifdef _DEBUG
+	Profiler profiler{"GU_Filesystem_FindFileInPath"};
 #endif
 
 	static std::string output{};
@@ -171,10 +163,10 @@ const char* GU_FindFileDirectoryInPath(const char* fileName, const char* directo
 	return output.c_str();
 }
 
-bool GU_FS_PathExists(const char* path)
+bool GU_Filesystem_PathExists(const char* path)
 {
 #ifdef _DEBUG
-	Profiler profiler{"GU_FS_PathExists"};
+	Profiler profiler{"GU_Filesystem_PathExists"};
 #endif
 
 	if (!path)

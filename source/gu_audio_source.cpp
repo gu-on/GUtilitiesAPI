@@ -25,20 +25,12 @@ bool AudioSource::IsMono(int bufferSize) const
 	return true;
 }
 
-bool AudioSource::IsFirstSampleZero() const
+bool AudioSource::IsSampleZero(const int position) const
 {
 	static constexpr int BUFFER_LENGTH = 1;
-	const AudioBuffer buffer(*this, BUFFER_LENGTH, 0);
+	int startSample{position < 0 ? GetLengthInSamples() + position : position};
 
-	const double bufferVal = std::abs(buffer.SampleAt(0));
-
-	return Maths::IsNearlyEqual(bufferVal, 0.0);
-}
-
-bool AudioSource::IsLastSampleZero() const
-{
-	static constexpr int BUFFER_LENGTH = 1;
-	const AudioBuffer buffer(*this, BUFFER_LENGTH, GetLengthInSamples() - 1);
+	const AudioBuffer buffer(*this, BUFFER_LENGTH, startSample);
 
 	const double bufferVal = std::abs(buffer.SampleAt(0));
 
@@ -149,6 +141,4 @@ double AudioSource::GetNormalization(int normalizationType) const
 	return 20 * log10(CalculateNormalization(AudioPtr, normalizationType, 0, 0, 0)) * -1;
 }
 
-AudioSource::AudioSource(PCM_source* source) : AudioPtr((assert(source != nullptr), source))
-{
-}
+AudioSource::AudioSource(PCM_source* source) : AudioPtr((assert(source != nullptr), source)) {}
