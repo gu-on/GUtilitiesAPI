@@ -5,6 +5,9 @@ namespace fs = std::filesystem;
 
 fs::path INIFile::GetFormattedFilePath(std::string fileName)
 {
+	if (APIExists == nullptr) // skip if dll not being run from Reaper, i.e. when testing
+		return fs::path(fileName);
+
 	fileName.erase(std::remove_if(fileName.begin(), fileName.end(),
 								  [](char c) { return !std::isalnum(c) && c != '_' && c != '\\' && c != '/'; }),
 				   fileName.end());
@@ -43,4 +46,9 @@ bool INIFile::Read(const std::string& category, const std::string& key, std::str
 	value = ini.get(category).get(key);
 
 	return PASS;
+}
+
+bool INIFile::Delete()
+{
+	return std::filesystem::remove(FilePath);
 }

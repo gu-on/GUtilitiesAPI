@@ -21,4 +21,5 @@ public:
 
 	bool Write(const std::string& category, const std::string& key, const std::string& value);
 	bool Read(const std::string& category, const std::string& key, std::string& value);
+	bool Delete();
 };
