@@ -20,7 +20,7 @@ class AudioSource
 
 public:
 	[[nodiscard]] bool IsMono(int bufferSize = 1024) const;
-	[[nodiscard]] bool IsSampleZero(int position) const;
+	[[nodiscard]] double GetSampleValue(double time) const;
 	[[nodiscard]] int CountSamplesTilPeak(int bufferSize, double threshold) const;
 	[[nodiscard]] int CountSamplesTilPeakR(int bufferSize, double threshold) const;
 	[[nodiscard]] int CountSamplesTilRMS(int bufferSize, double threshold) const;
@@ -35,6 +35,7 @@ public:
 	{
 		return static_cast<int>(AudioPtr->GetLength() * AudioPtr->GetSampleRate());
 	}
+	[[nodiscard]] double GetLengthInSeconds() const { return AudioPtr->GetLength(); }
 
 private:
 	PCM_source* AudioPtr{};

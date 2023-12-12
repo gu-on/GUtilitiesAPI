@@ -43,15 +43,15 @@ bool GU_PCM_Source_IsMono(PCM_source* source)
 	return AudioSource{source}.IsMono();
 }
 
-bool GU_PCM_Source_IsSampleZero(PCM_source* source, int position)
+double GU_PCM_Source_GetSampleValue(PCM_source* source, double time)
 {
 	if (!source)
 		return false;
 
-	return AudioSource{source}.IsSampleZero(position);
+	return AudioSource{source}.GetSampleValue(time);
 }
 
-int GU_PCM_Source_CountSamplesTilPeak(PCM_source* source, int bufferSize, const double threshold)
+int GU_PCM_Source_CountSamplesTilPeak(PCM_source* source, const int bufferSize, const double threshold)
 {
 	if (!source)
 		return -1;

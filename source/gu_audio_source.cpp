@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <fmt/core.h>
 
 bool AudioSource::IsMono(int bufferSize) const
 {
@@ -25,16 +26,14 @@ bool AudioSource::IsMono(int bufferSize) const
 	return true;
 }
 
-bool AudioSource::IsSampleZero(const int position) const
+double AudioSource::GetSampleValue(const double time) const
 {
 	static constexpr int BUFFER_LENGTH = 1;
-	int startSample{position < 0 ? GetLengthInSamples() + position : position};
+	double startTime{time < 0 ? GetLengthInSeconds() + time : time};
 
-	const AudioBuffer buffer(*this, BUFFER_LENGTH, startSample);
+	const AudioBuffer buffer(*this, BUFFER_LENGTH, static_cast<int>(startTime * GetSampleRate()));
 
-	const double bufferVal = std::abs(buffer.SampleAt(0));
-
-	return Maths::IsNearlyEqual(bufferVal, 0.0);
+	return buffer.SampleAt(0);
 }
 
 int AudioSource::CountSamplesTilPeak(const int bufferSize, const double threshold) const
