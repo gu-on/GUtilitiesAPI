@@ -1,9 +1,9 @@
 #pragma once
 
-#include <reaper_plugin_functions.h>
-
 #include <string>
 #include <vector>
+
+#include <reaper_plugin_functions.h>
 
 struct CueMarker
 {

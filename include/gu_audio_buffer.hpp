@@ -1,9 +1,10 @@
 #pragma once
 
-#include <gu_audio_source.hpp>
+#include <functional>
+
 #include <reaper_plugin.h>
 
-#include <functional>
+#include <gu_audio_source.hpp>
 
 class AudioBuffer
 {

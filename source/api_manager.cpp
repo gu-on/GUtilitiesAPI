@@ -1,11 +1,11 @@
-#include <reaper_plugin_functions.h>
-
-#include <api_manager.hpp>
-#include <gu_ini_file.hpp>
-
 #include <algorithm>
 #include <cstring>
+
+#include <api_manager.hpp>
 #include <fmt/core.h>
+#include <reaper_plugin_functions.h>
+
+#include <gu_ini_file.hpp>
 
 void API::Add(APIDefinition def)
 {

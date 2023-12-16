@@ -1,8 +1,8 @@
 #pragma once
 
-#include "reascript_vararg.hpp"
-
 #include <vector>
+
+#include "reascript_vararg.hpp"
 
 // https://forums.cockos.com/showthread.php?p=2028399
 // (This struct is copied from SWS.)

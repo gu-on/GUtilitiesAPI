@@ -1,8 +1,9 @@
 #pragma once
 
 #include <filesystem>
-#include <mini/ini.h>
 #include <string>
+
+#include <mini/ini.h>
 
 namespace fs = std::filesystem;
 

@@ -1,10 +1,10 @@
-#include <gu_recursive_importer.hpp>
-#include <reaper_plugin_functions.h>
-
 #include <algorithm>
 #include <cctype>
 #include <chrono>
 #include <functional>
+
+#include <gu_recursive_importer.hpp>
+#include <reaper_plugin_functions.h>
 
 MediaFileInfoStats RecursiveImporter::CalculateMediaFileInfo()
 {

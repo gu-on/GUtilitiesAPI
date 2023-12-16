@@ -1,7 +1,7 @@
-#include <gu_profiler.hpp>
+#include <fmt/core.h>
 #include <reaper_plugin_functions.h>
 
-#include <fmt/core.h>
+#include <gu_profiler.hpp>
 
 Profiler::Profiler(std::string name)
 {

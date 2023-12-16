@@ -1,3 +1,7 @@
+#include <chrono>
+#include <filesystem>
+#include <string>
+
 #include <reaper_plugin_functions.h>
 
 #include <gu_api.hpp>
@@ -7,10 +11,6 @@
 #include <gu_profiler.hpp>
 #include <gu_recursive_importer.hpp>
 #include <gu_wildcard_parser.hpp>
-
-#include <chrono>
-#include <filesystem>
-#include <string>
 
 bool GU_Config_Write(const char* fileName, const char* category, const char* key, const char* value)
 {

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <gu_audio_source.hpp>
-#include <reaper_plugin_functions.h>
-
 #include <string>
 #include <tuple>
+
+#include <gu_audio_source.hpp>
+#include <reaper_plugin_functions.h>
 
 static constexpr int REAPER_NOTES_MAX_LENGTH = 1 << 15;
 static constexpr int REAPER_NAMES_MAX_LENGTH = 1 << 9;

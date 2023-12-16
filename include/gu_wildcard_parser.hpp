@@ -1,9 +1,9 @@
 #pragma once
 
+#include <string>
+
 #include <gu_reaper_wrapper.hpp>
 #include <reaper_plugin_functions.h>
-
-#include <string>
 
 class WildcardParser
 {

@@ -1,10 +1,11 @@
+#include <algorithm>
+#include <cassert>
+
+#include <fmt/core.h>
+
 #include <gu_audio_buffer.hpp>
 #include <gu_audio_source.hpp>
 #include <gu_maths.hpp>
-
-#include <algorithm>
-#include <cassert>
-#include <fmt/core.h>
 
 bool AudioSource::IsMono(int bufferSize) const
 {
@@ -29,7 +30,7 @@ bool AudioSource::IsMono(int bufferSize) const
 double AudioSource::GetSampleValue(const double time) const
 {
 	static constexpr int BUFFER_LENGTH = 1;
-	double startTime{time < 0 ? GetLengthInSeconds() + time : time};
+	double startTime{time >= 0 ? time : GetLengthInSeconds() + time};
 
 	const AudioBuffer buffer(*this, BUFFER_LENGTH, static_cast<int>(startTime * GetSampleRate()));
 
@@ -121,8 +122,8 @@ std::vector<CueMarker> AudioSource::GetMediaCues() const
 
 	REAPER_cue cue{};
 	int index{};
-	while (AudioPtr->Extended(PCM_SOURCE_EXT_ENUMCUES_EX, reinterpret_cast<void*>(static_cast<intptr_t>(index++)), &cue,
-							  nullptr) > 0)
+	static constexpr int call{PCM_SOURCE_EXT_ENUMCUES_EX};
+	while (AudioPtr->Extended(call, reinterpret_cast<void*>(static_cast<intptr_t>(index++)), &cue, nullptr) > 0)
 	{
 		CueMarker marker{
 			index,			static_cast<float>(cue.m_time), static_cast<float>(cue.m_endtime),

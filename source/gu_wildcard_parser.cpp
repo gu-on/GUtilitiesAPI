@@ -1,14 +1,13 @@
-#include <gu_wildcard_parser.hpp>
-
-#include <gu_audio_source.hpp>
-#include <gu_maths.hpp>
-#include <gu_time_printer.hpp>
-
 #include <chrono>
 #include <fmt/core.h>
 #include <functional>
 #include <map>
 #include <string>
+
+#include <gu_audio_source.hpp>
+#include <gu_maths.hpp>
+#include <gu_time_printer.hpp>
+#include <gu_wildcard_parser.hpp>
 
 std::string WildcardParser::ParseTakeName(MediaItem_Take* takePtr, std::string input)
 {
