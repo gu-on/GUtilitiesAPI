@@ -1,5 +1,6 @@
 include_directories (
     ${CMAKE_CURRENT_SOURCE_DIR}/source
+    ${CMAKE_SOURCE_DIR}/vendor/mINI/src
 )
 
 add_executable(Test 
@@ -7,6 +8,6 @@ add_executable(Test
     doctest.h
 )
 
-target_link_libraries(${PROJECT_NAME} reaper_plugin)
+target_link_libraries(Test reaper_plugin)
 
 add_test(NAME test1 COMMAND Test)
