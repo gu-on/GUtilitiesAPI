@@ -91,22 +91,17 @@ bool GU_PCM_Source_HasRegion(PCM_source* source)
 	return AudioSource{source}.HasRegion();
 }
 
-const char* GU_WildcardParseTake(MediaItem_Take* take, const char* input)
+void GU_WildcardParseTake(MediaItem_Take* take, const char* input, char* valueOut, int valueOut_sz)
 {
 #ifdef _DEBUG
 	Profiler profiler{"GU_WildcardParseTake"};
 #endif
 
-	static std::string output{};
-	output.clear();
-
 	if (!take || !input)
-		return "";
+		return;
 
 	WildcardParser wildcardParser{};
-	output = wildcardParser.ParseTakeName(take, input);
-
-	return output.c_str();
+	snprintf(valueOut, valueOut_sz, "%s", wildcardParser.ParseTakeName(take, input).c_str());
 }
 
 int GU_Filesystem_CountMediaFiles(const char* filePath, int flags, double* fileSizeOut)
@@ -128,39 +123,30 @@ int GU_Filesystem_CountMediaFiles(const char* filePath, int flags, double* fileS
 	return mediaFileInfo.Count;
 }
 
-const char* GU_Filesystem_EnumerateMediaFiles(const char* path, const int flags)
+void GU_Filesystem_EnumerateMediaFiles(const char* path, const int flags, char* pathOut, int pathOut_sz)
 {
 #ifdef _DEBUG
 	Profiler profiler{"GU_Filesystem_EnumerateMediaFiles"};
 #endif
 
-	static std::string currentMediaFile{};
-
 	if (!path)
-		return "";
+		return;
 
 	RecursiveImporter recursiveImporter{path, flags};
-	currentMediaFile = recursiveImporter.GetNextMediaFilePath();
-
-	return currentMediaFile.c_str();
+	snprintf(pathOut, pathOut_sz, "%s", recursiveImporter.GetNextMediaFilePath().c_str());
 }
 
-const char* GU_Filesystem_FindFileInPath(const char* fileName, const char* directory)
+void GU_Filesystem_FindFileInPath(const char* fileName, const char* directory, char* pathOut, int pathOut_sz)
 {
 #ifdef _DEBUG
 	Profiler profiler{"GU_Filesystem_FindFileInPath"};
 #endif
 
-	static std::string output{};
-	output.clear();
-
 	if (!fileName || !directory)
-		return "";
+		return;
 
 	FileFinder fileFinder{};
-	output = fileFinder.FindFileInDirectory(fileName, directory);
-
-	return output.c_str();
+	snprintf(pathOut, pathOut_sz, "%s", fileFinder.FindFileInDirectory(fileName, directory).c_str());
 }
 
 bool GU_Filesystem_PathExists(const char* path)
@@ -172,7 +158,5 @@ bool GU_Filesystem_PathExists(const char* path)
 	if (!path)
 		return false;
 
-	std::filesystem::path filePath{path};
-
-	return std::filesystem::exists(filePath);
+	return std::filesystem::exists(std::filesystem::path(path));
 }
