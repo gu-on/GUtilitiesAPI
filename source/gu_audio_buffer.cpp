@@ -9,7 +9,7 @@ AudioBuffer::AudioBuffer(const AudioSource& source, int bufferLength, int startS
 	Buffer.time_s = static_cast<double>(startSample) / sampleRate;
 	Buffer.samplerate = sampleRate;
 	Buffer.nch = Source->GetChannelCount();
-	Buffer.length = bufferLength;
+	Buffer.length = std::clamp(bufferLength, 0, 1 << 14);
 	Buffer.samples = new ReaSample[static_cast<unsigned long long>(Buffer.length) * Buffer.nch];
 	Buffer.absolute_time_s = 0.0;
 
@@ -81,6 +81,7 @@ int AudioBuffer::GetFirstSampleAboveThreshold(const double peakThreshold) const
 bool AudioBuffer::IsMono() const
 {
 	bool isMono = true;
+
 	IterateOver([&](const int i) {
 		if (const int index = i % ChannelCount(); index > 0)
 		{
