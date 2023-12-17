@@ -32,7 +32,7 @@ TEST_CASE("Check INI File")
 	using namespace std;
 
 	const string configFileName = "testing.ini";
-	const string goodPath = std::filesystem::current_path().root_path().string() + configFileName;
+	const string goodPath = std::filesystem::current_path().string() + configFileName;
 	const string badFilePath = "test/badFilePath";
 	const string category = "fruit";
 	const string key = "tasty";
