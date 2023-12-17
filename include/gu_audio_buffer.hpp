@@ -10,16 +10,17 @@ class AudioBuffer
 {
 public:
 	void RefillSamples(int frame);
-	void ReverseRefillSamples(int frame, int maxFrames);
 
 	[[nodiscard]] int SamplesOut() const { return Buffer.samples_out; }
 	[[nodiscard]] int ChannelCount() const { return Buffer.nch; }
 	[[nodiscard]] int Length() const { return Buffer.length; }
 
-	void IterateOver(const std::function<void(int)>& func) const;
+	void Iterate(const std::function<void(int)>& func) const;
+	void IterateR(const std::function<void(int)>& func) const;
 
 	[[nodiscard]] double GetRMS() const;
 	[[nodiscard]] int GetFirstSampleAboveThreshold(double peakThreshold) const;
+	[[nodiscard]] int GetFirstSampleAboveThresholdR(double peakThreshold) const;
 	[[nodiscard]] bool IsMono() const;
 
 	[[nodiscard]] ReaSample SampleAt(const int index) const { return Buffer.samples[index]; }

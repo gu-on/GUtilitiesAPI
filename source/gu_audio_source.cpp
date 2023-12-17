@@ -56,18 +56,19 @@ int AudioSource::CountSamplesTilPeak(const int bufferSize, const double threshol
 
 int AudioSource::CountSamplesTilPeakR(const int bufferSize, const double threshold) const
 {
-	const int startSample{GetLengthInSamples() - bufferSize};
+	const int sourceLengthInSamples{GetLengthInSamples()};
+	const int startSample{sourceLengthInSamples - bufferSize};
 	AudioBuffer buffer(*this, bufferSize, startSample);
 
 	int frame{};
-	const int maxFrames = GetLengthInSamples() / bufferSize;
+	const int maxFrames = sourceLengthInSamples / bufferSize;
 
 	while (buffer.SamplesOut() && frame < maxFrames)
 	{
-		if (const int sample = buffer.GetFirstSampleAboveThreshold(threshold); sample > 0)
-			return sample;
+		if (const int sample = buffer.GetFirstSampleAboveThresholdR(threshold); sample > 0)
+			return sourceLengthInSamples - sample;
 
-		buffer.ReverseRefillSamples(++frame, maxFrames);
+		buffer.RefillSamples(maxFrames - ++frame);
 	}
 
 	return 0;
@@ -92,18 +93,19 @@ int AudioSource::CountSamplesTilRMS(const int bufferSize, const double threshold
 
 int AudioSource::CountSamplesTilRMSR(const int bufferSize, const double threshold) const
 {
-	const int startSample{GetLengthInSamples() - bufferSize};
+	const int sourceLengthInSamples{GetLengthInSamples()};
+	const int startSample{sourceLengthInSamples - bufferSize};
 	AudioBuffer buffer{*this, bufferSize, startSample};
 
 	int frame{};
-	const int maxFrames = GetLengthInSamples() / bufferSize;
+	const int maxFrames = sourceLengthInSamples / bufferSize;
 
 	while (buffer.SamplesOut() && frame < maxFrames)
 	{
 		if (const double rms = buffer.GetRMS(); rms > Maths::DB2VOL(threshold))
 			return frame * bufferSize;
 
-		buffer.ReverseRefillSamples(++frame, maxFrames);
+		buffer.RefillSamples(maxFrames - ++frame);
 	}
 
 	return 0;
