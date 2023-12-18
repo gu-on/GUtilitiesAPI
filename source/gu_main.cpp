@@ -7,13 +7,12 @@
 
 API Api{};
 
-// clang-format off
-int LoadPlugin()
+void LoadPlugin()
 {
 	Api.Add({APIFUNC(GU_Config_Write), "bool", "const char*,const char*,const char*,const char*", "fileName,category,key,value", "Write config file to Reaper's resource folder"});
 	Api.Add({APIFUNC(GU_Config_Read), "bool", "const char*,const char*,const char*,char*,int", "fileName,category,key,valueOut,valueOut_sz", "Read config file from Reaper's resource folder"});
 	Api.Add({APIFUNC(GU_PCM_Source_IsMono), "bool", "PCM_source*", "source", "Checks if PCM_source is mono by comparing all channels"});
-	Api.Add({APIFUNC(GU_PCM_Source_GetSampleValue), "double", "PCM_source*,double", "source,time", "Get the value of a sample in time (seconds). Setting isForward to 'false' will search from the end in reverse"});
+	Api.Add({APIFUNC(GU_PCM_Source_GetSampleValue), "double", "PCM_source*,double", "source,time", "Get a PCM_source's sample value at a point in time (seconds). Providing a negative number will search backwards from the end"});
 	Api.Add({APIFUNC(GU_PCM_Source_CountSamplesTilPeak), "int", "PCM_source*,int,double", "source,bufferSize,threshold", "Count number of samples in PCM_source from start til peak threshold is breached. Returns -1 if invalid"});
 	Api.Add({APIFUNC(GU_PCM_Source_CountSamplesTilRMS), "int", "PCM_source*,int,double", "source,bufferSize,threshold", "Count number of samples in PCM_source from start til RMS threshold is breached. Returns -1 if invalid"});
 	Api.Add({APIFUNC(GU_PCM_Source_CountSamplesTilPeakR), "int", "PCM_source*,int,double", "source,bufferSize,threshold", "Count number of samples in PCM_source from end til peak threshold is breached. Returns -1 if invalid"});
@@ -25,22 +24,11 @@ int LoadPlugin()
 	Api.Add({APIFUNC(GU_Filesystem_FindFileInPath), "void", "const char*,const char*,char*,int", "fileName,path,pathOut,pathOut_sz", "Returns the path of a file from a given path"});
 	Api.Add({APIFUNC(GU_Filesystem_PathExists), "bool", "const char*", "path", "Check if file or directory exists"});
 	Api.Register();
-
-	return 1;
-}
-// clang-format on
-
-int UnloadPlugin()
-{
-	Api.Unregister();
-
-	return 0;
 }
 
 extern "C"
 {
-	REAPER_PLUGIN_DLL_EXPORT int REAPER_PLUGIN_ENTRYPOINT(REAPER_PLUGIN_HINSTANCE hInstance [[maybe_unused]],
-														  reaper_plugin_info_t* rec)
+	REAPER_PLUGIN_DLL_EXPORT int REAPER_PLUGIN_ENTRYPOINT(REAPER_PLUGIN_HINSTANCE hInstance [[maybe_unused]], reaper_plugin_info_t* rec)
 	{
 		if (rec && REAPERAPI_LoadAPI(rec->GetFunc) == 0)
 		{
@@ -50,11 +38,13 @@ extern "C"
 #else
 			ini.Write("debug", "enabled", "false");
 #endif
-			return LoadPlugin();
+			LoadPlugin();
+			return 1;
 		}
 		else
 		{
-			return UnloadPlugin();
+			Api.Unregister();
+			return 0;
 		}
 	}
 }

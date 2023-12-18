@@ -1,15 +1,16 @@
 import sys
 
-
-def parse_header_file(header_file):
-    with open(header_file, 'r') as file:
+def ParseHeaderFile(headerFile):
+    lines = []
+    
+    with open(headerFile, 'r') as file:
         lines = file.readlines()
 
     comment = ''
     decl = ''
-    api_calls = []
+    apiCalls = []
 
-    for i, line, in enumerate(lines):
+    for line in lines:
         line = line.strip()
 
         if not line:  # ignore empty lines
@@ -21,6 +22,7 @@ def parse_header_file(header_file):
         if line.startswith('//'):
             if comment:  # add empty space to multiline comments
                 comment += ' '
+
             comment += line.lstrip('//').strip()
             continue
 
@@ -35,96 +37,113 @@ def parse_header_file(header_file):
 
             params = decl[start+1:end]
 
-            param_types = ''
-            param_names = ''
+            paramTypes = ''
+            paramNames = ''
 
             if params:
                 # Split the string into a list of parameter strings
-                param_list = params.split(',')
+                paramList = params.split(',')
 
                 # Extract the types and variable names from each parameter string
                 types = []
                 names = []
 
-                for param in param_list:
+                for param in paramList:
                     parts = param.split()
                     types.append(' '.join(parts[:-1]))
                     names.append(parts[-1])
 
                 # Combine the types and names into two comma-separated strings
-                param_types = ','.join(types)
-                param_names = ','.join(names)
+                paramTypes = ','.join(types)
+                paramNames = ','.join(names)
 
             # extract func_name
             end = decl.find('(')
             start = decl[:end].rfind(' ')
-            func_name = decl[start+1:end]
-            ret_type = decl[0:start]
+            FuncName = decl[start+1:end]
+            retType = decl[0:start]
 
-            # print(f"Func Name: {func_name}\nRet Type: {ret_type}\nParams: {params}\nParam Types: {param_types}\nParam Names: {param_names}\nHelp: {comment}")
-
-            api_calls.append({
+            apiCalls.append({
                 'help': comment,
-                'ret_type': ret_type,
-                'func_name': func_name,
-                'param_types': param_types,
-                'param_names': param_names,
+                'ret_type': retType,
+                'func_name': FuncName,
+                'param_types': paramTypes,
+                'param_names': paramNames,
             })
+
             comment = ""
             decl = ""
 
-            # print("\n")
-
     file.close
-    return api_calls
+    return apiCalls
 
-
-def generate_code(api_calls):
+def GenerateCode(apiCalls):
     code = []
-    for call in api_calls:
+    for call in apiCalls:
         code.append(
-            f'Api.Add({{APIFUNC({call["func_name"]}), "{call["ret_type"]}", "{call["param_types"]}", "{call["param_names"]}", "{call["help"]}"}});'
+            f'\tApi.Add({{APIFUNC({call["func_name"]}), "{call["ret_type"]}", "{call["param_types"]}", "{call["param_names"]}", "{call["help"]}"}});'
         )
 
     return '\n'.join(code)
 
+def RunAPIGen(mainCppFile, generatedCode):
+    startBlock = [
+        '#define REAPERAPI_IMPLEMENT',
+        '#include <reaper_plugin_functions.h>',
+        '',
+        '#include <api_manager.hpp>',
+        '#include <gu_api.hpp>',
+        '#include <gu_ini_file.hpp>',
+        '',
+        'API Api{};',
+        '',
+        'void LoadPlugin()',
+        '{'
+    ]
+    
+    endBlock = [
+        '	Api.Register();',
+        '}',
+        '',
+        'extern "C"',
+        '{',
+        '	REAPER_PLUGIN_DLL_EXPORT int REAPER_PLUGIN_ENTRYPOINT(REAPER_PLUGIN_HINSTANCE hInstance [[maybe_unused]], reaper_plugin_info_t* rec)',
+        '	{',
+        '		if (rec && REAPERAPI_LoadAPI(rec->GetFunc) == 0)',
+        '		{',
+        '			INIFile ini{"GUtilities"};',
+        '#ifdef _DEBUG',
+        '			ini.Write("debug", "enabled", "true");',
+        '#else',
+        '			ini.Write("debug", "enabled", "false");',
+        '#endif',
+        '			LoadPlugin();',
+        '			return 1;',
+        '		}',
+        '		else',
+        '		{',
+        '			Api.Unregister();',
+        '			return 0;',
+        '		}',
+        '	}',
+        '}'
+    ]
 
-def update_main_cpp_file(main_cpp_file, generated_code):
-    with open(main_cpp_file, 'r') as file:
-        lines = file.readlines()
-
-    start_marker = "int LoadPlugin()"
-    end_marker = "Api.Register();"
-
-    start_index = None
-    end_index = None
-
-    for i, line in enumerate(lines):
-        if start_marker in line:
-            start_index = i
-        if end_marker in line:
-            end_index = i
-            break
-
-    if start_index is not None and end_index is not None:
-        # Remove the existing code between the markers
-        del lines[start_index + 1:end_index]
-
-        lines.insert(start_index + 1, "{\n")
-        # Insert the generated code between the markers
-        for i, line in enumerate(generated_code.split('\n')):
-            lines.insert(start_index + 2 + i, '\t' + line + '\n')
-
-        # Write the updated lines to the main.cpp file
-        with open(main_cpp_file, 'w') as file:
-            file.writelines(lines)
+    # Write the updated lines to the gu_main.cpp file
+    with open(mainCppFile, 'w') as file:
+        for line in startBlock:
+            file.write(line + "\n")
+        for line in generatedCode:
+            file.write(line)
+        file.write("\n")
+        for line in endBlock:
+            file.write(line + "\n")
 
     file.close()
 
+headerFile = sys.argv[1]
+mainCppFile = sys.argv[2]
 
-header_file = sys.argv[1]
-main_cpp_file = sys.argv[2]
-
-api_calls = parse_header_file(header_file)
-output_code = generate_code(api_calls)
-update_main_cpp_file(main_cpp_file, output_code)
+apiCalls = ParseHeaderFile(headerFile)
+outputCode = GenerateCode(apiCalls)
+RunAPIGen(mainCppFile, outputCode)
