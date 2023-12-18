@@ -106,6 +106,7 @@ bool AudioBuffer::IsMono() const
 			if (!Maths::IsNearlyEqual(SampleAt(index - 1), SampleAt(index)))
 			{
 				isMono = false;
+				return;
 			}
 		}
 	});
