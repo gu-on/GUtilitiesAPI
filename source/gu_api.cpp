@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <string>
 
+#include <fmt/core.h>
 #include <reaper_plugin_functions.h>
 
 #include <gu_api.hpp>
@@ -94,7 +95,7 @@ bool GU_PCM_Source_HasRegion(PCM_source* source)
 void GU_WildcardParseTake(MediaItem_Take* take, const char* input, char* valueOut, int valueOut_sz)
 {
 #ifdef _DEBUG
-	Profiler profiler{"GU_WildcardParseTake"};
+	Profiler profiler{fmt::format("GU_WildcardParseTake({})", input)};
 #endif
 
 	if (!take || !input)
@@ -107,7 +108,7 @@ void GU_WildcardParseTake(MediaItem_Take* take, const char* input, char* valueOu
 int GU_Filesystem_CountMediaFiles(const char* filePath, int flags, double* fileSizeOut)
 {
 #ifdef _DEBUG
-	Profiler profiler{"GU_Filesystem_CountMediaFiles"};
+	Profiler profiler{fmt::format("GU_Filesystem_CountMediaFiles({}, {})", filePath, flags)};
 #endif
 
 	if (!filePath)
@@ -126,7 +127,7 @@ int GU_Filesystem_CountMediaFiles(const char* filePath, int flags, double* fileS
 void GU_Filesystem_EnumerateMediaFiles(const char* path, const int flags, char* pathOut, int pathOut_sz)
 {
 #ifdef _DEBUG
-	Profiler profiler{"GU_Filesystem_EnumerateMediaFiles"};
+	Profiler profiler{fmt::format("GU_Filesystem_EnumerateMediaFiles({}, {})", path, flags)};
 #endif
 
 	if (!path)
@@ -139,7 +140,7 @@ void GU_Filesystem_EnumerateMediaFiles(const char* path, const int flags, char* 
 void GU_Filesystem_FindFileInPath(const char* fileName, const char* directory, char* pathOut, int pathOut_sz)
 {
 #ifdef _DEBUG
-	Profiler profiler{"GU_Filesystem_FindFileInPath"};
+	Profiler profiler{fmt::format("GU_Filesystem_FindFileInPath({}, {})", fileName, directory)};
 #endif
 
 	if (!fileName || !directory)
@@ -151,10 +152,6 @@ void GU_Filesystem_FindFileInPath(const char* fileName, const char* directory, c
 
 bool GU_Filesystem_PathExists(const char* path)
 {
-#ifdef _DEBUG
-	Profiler profiler{"GU_Filesystem_PathExists"};
-#endif
-
 	if (!path)
 		return false;
 
