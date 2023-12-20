@@ -52,36 +52,48 @@ double GU_PCM_Source_GetSampleValue(PCM_source* source, double time)
 	return AudioSource{source}.GetSampleValue(time);
 }
 
-int GU_PCM_Source_CountSamplesTilPeak(PCM_source* source, const int bufferSize, const double threshold)
+double GU_PCM_Source_TimeToPeak(PCM_source* source, const int bufferSize, const double threshold)
 {
+#ifdef _DEBUG
+	Profiler profiler{fmt::format("GU_PCM_Source_TimeToPeak({}, {})", bufferSize, threshold)};
+#endif
 	if (!source)
 		return -1;
 
-	return AudioSource{source}.CountSamplesTilPeak(bufferSize, threshold);
+	return AudioSource{source}.TimeToPeak(bufferSize, threshold);
 }
 
-int GU_PCM_Source_CountSamplesTilRMS(PCM_source* source, const int bufferSize, const double threshold)
+double GU_PCM_Source_TimeToRMS(PCM_source* source, const int bufferSize, const double threshold)
 {
+#ifdef _DEBUG
+	Profiler profiler{fmt::format("GU_PCM_Source_TimeToRMS({}, {})", bufferSize, threshold)};
+#endif
 	if (!source)
 		return -1;
 
-	return AudioSource{source}.CountSamplesTilRMS(bufferSize, threshold);
+	return AudioSource{source}.TimeToRMS(bufferSize, threshold);
 }
 
-int GU_PCM_Source_CountSamplesTilPeakR(PCM_source* source, const int bufferSize, const double threshold)
+double GU_PCM_Source_TimeToPeakR(PCM_source* source, const int bufferSize, const double threshold)
 {
+#ifdef _DEBUG
+	Profiler profiler{fmt::format("GU_PCM_Source_TimeToPeakR({}, {})", bufferSize, threshold)};
+#endif
 	if (!source)
 		return -1;
 
-	return AudioSource{source}.CountSamplesTilPeakR(bufferSize, threshold);
+	return AudioSource{source}.TimeToPeakR(bufferSize, threshold);
 }
 
-int GU_PCM_Source_CountSamplesTilRMSR(PCM_source* source, const int bufferSize, const double threshold)
+double GU_PCM_Source_TimeToRMSR(PCM_source* source, const int bufferSize, const double threshold)
 {
+#ifdef _DEBUG
+	Profiler profiler{fmt::format("GU_PCM_Source_TimeToRMSR({}, {})", bufferSize, threshold)};
+#endif
 	if (!source)
 		return -1;
 
-	return AudioSource{source}.CountSamplesTilRMSR(bufferSize, threshold);
+	return AudioSource{source}.TimeToRMSR(bufferSize, threshold);
 }
 
 bool GU_PCM_Source_HasRegion(PCM_source* source)

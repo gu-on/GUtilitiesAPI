@@ -9,13 +9,13 @@ bool GU_PCM_Source_IsMono(PCM_source* source);
 // the end
 double GU_PCM_Source_GetSampleValue(PCM_source* source, double time);
 // Count number of samples in PCM_source from start til peak threshold is breached. Returns -1 if invalid
-int GU_PCM_Source_CountSamplesTilPeak(PCM_source* source, int bufferSize, double threshold);
+double GU_PCM_Source_TimeToPeak(PCM_source* source, int bufferSize, double threshold);
 // Count number of samples in PCM_source from start til RMS threshold is breached. Returns -1 if invalid
-int GU_PCM_Source_CountSamplesTilRMS(PCM_source* source, int bufferSize, double threshold);
+double GU_PCM_Source_TimeToRMS(PCM_source* source, int bufferSize, double threshold);
 // Count number of samples in PCM_source from end til peak threshold is breached. Returns -1 if invalid
-int GU_PCM_Source_CountSamplesTilPeakR(PCM_source* source, int bufferSize, double threshold);
+double GU_PCM_Source_TimeToPeakR(PCM_source* source, int bufferSize, double threshold);
 // Count number of samples in PCM_source from end til RMS threshold is breached. Returns -1 if invalid
-int GU_PCM_Source_CountSamplesTilRMSR(PCM_source* source, int bufferSize, double threshold);
+double GU_PCM_Source_TimeToRMSR(PCM_source* source, int bufferSize, double threshold);
 // Check if PCM_source has embedded Media Cue Markers
 bool GU_PCM_Source_HasRegion(PCM_source* source);
 // Renames take based on wildcards

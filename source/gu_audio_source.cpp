@@ -5,7 +5,6 @@
 
 #include <gu_audio_buffer.hpp>
 #include <gu_audio_source.hpp>
-#include <gu_maths.hpp>
 
 bool AudioSource::IsMono(int bufferSize) const
 {
@@ -14,15 +13,9 @@ bool AudioSource::IsMono(int bufferSize) const
 	if (buffer.ChannelCount() == 1)
 		return true;
 
-	int frame{};
-
-	while (buffer.SamplesOut())
-	{
+	while (buffer.IsValid())
 		if (!buffer.IsMono())
 			return false;
-
-		buffer.RefillSamples(++frame);
-	}
 
 	return true;
 }
@@ -32,82 +25,77 @@ double AudioSource::GetSampleValue(const double time) const
 	static constexpr int BUFFER_LENGTH = 1;
 	double startTime{time >= 0 ? time : GetLengthInSeconds() + time};
 
-	const AudioBuffer buffer(*this, BUFFER_LENGTH, static_cast<int>(startTime * GetSampleRate()));
+	const AudioBuffer buffer(*this, BUFFER_LENGTH, startTime);
 
 	return buffer.SampleAt(0);
 }
 
-int AudioSource::CountSamplesTilPeak(const int bufferSize, const double threshold) const
+double AudioSource::TimeToPeak(const int bufferSize, const double threshold) const
 {
-	AudioBuffer buffer(*this, bufferSize, 0);
+	AudioBuffer buffer(*this, bufferSize, 0.0);
 
-	int frame{};
-
-	while (buffer.SamplesOut())
+	while (buffer.IsValid())
 	{
-		if (const int sample = buffer.GetFirstSampleAboveThreshold(threshold); sample > 0)
-			return sample;
-
-		buffer.RefillSamples(++frame);
+		if (const double time = buffer.GetTimeToPeak(threshold); time > 0)
+		{
+			ShowConsoleMsg(fmt::format("\ntotal refills: {}\n", buffer.totalSampleRefills).c_str());
+			return time;
+		}
 	}
 
+	ShowConsoleMsg(fmt::format("\ntotal refills: {}\n", buffer.totalSampleRefills).c_str());
 	return 0;
 }
 
-int AudioSource::CountSamplesTilPeakR(const int bufferSize, const double threshold) const
+double AudioSource::TimeToPeakR(const int bufferSize, const double threshold) const
 {
-	const int sourceLengthInSamples{GetLengthInSamples()};
-	const int startSample{sourceLengthInSamples - bufferSize};
-	AudioBuffer buffer(*this, bufferSize, startSample);
+	const double startTime{GetLengthInSeconds() - bufferSize / GetSampleRate()};
+	AudioBuffer buffer(*this, bufferSize, startTime);
 
-	int frame{};
-	const int maxFrames = sourceLengthInSamples / bufferSize;
-
-	while (buffer.SamplesOut() && frame < maxFrames)
+	while (buffer.IsValid())
 	{
-		if (const int sample = buffer.GetFirstSampleAboveThresholdR(threshold); sample > 0)
-			return sourceLengthInSamples - sample;
-
-		buffer.RefillSamples(maxFrames - ++frame);
+		if (const double time = buffer.GetTimeToPeakR(threshold); time > 0)
+		{
+			ShowConsoleMsg(fmt::format("\ntotal refills: {}\n", buffer.totalSampleRefills).c_str());
+			return GetLengthInSeconds() - time;
+		}
 	}
 
+	ShowConsoleMsg(fmt::format("\ntotal refills: {}\n", buffer.totalSampleRefills).c_str());
 	return 0;
 }
 
-int AudioSource::CountSamplesTilRMS(const int bufferSize, const double threshold) const
+double AudioSource::TimeToRMS(const int bufferSize, const double threshold) const
 {
-	AudioBuffer buffer(*this, bufferSize, 0);
-
-	int frame{};
-
-	while (buffer.SamplesOut())
+	AudioBuffer buffer(*this, bufferSize, 0.0);
+	while (buffer.IsValid())
 	{
 		if (const double rms = buffer.GetRMS(); rms > Maths::DB2VOL(threshold))
-			return frame * bufferSize;
-
-		buffer.RefillSamples(++frame);
+		{
+			ShowConsoleMsg(fmt::format("\ntotal refills: {}\n", buffer.totalSampleRefills).c_str());
+			return buffer.Time();
+		}
 	}
 
+	ShowConsoleMsg(fmt::format("\ntotal refills: {}\n", buffer.totalSampleRefills).c_str());
 	return 0;
 }
 
-int AudioSource::CountSamplesTilRMSR(const int bufferSize, const double threshold) const
+double AudioSource::TimeToRMSR(const int bufferSize, const double threshold) const
 {
-	const int sourceLengthInSamples{GetLengthInSamples()};
-	const int startSample{sourceLengthInSamples - bufferSize};
-	AudioBuffer buffer{*this, bufferSize, startSample};
+	const double startTime{GetFinalBufferTime(bufferSize)};
+	AudioBuffer buffer{*this, bufferSize, startTime};
 
-	int frame{};
-	const int maxFrames = sourceLengthInSamples / bufferSize;
-
-	while (buffer.SamplesOut() && frame < maxFrames)
+	while (buffer.IsValid())
 	{
-		if (const double rms = buffer.GetRMS(); rms > Maths::DB2VOL(threshold))
-			return frame * bufferSize;
-
-		buffer.RefillSamples(maxFrames - ++frame);
+		if (const double rms = buffer.GetRMSR(); rms > Maths::DB2VOL(threshold))
+		{
+			ShowConsoleMsg(fmt::format("\ntotal refills: {}\n", buffer.totalSampleRefills).c_str());
+			return buffer.Time();
+		}
 	}
 
+	ShowConsoleMsg(fmt::format("\ntotal refills: {}\n", buffer.totalSampleRefills).c_str());
 	return 0;
 }
 
