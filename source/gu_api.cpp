@@ -31,7 +31,8 @@ bool GU_Config_Read(const char* fileName, const char* category, const char* key,
 	std::string temp{};
 	bool isSuccessful = ini.Read(category, key, temp);
 
-	snprintf(valueOut, valueOut_sz, "%s", temp.c_str());
+	if (isSuccessful)
+		snprintf(valueOut, valueOut_sz, "%s", temp.c_str());
 
 	return isSuccessful;
 }
