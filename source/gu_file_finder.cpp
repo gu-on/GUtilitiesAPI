@@ -1,6 +1,6 @@
 #include <gu_file_finder.hpp>
 
-std::string FileFinder::FindFileInDirectory(const char* path, const char* fileName)
+std::string FileFinder::FindFileInDirectory(std::string_view path, std::string_view fileName)
 {
 	for (auto it = DirectoryIterator(path); it != DirectoryIterator(); ++it)
 	{

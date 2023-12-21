@@ -14,7 +14,7 @@ private:
 	static constexpr bool FAIL = false;
 
 	fs::path GetFormattedFilePath(std::string fileName);
-	const fs::path FilePath{};
+	const fs::path Path{};
 
 public:
 	INIFile() = delete;

@@ -121,19 +121,19 @@ void GU_WildcardParseTake(MediaItem_Take* take, const char* input, char* valueOu
 	snprintf(valueOut, valueOut_sz, "%s", wildcardParser.ParseTakeName(take, input).c_str());
 }
 
-int GU_Filesystem_CountMediaFiles(const char* filePath, int flags, double* fileSizeOut)
+int GU_Filesystem_CountMediaFiles(const char* path, int flags, double* fileSizeOut)
 {
 #ifdef _DEBUG
-	Profiler profiler{fmt::format("GU_Filesystem_CountMediaFiles({}, {})", filePath, flags)};
+	Profiler profiler{fmt::format("GU_Filesystem_CountMediaFiles({}, {})", path, flags)};
 #endif
 
-	if (!filePath)
+	if (!path)
 	{
 		*fileSizeOut = RecursiveImporter::MediaFileError.FileSize;
 		return RecursiveImporter::MediaFileError.Count;
 	}
 
-	RecursiveImporter recursiveImporter{filePath, flags};
+	RecursiveImporter recursiveImporter{path, flags};
 	auto mediaFileInfo = recursiveImporter.CalculateMediaFileInfo();
 	*fileSizeOut = mediaFileInfo.FileSize;
 

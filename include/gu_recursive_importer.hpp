@@ -64,34 +64,35 @@ public:
 	static inline MediaFileInfoStats MediaFileError{-1, 0};
 
 	RecursiveImporter() = delete;
-	explicit RecursiveImporter(const std::string filePath, int flags);
+	explicit RecursiveImporter(std::string_view filePath, int flags);
 
 private:
-	bool IsValidPath();
-	bool IsFlaggedExtension(std::string fileExtension);
+	bool IsValidPath() const;
+	bool IsFlaggedExtension(std::string& fileExtension) const;
 	void Reset();
 	void CreateCustomFlagsList();
 	void CreateDefaultFlagsList();
 
-	const std::array<std::pair<MediaType, std::vector<std::string>>, 10> MediaTypeMappings = {
-		std::make_pair(MediaType::WAV, std::vector<std::string>{".WAV"}),
-		std::make_pair(MediaType::AIFF, std::vector<std::string>{".AIFF", ".AIF"}),
-		std::make_pair(MediaType::FLAC, std::vector<std::string>{".FLAC"}),
-		std::make_pair(MediaType::MP3, std::vector<std::string>{".MP3"}),
-		std::make_pair(MediaType::OGG, std::vector<std::string>{".OGG"}),
-		std::make_pair(MediaType::BWF, std::vector<std::string>{".BWF"}),
-		std::make_pair(MediaType::W64, std::vector<std::string>{".W64"}),
-		std::make_pair(MediaType::WAVPACK, std::vector<std::string>{".WAVPACK"}),
-		std::make_pair(MediaType::GIF, std::vector<std::string>{".GIF"}),
-		std::make_pair(MediaType::MP4, std::vector<std::string>{".MP4"})};
+	static constexpr std::array<std::pair<MediaType, std::array<const char*, 2>>, 10> MediaTypeMappings = {
+		std::make_pair(MediaType::WAV, std::array<const char*, 2>{".WAV", ""}),
+		std::make_pair(MediaType::AIFF, std::array<const char*, 2>{".AIFF", ".AIF"}),
+		std::make_pair(MediaType::FLAC, std::array<const char*, 2>{".FLAC", ""}),
+		std::make_pair(MediaType::MP3, std::array<const char*, 2>{".MP3", ""}),
+		std::make_pair(MediaType::OGG, std::array<const char*, 2>{".OGG", ""}),
+		std::make_pair(MediaType::BWF, std::array<const char*, 2>{".BWF", ""}),
+		std::make_pair(MediaType::W64, std::array<const char*, 2>{".W64", ""}),
+		std::make_pair(MediaType::WAVPACK, std::array<const char*, 2>{".WAVPACK", ""}),
+		std::make_pair(MediaType::GIF, std::array<const char*, 2>{".GIF", ""}),
+		std::make_pair(MediaType::MP4, std::array<const char*, 2>{".MP4", ""})};
 
-	// Statically pin to access between calls
-	static inline std::string FilePath{};
+	// Marked 'static' to access between calls
+
+	static inline std::string_view Path{};
 	static inline int Flags{};
-	static inline std::vector<std::string> FlagsToCheck{};
-	static inline std::hash<std::string> Hasher{};
-	static inline std::size_t FilePathHash{};
+	static inline std::vector<std::string_view> FlagsToCheck{};
+	static inline std::hash<std::string_view> Hasher{};
+	static inline std::size_t PathHash{};
 	static inline DirectoryIterator Iterator{};
 
-	static constexpr const char* NULLSTRING = "";
+	static constexpr const char* EMPTYSTRING = "";
 };

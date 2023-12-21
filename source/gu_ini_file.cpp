@@ -19,11 +19,11 @@ fs::path INIFile::GetFormattedFilePath(std::string fileName)
 	return fs::path(GetResourcePath()) / fs::path(CONFIGFOLDER) / fs::path(fileName + CONFIGEXTENSION);
 }
 
-INIFile::INIFile(const std::string& fileName) : FilePath(GetFormattedFilePath(fileName)) {}
+INIFile::INIFile(const std::string& fileName) : Path(GetFormattedFilePath(fileName)) {}
 
 bool INIFile::Write(const std::string& category, const std::string& key, const std::string& value)
 {
-	const mINI::INIFile file(FilePath.string());
+	const mINI::INIFile file(Path.string());
 
 	mINI::INIStructure ini;
 
@@ -31,14 +31,14 @@ bool INIFile::Write(const std::string& category, const std::string& key, const s
 	ini[category][key] = value;
 	file.write(ini);
 
-	return fs::exists(FilePath) && fs::is_regular_file(FilePath);
+	return fs::exists(Path) && fs::is_regular_file(Path);
 }
 
 bool INIFile::Read(const std::string& category, const std::string& key, std::string& value)
 {
-	const mINI::INIFile file(FilePath.string());
+	const mINI::INIFile file(Path.string());
 
-	if (!std::filesystem::exists(FilePath))
+	if (!std::filesystem::exists(Path))
 		return FAIL;
 
 	mINI::INIStructure ini;
@@ -51,5 +51,5 @@ bool INIFile::Read(const std::string& category, const std::string& key, std::str
 
 bool INIFile::Delete()
 {
-	return std::filesystem::remove(FilePath);
+	return std::filesystem::remove(Path);
 }

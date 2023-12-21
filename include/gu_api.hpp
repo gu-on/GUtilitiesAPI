@@ -19,7 +19,7 @@ double GU_PCM_Source_TimeToRMSR(PCM_source* source, int bufferSize, double thres
 bool GU_PCM_Source_HasRegion(PCM_source* source);
 // Renames take based on wildcards
 void GU_WildcardParseTake(MediaItem_Take* take, const char* input, char* valueOut, int valueOut_sz);
-// Recursively count all media files within a given folder. Returns -1 if path is invalid. Can also retrieve
+// Recursively counts all media files within a given path. Returns -1 if path is invalid. Can also retrieve
 // fileSize sum in megabytes
 int GU_Filesystem_CountMediaFiles(const char* path, int flags, double* fileSizeOut);
 // Import media file from path at index

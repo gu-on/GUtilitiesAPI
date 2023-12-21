@@ -16,7 +16,7 @@ MediaFileInfoStats RecursiveImporter::CalculateMediaFileInfo()
 		return MediaFileError;
 	}
 
-	for (Iterator = DirectoryIterator(FilePath); Iterator != DirectoryIterator(); ++Iterator)
+	for (Iterator = DirectoryIterator(Path); Iterator != DirectoryIterator(); ++Iterator)
 	{
 		if (Iterator->is_regular_file() && IsFlaggedExtension(Iterator->path().extension().string()))
 		{
@@ -31,17 +31,20 @@ MediaFileInfoStats RecursiveImporter::CalculateMediaFileInfo()
 	return mediaFileInfo;
 }
 
-RecursiveImporter::RecursiveImporter(const std::string filePath, const int flags)
+RecursiveImporter::RecursiveImporter(std::string_view path, const int flags)
 {
-	FilePath = filePath;
+	Path = path;
 
-	if (!std::filesystem::exists(FilePath))
-		return;
-
-	if (auto hash = Hasher(FilePath); FilePathHash != hash || Flags != flags)
+	if (!std::filesystem::exists(Path))
 	{
-		FilePathHash = hash;
-		Iterator = DirectoryIterator(FilePath);
+		Reset();
+		return;
+	}
+
+	if (auto hash = Hasher(Path); PathHash != hash || Flags != flags)
+	{
+		PathHash = hash;
+		Iterator = DirectoryIterator(Path);
 
 		Flags = flags;
 
@@ -56,9 +59,9 @@ RecursiveImporter::RecursiveImporter(const std::string filePath, const int flags
 	}
 }
 
-bool RecursiveImporter::IsValidPath()
+bool RecursiveImporter::IsValidPath() const
 {
-	return !FilePath.empty() && std::filesystem::exists(FilePath);
+	return !Path.empty() && std::filesystem::exists(Path);
 }
 
 std::string RecursiveImporter::GetNextMediaFilePath()
@@ -66,7 +69,7 @@ std::string RecursiveImporter::GetNextMediaFilePath()
 	if (!IsValidPath() || Iterator == DirectoryIterator())
 	{
 		Reset();
-		return NULLSTRING;
+		return EMPTYSTRING;
 	}
 
 	while (Iterator != DirectoryIterator() && Iterator->is_regular_file() &&
@@ -78,7 +81,7 @@ std::string RecursiveImporter::GetNextMediaFilePath()
 	if (Iterator == DirectoryIterator())
 	{
 		Reset();
-		return NULLSTRING;
+		return EMPTYSTRING;
 	}
 
 	std::string temp{Iterator->path().string()};
@@ -87,18 +90,18 @@ std::string RecursiveImporter::GetNextMediaFilePath()
 	return temp;
 }
 
-bool RecursiveImporter::IsFlaggedExtension(std::string fileExtension)
+bool RecursiveImporter::IsFlaggedExtension(std::string& fileExtension) const
 {
 	std::transform(fileExtension.begin(), fileExtension.end(), fileExtension.begin(),
 				   [](unsigned char c) { return std::toupper(c); });
 
 	return std::any_of(FlagsToCheck.begin(), FlagsToCheck.end(),
-					   [&fileExtension](const std::string& s) { return fileExtension == s; });
+					   [&fileExtension](std::string_view s) { return fileExtension == s; });
 }
 
 void RecursiveImporter::Reset()
 {
-	FilePathHash = 0;
+	PathHash = 0;
 }
 
 void RecursiveImporter::CreateCustomFlagsList()
@@ -107,12 +110,15 @@ void RecursiveImporter::CreateCustomFlagsList()
 
 	for (const auto& [flag, vector] : MediaTypeMappings)
 	{
-		if ((static_cast<MediaType>(Flags) & flag) == flag)
+		if ((static_cast<MediaType>(Flags) & flag) != flag)
+			continue;
+
+		for (const auto& name : vector)
 		{
-			for (const auto& name : vector)
-			{
-				FlagsToCheck.push_back(name);
-			}
+			if (name == EMPTYSTRING)
+				continue;
+
+			FlagsToCheck.push_back(name);
 		}
 	}
 }
