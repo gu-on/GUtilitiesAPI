@@ -9,7 +9,7 @@ private:
 	typedef std::filesystem::recursive_directory_iterator DirectoryIterator;
 
 public:
-	std::string FindFileInDirectory(const char* fileName, const char* directory);
+	std::string FindFileInDirectory(const char* path, const char* fileName);
 
 private:
 };

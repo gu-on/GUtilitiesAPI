@@ -153,17 +153,17 @@ void GU_Filesystem_EnumerateMediaFiles(const char* path, const int flags, char* 
 	snprintf(pathOut, pathOut_sz, "%s", recursiveImporter.GetNextMediaFilePath().c_str());
 }
 
-void GU_Filesystem_FindFileInPath(const char* fileName, const char* directory, char* pathOut, int pathOut_sz)
+void GU_Filesystem_FindFileInPath(const char* path, const char* fileName, char* pathOut, int pathOut_sz)
 {
 #ifdef _DEBUG
-	Profiler profiler{fmt::format("GU_Filesystem_FindFileInPath({}, {})", fileName, directory)};
+	Profiler profiler{fmt::format("GU_Filesystem_FindFileInPath({}, {})", path, fileName)};
 #endif
 
-	if (!fileName || !directory)
+	if (!path || !fileName)
 		return;
 
 	FileFinder fileFinder{};
-	snprintf(pathOut, pathOut_sz, "%s", fileFinder.FindFileInDirectory(fileName, directory).c_str());
+	snprintf(pathOut, pathOut_sz, "%s", fileFinder.FindFileInDirectory(path, fileName).c_str());
 }
 
 bool GU_Filesystem_PathExists(const char* path)

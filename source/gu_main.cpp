@@ -21,7 +21,7 @@ void LoadPlugin()
 	Api.Add({APIFUNC(GU_WildcardParseTake), "void", "MediaItem_Take*,const char*,char*,int", "take,input,valueOut,valueOut_sz", "Renames take based on wildcards"});
 	Api.Add({APIFUNC(GU_Filesystem_CountMediaFiles), "int", "const char*,int,double*", "path,flags,fileSizeOut", "Recursively count all media files within a given folder. Returns -1 if path is invalid. Can also retrieve fileSize sum in megabytes"});
 	Api.Add({APIFUNC(GU_Filesystem_EnumerateMediaFiles), "void", "const char*,int,char*,int", "path,flags,pathOut,pathOut_sz", "Import media file from path at index"});
-	Api.Add({APIFUNC(GU_Filesystem_FindFileInPath), "void", "const char*,const char*,char*,int", "fileName,path,pathOut,pathOut_sz", "Returns the path of a file from a given path"});
+	Api.Add({APIFUNC(GU_Filesystem_FindFileInPath), "void", "const char*,const char*,char*,int", "path,fileName,pathOut,pathOut_sz", "Returns the path of a file from a given path"});
 	Api.Add({APIFUNC(GU_Filesystem_PathExists), "bool", "const char*", "path", "Check if file or directory exists"});
 	Api.Register();
 }

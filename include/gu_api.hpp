@@ -24,7 +24,7 @@ void GU_WildcardParseTake(MediaItem_Take* take, const char* input, char* valueOu
 int GU_Filesystem_CountMediaFiles(const char* path, int flags, double* fileSizeOut);
 // Import media file from path at index
 void GU_Filesystem_EnumerateMediaFiles(const char* path, int flags, char* pathOut, int pathOut_sz);
-// Returns the path of a file from a given path
-void GU_Filesystem_FindFileInPath(const char* fileName, const char* path, char* pathOut, int pathOut_sz);
+// Returns the first found file's path from within a given path, or an empty string if not found
+void GU_Filesystem_FindFileInPath(const char* path, const char* fileName, char* pathOut, int pathOut_sz);
 // Check if file or directory exists
 bool GU_Filesystem_PathExists(const char* path);
