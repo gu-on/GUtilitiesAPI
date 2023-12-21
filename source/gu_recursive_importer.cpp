@@ -90,7 +90,7 @@ std::string RecursiveImporter::GetNextMediaFilePath()
 	return temp;
 }
 
-bool RecursiveImporter::IsFlaggedExtension(std::string& fileExtension) const
+bool RecursiveImporter::IsFlaggedExtension(std::string fileExtension) const
 {
 	std::transform(fileExtension.begin(), fileExtension.end(), fileExtension.begin(),
 				   [](unsigned char c) { return std::toupper(c); });

@@ -68,7 +68,7 @@ public:
 
 private:
 	bool IsValidPath() const;
-	bool IsFlaggedExtension(std::string& fileExtension) const;
+	bool IsFlaggedExtension(std::string fileExtension) const;
 	void Reset();
 	void CreateCustomFlagsList();
 	void CreateDefaultFlagsList();
