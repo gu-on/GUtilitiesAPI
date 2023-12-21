@@ -6,9 +6,9 @@
 #include <gu_audio_buffer.hpp>
 #include <gu_audio_source.hpp>
 
-bool AudioSource::IsMono(int bufferSize) const
+bool AudioSource::IsMono(const int bufferSize) const
 {
-	AudioBuffer buffer(*this, bufferSize, 0);
+	AudioBuffer buffer(*this, bufferSize, 0.0);
 
 	if (buffer.ChannelCount() == 1)
 		return true;
@@ -23,11 +23,9 @@ bool AudioSource::IsMono(int bufferSize) const
 double AudioSource::GetSampleValue(const double time) const
 {
 	static constexpr int BUFFER_LENGTH = 1;
-	double startTime{time >= 0 ? time : GetLengthInSeconds() + time};
+	const AudioBuffer buffer(*this, BUFFER_LENGTH, std::clamp(time, 0.0, (GetLengthInSamples() - 1) / GetSampleRate()));
 
-	const AudioBuffer buffer(*this, BUFFER_LENGTH, startTime);
-
-	return buffer.SampleAt(0);
+	return buffer.GetFirstSampleValue();
 }
 
 double AudioSource::TimeToPeak(const int bufferSize, const double threshold) const
@@ -35,67 +33,42 @@ double AudioSource::TimeToPeak(const int bufferSize, const double threshold) con
 	AudioBuffer buffer(*this, bufferSize, 0.0);
 
 	while (buffer.IsValid())
-	{
-		if (const double time = buffer.GetTimeToPeak(threshold); time > 0)
-		{
-			ShowConsoleMsg(fmt::format("\ntotal refills: {}\n", buffer.totalSampleRefills).c_str());
+		if (const double time = buffer.GetTimeToPeak(threshold); time > 0.0)
 			return time;
-		}
-	}
 
-	ShowConsoleMsg(fmt::format("\ntotal refills: {}\n", buffer.totalSampleRefills).c_str());
 	return 0;
 }
 
 double AudioSource::TimeToPeakR(const int bufferSize, const double threshold) const
 {
-	const double startTime{GetLengthInSeconds() - bufferSize / GetSampleRate()};
-	AudioBuffer buffer(*this, bufferSize, startTime);
+	AudioBuffer buffer(*this, bufferSize, GetLengthInSeconds() - bufferSize / GetSampleRate());
 
 	while (buffer.IsValid())
-	{
-		if (const double time = buffer.GetTimeToPeakR(threshold); time > 0)
-		{
-			ShowConsoleMsg(fmt::format("\ntotal refills: {}\n", buffer.totalSampleRefills).c_str());
+		if (const double time = buffer.GetTimeToPeakR(threshold); time > 0.0)
 			return GetLengthInSeconds() - time;
-		}
-	}
 
-	ShowConsoleMsg(fmt::format("\ntotal refills: {}\n", buffer.totalSampleRefills).c_str());
 	return 0;
 }
 
 double AudioSource::TimeToRMS(const int bufferSize, const double threshold) const
 {
 	AudioBuffer buffer(*this, bufferSize, 0.0);
-	while (buffer.IsValid())
-	{
-		if (const double rms = buffer.GetRMS(); rms > Maths::DB2VOL(threshold))
-		{
-			ShowConsoleMsg(fmt::format("\ntotal refills: {}\n", buffer.totalSampleRefills).c_str());
-			return buffer.Time();
-		}
-	}
 
-	ShowConsoleMsg(fmt::format("\ntotal refills: {}\n", buffer.totalSampleRefills).c_str());
+	while (buffer.IsValid())
+		if (const double rms = buffer.GetRMS(); rms > Maths::DB2VOL(threshold))
+			return buffer.Time();
+
 	return 0;
 }
 
 double AudioSource::TimeToRMSR(const int bufferSize, const double threshold) const
 {
-	const double startTime{GetFinalBufferTime(bufferSize)};
-	AudioBuffer buffer{*this, bufferSize, startTime};
+	AudioBuffer buffer{*this, bufferSize, GetFinalBufferTime(bufferSize)};
 
 	while (buffer.IsValid())
-	{
 		if (const double rms = buffer.GetRMSR(); rms > Maths::DB2VOL(threshold))
-		{
-			ShowConsoleMsg(fmt::format("\ntotal refills: {}\n", buffer.totalSampleRefills).c_str());
 			return buffer.Time();
-		}
-	}
 
-	ShowConsoleMsg(fmt::format("\ntotal refills: {}\n", buffer.totalSampleRefills).c_str());
 	return 0;
 }
 
@@ -126,9 +99,9 @@ std::vector<CueMarker> AudioSource::GetMediaCues() const
 	return temp;
 }
 
-double AudioSource::GetNormalization(int normalizationType) const
+double AudioSource::GetNormalization(const NormalizationType type) const
 {
-	return 20 * log10(CalculateNormalization(AudioPtr, normalizationType, 0, 0, 0)) * -1;
+	return 20 * log10(CalculateNormalization(AudioPtr, static_cast<int>(type), 0, 0, 0)) * -1;
 }
 
 AudioSource::AudioSource(PCM_source* source) : AudioPtr((assert(source != nullptr), source)) {}

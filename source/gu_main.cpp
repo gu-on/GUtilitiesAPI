@@ -12,7 +12,7 @@ void LoadPlugin()
 	Api.Add({APIFUNC(GU_Config_Write), "bool", "const char*,const char*,const char*,const char*", "fileName,category,key,value", "Write config file to Reaper's resource folder"});
 	Api.Add({APIFUNC(GU_Config_Read), "bool", "const char*,const char*,const char*,char*,int", "fileName,category,key,valueOut,valueOut_sz", "Read config file from Reaper's resource folder"});
 	Api.Add({APIFUNC(GU_PCM_Source_IsMono), "bool", "PCM_source*", "source", "Checks if PCM_source is mono by comparing all channels"});
-	Api.Add({APIFUNC(GU_PCM_Source_GetSampleValue), "double", "PCM_source*,double", "source,time", "Get a PCM_source's sample value at a point in time (seconds). Providing a negative number will search backwards from the end"});
+	Api.Add({APIFUNC(GU_PCM_Source_GetSampleValue), "double", "PCM_source*,double", "source,time", "Get a PCM_source's sample value at a point in time (seconds)"});
 	Api.Add({APIFUNC(GU_PCM_Source_TimeToPeak), "double", "PCM_source*,int,double", "source,bufferSize,threshold", "Count number of samples in PCM_source from start til peak threshold is breached. Returns -1 if invalid"});
 	Api.Add({APIFUNC(GU_PCM_Source_TimeToRMS), "double", "PCM_source*,int,double", "source,bufferSize,threshold", "Count number of samples in PCM_source from start til RMS threshold is breached. Returns -1 if invalid"});
 	Api.Add({APIFUNC(GU_PCM_Source_TimeToPeakR), "double", "PCM_source*,int,double", "source,bufferSize,threshold", "Count number of samples in PCM_source from end til peak threshold is breached. Returns -1 if invalid"});

@@ -8,60 +8,52 @@
 
 class AudioBuffer
 {
-	friend class AudioSource;
-
-private:
 	enum class Direction
 	{
 		Forward,
 		Backward,
 	};
 
-private:
-	[[nodiscard]] double CalculateRMS(Direction dir);
-	[[nodiscard]] double CalculateTimeToPeak(double peakThreshold, Direction dir);
-
 public:
-	void RefillSamples(Direction dir);
+	[[nodiscard]] double GetRMS();
+	[[nodiscard]] double GetRMSR();
+	[[nodiscard]] double GetTimeToPeak(double peakThreshold);
+	[[nodiscard]] double GetTimeToPeakR(double peakThreshold);
+	[[nodiscard]] bool IsMono();
+	[[nodiscard]] bool IsFrameInRange() const { return frame >= 0 && frame <= frameMax; }
+	[[nodiscard]] bool IsValid() const { return SamplesOut() && IsFrameInRange(); };
+	[[nodiscard]] double GetFirstSampleValue() const { return SampleAt(0); }
 
-	[[nodiscard]] int SamplesOut() const { return Buffer.samples_out; }
 	[[nodiscard]] int ChannelCount() const { return Buffer.nch; }
 	[[nodiscard]] int Length() const { return Buffer.length; }
 	[[nodiscard]] double SampleRate() const { return Buffer.samplerate; }
 	[[nodiscard]] double Time() const { return Buffer.time_s; }
 
+	[[nodiscard]] double CalculateRMS(Direction dir);
+	[[nodiscard]] double CalculateTimeToPeak(double peakThreshold, Direction dir);
+
+private:
+	void RefillSamples(Direction dir);
 	void Iterate(const std::function<void(int)>& func, Direction dir) const;
 
-	[[nodiscard]] double GetRMS() { return CalculateRMS(Direction::Forward); }
-	[[nodiscard]] double GetRMSR() { return CalculateRMS(Direction::Backward); }
-	[[nodiscard]] double GetTimeToPeak(const double peakThreshold)
-	{
-		return CalculateTimeToPeak(peakThreshold, Direction::Forward);
-	}
-	[[nodiscard]] double GetTimeToPeakR(const double peakThreshold)
-	{
-		return CalculateTimeToPeak(peakThreshold, Direction::Backward);
-	}
-	[[nodiscard]] bool IsMono();
-	[[nodiscard]] bool IsFrameInRange() const { return frame >= 0 && frame <= frameMax; }
-	[[nodiscard]] bool IsValid() const { return SamplesOut() && IsFrameInRange(); };
-
 	[[nodiscard]] ReaSample SampleAt(const int index) const { return Buffer.samples[index]; }
+	[[nodiscard]] int SamplesOut() const { return Buffer.samples_out; }
 
+public:
 	AudioBuffer() = delete;
 	explicit AudioBuffer(const AudioSource& source, int bufferLength, double startTime);
 	~AudioBuffer() { delete[] Buffer.samples; };
 
-	AudioBuffer(const AudioBuffer&) = default;
-	AudioBuffer& operator=(const AudioBuffer&) = default;
-	AudioBuffer(AudioBuffer&&) = default;
-	AudioBuffer& operator=(AudioBuffer&&) = default;
+	AudioBuffer(const AudioBuffer&) = delete;
+	AudioBuffer& operator=(const AudioBuffer&) = delete;
+	AudioBuffer(AudioBuffer&&) = delete;
+	AudioBuffer& operator=(AudioBuffer&&) = delete;
 
 private:
 	const AudioSource* Source{};
 	PCM_source_transfer_t Buffer{};
+
 	mutable int frame{};
-	int frameMax{};
 	static constexpr int FRAME_MIN{0};
-	int totalSampleRefills{};
+	int frameMax{};
 };

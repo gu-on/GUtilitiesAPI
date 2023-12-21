@@ -5,8 +5,7 @@ bool GU_Config_Write(const char* fileName, const char* category, const char* key
 bool GU_Config_Read(const char* fileName, const char* category, const char* key, char* valueOut, int valueOut_sz);
 // Checks if PCM_source is mono by comparing all channels
 bool GU_PCM_Source_IsMono(PCM_source* source);
-// Get a PCM_source's sample value at a point in time (seconds). Providing a negative number will search backwards from
-// the end
+// Get a PCM_source's sample value at a point in time (seconds)
 double GU_PCM_Source_GetSampleValue(PCM_source* source, double time);
 // Count number of samples in PCM_source from start til peak threshold is breached. Returns -1 if invalid
 double GU_PCM_Source_TimeToPeak(PCM_source* source, int bufferSize, double threshold);

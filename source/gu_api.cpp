@@ -57,6 +57,7 @@ double GU_PCM_Source_TimeToPeak(PCM_source* source, const int bufferSize, const 
 #ifdef _DEBUG
 	Profiler profiler{fmt::format("GU_PCM_Source_TimeToPeak({}, {})", bufferSize, threshold)};
 #endif
+
 	if (!source)
 		return -1;
 
@@ -68,6 +69,7 @@ double GU_PCM_Source_TimeToRMS(PCM_source* source, const int bufferSize, const d
 #ifdef _DEBUG
 	Profiler profiler{fmt::format("GU_PCM_Source_TimeToRMS({}, {})", bufferSize, threshold)};
 #endif
+
 	if (!source)
 		return -1;
 
@@ -79,6 +81,7 @@ double GU_PCM_Source_TimeToPeakR(PCM_source* source, const int bufferSize, const
 #ifdef _DEBUG
 	Profiler profiler{fmt::format("GU_PCM_Source_TimeToPeakR({}, {})", bufferSize, threshold)};
 #endif
+
 	if (!source)
 		return -1;
 
@@ -90,6 +93,7 @@ double GU_PCM_Source_TimeToRMSR(PCM_source* source, const int bufferSize, const 
 #ifdef _DEBUG
 	Profiler profiler{fmt::format("GU_PCM_Source_TimeToRMSR({}, {})", bufferSize, threshold)};
 #endif
+
 	if (!source)
 		return -1;
 

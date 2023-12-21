@@ -18,6 +18,8 @@ struct CueMarker
 
 class AudioSource
 {
+	friend class AudioBuffer;
+
 public:
 	[[nodiscard]] bool IsMono(int bufferSize = 1024) const;
 	[[nodiscard]] double GetSampleValue(double time) const;
@@ -29,24 +31,13 @@ public:
 
 	[[nodiscard]] std::vector<CueMarker> GetMediaCues() const;
 	[[nodiscard]] int GetChannelCount() const { return AudioPtr->GetNumChannels(); }
-	void GetSamples(PCM_source_transfer_t& buffer) const { AudioPtr->GetSamples(&buffer); }
 	[[nodiscard]] double GetSampleRate() const { return AudioPtr->GetSampleRate(); }
+	[[nodiscard]] double GetLengthInSeconds() const { return AudioPtr->GetLength(); }
 	[[nodiscard]] int GetLengthInSamples() const
 	{
 		return static_cast<int>(std::ceil(AudioPtr->GetLength() * AudioPtr->GetSampleRate()));
 	}
-	[[nodiscard]] double GetLengthInSeconds() const { return AudioPtr->GetLength(); }
 
-private:
-	[[nodiscard]] double GetFinalBufferTime(int bufferSize) const
-	{
-		return GetLengthInSeconds() - bufferSize / GetSampleRate();
-	}
-
-private:
-	PCM_source* AudioPtr{};
-
-public:
 	enum class NormalizationType
 	{
 		LUFS_I,
@@ -57,16 +48,23 @@ public:
 		LUFS_S
 	};
 
-	[[nodiscard]] double GetNormalization(int normalizationType) const;
+	[[nodiscard]] double GetNormalization(NormalizationType type) const;
 
-	[[nodiscard]] double GetLUFS() const { return GetNormalization(static_cast<int>(NormalizationType::LUFS_I)); }
-	[[nodiscard]] double GetRMS() const { return GetNormalization(static_cast<int>(NormalizationType::RMS)); }
-	[[nodiscard]] double GetPeak() const { return GetNormalization(static_cast<int>(NormalizationType::PEAK)); }
-	[[nodiscard]] double GetTruePeak() const
-	{
-		return GetNormalization(static_cast<int>(NormalizationType::TRUE_PEAK));
-	}
+	[[nodiscard]] double GetLUFS() const { return GetNormalization(NormalizationType::LUFS_I); }
+	[[nodiscard]] double GetRMS() const { return GetNormalization(NormalizationType::RMS); }
+	[[nodiscard]] double GetPeak() const { return GetNormalization(NormalizationType::PEAK); }
+	[[nodiscard]] double GetTruePeak() const { return GetNormalization(NormalizationType::TRUE_PEAK); }
 
 	AudioSource() = delete;
 	explicit AudioSource(PCM_source* source);
+
+private:
+	void GetSamples(PCM_source_transfer_t& buffer) const { AudioPtr->GetSamples(&buffer); }
+	[[nodiscard]] double GetFinalBufferTime(int bufferSize) const
+	{
+		return (GetLengthInSamples() - 1 - bufferSize) / GetSampleRate();
+	}
+
+private:
+	PCM_source* AudioPtr{};
 };

@@ -9,7 +9,7 @@ AudioBuffer::AudioBuffer(const AudioSource& source, int bufferLength, double sta
 
 	const double sampleRate = Source->GetSampleRate();
 	frame = static_cast<int>(std::floor(startTime * sampleRate));
-	frameMax = Source->GetLengthInSamples();
+	frameMax = Source->GetLengthInSamples() - 1;
 
 	Buffer.time_s = startTime;
 	Buffer.samplerate = sampleRate;
@@ -23,7 +23,6 @@ AudioBuffer::AudioBuffer(const AudioSource& source, int bufferLength, double sta
 
 void AudioBuffer::RefillSamples(const Direction dir)
 {
-	++totalSampleRefills;
 	if (dir == Direction::Forward)
 	{
 		Buffer.time_s += SamplesOut() / SampleRate();
@@ -64,6 +63,26 @@ void AudioBuffer::Iterate(const std::function<void(int)>& func, const Direction 
 			--frame;
 		}
 	}
+}
+
+double AudioBuffer::GetRMS()
+{
+	return CalculateRMS(Direction::Forward);
+}
+
+double AudioBuffer::GetRMSR()
+{
+	return CalculateRMS(Direction::Backward);
+}
+
+double AudioBuffer::GetTimeToPeak(const double peakThreshold)
+{
+	return CalculateTimeToPeak(peakThreshold, Direction::Forward);
+}
+
+double AudioBuffer::GetTimeToPeakR(const double peakThreshold)
+{
+	return CalculateTimeToPeak(peakThreshold, Direction::Backward);
 }
 
 double AudioBuffer::CalculateRMS(const Direction dir)
