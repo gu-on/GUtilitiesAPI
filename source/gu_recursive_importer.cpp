@@ -90,13 +90,13 @@ std::string RecursiveImporter::GetNextMediaFilePath()
 	return temp;
 }
 
-bool RecursiveImporter::IsFlaggedExtension(std::string fileExtension) const
+bool RecursiveImporter::IsFlaggedExtension(std::string extension) const
 {
-	std::transform(fileExtension.begin(), fileExtension.end(), fileExtension.begin(),
+	std::transform(extension.begin(), extension.end(), extension.begin(),
 				   [](unsigned char c) { return std::toupper(c); });
 
 	return std::any_of(FlagsToCheck.begin(), FlagsToCheck.end(),
-					   [&fileExtension](std::string_view s) { return fileExtension == s; });
+					   [&extension](std::string_view s) { return extension == s; });
 }
 
 void RecursiveImporter::Reset()

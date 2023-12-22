@@ -64,11 +64,11 @@ public:
 	static inline MediaFileInfoStats MediaFileError{-1, 0};
 
 	RecursiveImporter() = delete;
-	explicit RecursiveImporter(std::string_view filePath, int flags);
+	explicit RecursiveImporter(std::string_view path, int flags);
 
 private:
 	bool IsValidPath() const;
-	bool IsFlaggedExtension(std::string fileExtension) const;
+	bool IsFlaggedExtension(std::string extension) const;
 	void Reset();
 	void CreateCustomFlagsList();
 	void CreateDefaultFlagsList();
