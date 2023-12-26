@@ -31,10 +31,8 @@ MediaFileInfoStats RecursiveImporter::CalculateMediaFileInfo()
 	return mediaFileInfo;
 }
 
-RecursiveImporter::RecursiveImporter(std::string_view path, const int flags)
+RecursiveImporter::RecursiveImporter(std::string_view path, const int flags) : Path(path)
 {
-	Path = path;
-
 	if (!std::filesystem::exists(Path))
 	{
 		Reset();

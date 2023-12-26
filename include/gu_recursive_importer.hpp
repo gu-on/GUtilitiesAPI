@@ -85,9 +85,10 @@ private:
 		std::make_pair(MediaType::GIF, std::array<const char*, 2>{".GIF", ""}),
 		std::make_pair(MediaType::MP4, std::array<const char*, 2>{".MP4", ""})};
 
+	std::string_view Path;
+
 	// Marked 'static' to access between calls
 
-	static inline std::string_view Path{};
 	static inline int Flags{};
 	static inline std::vector<std::string_view> FlagsToCheck{};
 	static inline std::hash<std::string_view> Hasher{};

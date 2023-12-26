@@ -150,8 +150,7 @@ void GU_Filesystem_EnumerateMediaFiles(const char* path, const int flags, char* 
 	if (!path)
 		return;
 
-	RecursiveImporter recursiveImporter{path, flags};
-	snprintf(pathOut, pathOut_sz, "%s", recursiveImporter.GetNextMediaFilePath().c_str());
+	snprintf(pathOut, pathOut_sz, "%s", RecursiveImporter{path, flags}.GetNextMediaFilePath().c_str());
 }
 
 void GU_Filesystem_FindFileInPath(const char* path, const char* fileName, char* pathOut, int pathOut_sz)
@@ -163,8 +162,7 @@ void GU_Filesystem_FindFileInPath(const char* path, const char* fileName, char* 
 	if (!path || !fileName)
 		return;
 
-	FileFinder fileFinder{};
-	snprintf(pathOut, pathOut_sz, "%s", fileFinder.FindFileInDirectory(path, fileName).c_str());
+	snprintf(pathOut, pathOut_sz, "%s", FileFinder{}.FindFileInDirectory(path, fileName).c_str());
 }
 
 bool GU_Filesystem_PathExists(const char* path)
