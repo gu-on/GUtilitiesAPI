@@ -170,5 +170,5 @@ bool GU_Filesystem_PathExists(const char* path)
 	if (!path)
 		return false;
 
-	return std::filesystem::exists(std::filesystem::path(path));
+	return std::filesystem::exists(std::filesystem::u8path(path));
 }

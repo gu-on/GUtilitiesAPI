@@ -3,7 +3,7 @@
 #include <fmt/core.h>
 #include <reaper_plugin_functions.h>
 
-std::string FileFinder::FindFileInDirectory(std::string_view path, std::string_view fileName)
+std::string FileFinder::FindFileInDirectory(std::filesystem::path path, std::string_view fileName)
 {
 	auto HandleException = [&](const std::exception& e) -> const char* {
 		PathHash = 0;
@@ -11,7 +11,7 @@ std::string FileFinder::FindFileInDirectory(std::string_view path, std::string_v
 		return EMPTYSTRING;
 	};
 
-	if (path.empty() || !std::filesystem::exists(path))
+	if (!std::filesystem::exists(path))
 	{
 		PathHash = 0;
 		return EMPTYSTRING;
