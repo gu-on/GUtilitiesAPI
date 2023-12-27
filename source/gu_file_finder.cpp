@@ -50,7 +50,7 @@ std::string FileFinder::FindFileInDirectory(std::string_view path, std::string_v
 		++Iterator;
 	}
 
-	if (Iterator.depth() < depth)
+	if (Iterator.depth() <= depth && Iterator != DirectoryIterator())
 	{
 		return Iterator->path().string();
 	}
