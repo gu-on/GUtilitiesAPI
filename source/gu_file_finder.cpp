@@ -5,6 +5,12 @@
 
 std::string FileFinder::FindFileInDirectory(std::string_view path, std::string_view fileName)
 {
+	auto HandleException = [&](const std::exception& e) -> const char* {
+		PathHash = 0;
+		ShowConsoleMsg(fmt::format("Exception encountered during filesystem access - {}\n", e.what()).c_str());
+		return EMPTYSTRING;
+	};
+
 	if (path.empty() || !std::filesystem::exists(path))
 	{
 		PathHash = 0;
@@ -28,7 +34,14 @@ std::string FileFinder::FindFileInDirectory(std::string_view path, std::string_v
 
 	while (Iterator != DirectoryIterator() && fileName != Iterator->path().filename().string())
 	{
-		++Iterator;
+		try
+		{
+			++Iterator;
+		}
+		catch (const std::exception& e)
+		{
+			return HandleException(e);
+		}
 	}
 
 	if (Iterator != DirectoryIterator())
@@ -47,7 +60,14 @@ std::string FileFinder::FindFileInDirectory(std::string_view path, std::string_v
 	Iterator = DirectoryIterator(path);
 	while (Iterator.depth() < depth && fileName != Iterator->path().filename().string())
 	{
-		++Iterator;
+		try
+		{
+			++Iterator;
+		}
+		catch (const std::exception& e)
+		{
+			return HandleException(e);
+		}
 	}
 
 	if (Iterator.depth() <= depth && Iterator != DirectoryIterator())
