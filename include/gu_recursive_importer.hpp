@@ -64,10 +64,9 @@ public:
 	static inline MediaFileInfoStats MediaFileError{-1, 0};
 
 	RecursiveImporter() = delete;
-	explicit RecursiveImporter(std::string_view path, int flags);
+	explicit RecursiveImporter(std::filesystem::path path, int flags);
 
 private:
-	bool IsValidPath() const;
 	bool IsFlaggedExtension(std::string extension) const;
 	void Reset();
 	void CreateCustomFlagsList();
@@ -85,14 +84,11 @@ private:
 		std::make_pair(MediaType::GIF, std::array<const char*, 2>{".GIF", ""}),
 		std::make_pair(MediaType::MP4, std::array<const char*, 2>{".MP4", ""})};
 
-	std::string_view Path;
-
 	// Marked 'static' to access between calls
 
+	static inline std::filesystem::path Path{};
 	static inline int Flags{};
 	static inline std::vector<std::string_view> FlagsToCheck{};
-	static inline std::hash<std::string_view> Hasher{};
-	static inline std::size_t PathHash{};
 	static inline DirectoryIterator Iterator{};
 
 	static constexpr const char* EMPTYSTRING = "";

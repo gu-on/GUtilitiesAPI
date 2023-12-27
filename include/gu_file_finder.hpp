@@ -12,8 +12,9 @@ public:
 	std::string FindFileInDirectory(std::filesystem::path path, std::string_view fileName);
 
 private:
-	static inline std::hash<std::filesystem::path> Hasher{};
-	static inline std::size_t PathHash{};
+	void Reset();
+
+	static inline std::filesystem::path Path{};
 	static inline DirectoryIterator Iterator{};
 
 	static constexpr const char* EMPTYSTRING = "";

@@ -11,7 +11,7 @@ MediaFileInfoStats RecursiveImporter::CalculateMediaFileInfo()
 {
 	MediaFileInfoStats mediaFileInfo{};
 
-	if (!IsValidPath())
+	if (!std::filesystem::exists(Path))
 	{
 		Reset();
 		return MediaFileError;
@@ -41,17 +41,17 @@ MediaFileInfoStats RecursiveImporter::CalculateMediaFileInfo()
 	return mediaFileInfo;
 }
 
-RecursiveImporter::RecursiveImporter(std::string_view path, const int flags) : Path(path)
+RecursiveImporter::RecursiveImporter(std::filesystem::path path, const int flags)
 {
-	if (!std::filesystem::exists(Path))
+	if (!std::filesystem::exists(path))
 	{
 		Reset();
 		return;
 	}
 
-	if (auto hash = Hasher(Path); PathHash != hash || Flags != flags)
+	if (Path != path || Flags != flags)
 	{
-		PathHash = hash;
+		Path = path;
 		Iterator = DirectoryIterator(Path);
 
 		Flags = flags;
@@ -67,11 +67,6 @@ RecursiveImporter::RecursiveImporter(std::string_view path, const int flags) : P
 	}
 }
 
-bool RecursiveImporter::IsValidPath() const
-{
-	return !Path.empty() && std::filesystem::exists(Path);
-}
-
 std::string RecursiveImporter::GetNextMediaFilePath()
 {
 	auto HandleException = [&](const std::exception& e) -> const char* {
@@ -80,7 +75,7 @@ std::string RecursiveImporter::GetNextMediaFilePath()
 		return EMPTYSTRING;
 	};
 
-	if (!IsValidPath() || Iterator == DirectoryIterator())
+	if (!std::filesystem::exists(Path) || Iterator == DirectoryIterator())
 	{
 		Reset();
 		return EMPTYSTRING;
@@ -105,7 +100,7 @@ std::string RecursiveImporter::GetNextMediaFilePath()
 		return EMPTYSTRING;
 	}
 
-	std::string temp{Iterator->path().string()};
+	std::string temp{Iterator->path().u8string()};
 
 	try
 	{
@@ -130,7 +125,7 @@ bool RecursiveImporter::IsFlaggedExtension(std::string extension) const
 
 void RecursiveImporter::Reset()
 {
-	PathHash = 0;
+	Path = std::filesystem::path{};
 }
 
 void RecursiveImporter::CreateCustomFlagsList()

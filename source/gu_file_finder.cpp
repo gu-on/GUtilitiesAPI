@@ -6,23 +6,23 @@
 std::string FileFinder::FindFileInDirectory(std::filesystem::path path, std::string_view fileName)
 {
 	auto HandleException = [&](const std::exception& e) -> const char* {
-		PathHash = 0;
+		Reset();
 		ShowConsoleMsg(fmt::format("Exception encountered during filesystem access - {}\n", e.what()).c_str());
 		return EMPTYSTRING;
 	};
 
 	if (!std::filesystem::exists(path))
 	{
-		PathHash = 0;
+		Reset();
 		return EMPTYSTRING;
 	}
 
 	bool startedFromPath;
 	int depth{};
 
-	if (auto hash = Hasher(path); PathHash != hash)
+	if (Path != path)
 	{
-		PathHash = hash;
+		Path = path;
 		Iterator = DirectoryIterator(path);
 		startedFromPath = true;
 	}
@@ -52,7 +52,7 @@ std::string FileFinder::FindFileInDirectory(std::filesystem::path path, std::str
 	// everything has been iterated over at least once - file not found
 	if (startedFromPath)
 	{
-		PathHash = 0;
+		Reset();
 		return EMPTYSTRING;
 	}
 
@@ -75,6 +75,11 @@ std::string FileFinder::FindFileInDirectory(std::filesystem::path path, std::str
 		return Iterator->path().u8string();
 	}
 
-	PathHash = 0;
+	Reset();
 	return EMPTYSTRING;
+}
+
+void FileFinder::Reset()
+{
+	Path = std::filesystem::path{};
 }

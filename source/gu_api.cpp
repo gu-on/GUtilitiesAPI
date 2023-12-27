@@ -134,10 +134,9 @@ int GU_Filesystem_CountMediaFiles(const char* path, int flags, double* fileSizeO
 		return RecursiveImporter::MediaFileError.Count;
 	}
 
-	RecursiveImporter recursiveImporter{path, flags};
-	auto mediaFileInfo = recursiveImporter.CalculateMediaFileInfo();
+	namespace fs = std::filesystem;
+	auto mediaFileInfo = RecursiveImporter{fs::u8path(path), flags}.CalculateMediaFileInfo();
 	*fileSizeOut = mediaFileInfo.FileSize;
-
 	return mediaFileInfo.Count;
 }
 
@@ -150,7 +149,8 @@ void GU_Filesystem_EnumerateMediaFiles(const char* path, const int flags, char* 
 	if (!path)
 		return;
 
-	snprintf(pathOut, pathOut_sz, "%s", RecursiveImporter{path, flags}.GetNextMediaFilePath().c_str());
+	namespace fs = std::filesystem;
+	snprintf(pathOut, pathOut_sz, "%s", RecursiveImporter{fs::u8path(path), flags}.GetNextMediaFilePath().c_str());
 }
 
 void GU_Filesystem_FindFileInPath(const char* path, const char* fileName, char* pathOut, int pathOut_sz)
