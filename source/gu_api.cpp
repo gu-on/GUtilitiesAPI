@@ -162,7 +162,8 @@ void GU_Filesystem_FindFileInPath(const char* path, const char* fileName, char* 
 	if (!path || !fileName)
 		return;
 
-	snprintf(pathOut, pathOut_sz, "%s", FileFinder{}.FindFileInDirectory(path, fileName).c_str());
+	namespace fs = std::filesystem;
+	snprintf(pathOut, pathOut_sz, "%s", FileFinder{}.FindFileInDirectory(fs::u8path(path), fileName).c_str());
 }
 
 bool GU_Filesystem_PathExists(const char* path)
@@ -170,5 +171,6 @@ bool GU_Filesystem_PathExists(const char* path)
 	if (!path)
 		return false;
 
-	return std::filesystem::exists(std::filesystem::u8path(path));
+	namespace fs = std::filesystem;
+	return fs::exists(fs::u8path(path));
 }

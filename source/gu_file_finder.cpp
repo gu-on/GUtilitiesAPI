@@ -32,7 +32,7 @@ std::string FileFinder::FindFileInDirectory(std::filesystem::path path, std::str
 		depth = Iterator.depth();
 	}
 
-	while (Iterator != DirectoryIterator() && fileName != Iterator->path().filename().string())
+	while (Iterator != DirectoryIterator() && fileName != Iterator->path().filename().u8string())
 	{
 		try
 		{
@@ -46,7 +46,7 @@ std::string FileFinder::FindFileInDirectory(std::filesystem::path path, std::str
 
 	if (Iterator != DirectoryIterator())
 	{
-		return Iterator->path().string();
+		return Iterator->path().u8string();
 	}
 
 	// everything has been iterated over at least once - file not found
@@ -58,7 +58,7 @@ std::string FileFinder::FindFileInDirectory(std::filesystem::path path, std::str
 
 	// iterator started partway through and didn't find anything - search from beginning
 	Iterator = DirectoryIterator(path);
-	while (Iterator.depth() < depth && fileName != Iterator->path().filename().string())
+	while (Iterator.depth() < depth && fileName != Iterator->path().filename().u8string())
 	{
 		try
 		{
@@ -72,7 +72,7 @@ std::string FileFinder::FindFileInDirectory(std::filesystem::path path, std::str
 
 	if (Iterator.depth() <= depth && Iterator != DirectoryIterator())
 	{
-		return Iterator->path().string();
+		return Iterator->path().u8string();
 	}
 
 	PathHash = 0;
