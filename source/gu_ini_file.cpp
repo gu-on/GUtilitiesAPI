@@ -46,7 +46,7 @@ bool INIFile::Read(const std::string& category, const std::string& key, std::str
 	file.read(ini);
 	value = ini.get(category).get(key);
 
-	return PASS;
+	return value.empty() ? FAIL : PASS;
 }
 
 bool INIFile::Delete()

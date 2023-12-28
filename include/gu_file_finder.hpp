@@ -14,6 +14,8 @@ public:
 private:
 	void Reset();
 
+	// Marked 'static' to access between calls
+
 	static inline std::filesystem::path Path{};
 	static inline DirectoryIterator Iterator{};
 
