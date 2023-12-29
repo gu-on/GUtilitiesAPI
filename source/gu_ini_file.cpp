@@ -33,6 +33,7 @@ bool INIFile::Write(const std::string& category, const std::string& key, const s
 {
 	mINI::INIStructure ini;
 
+	IniFile.read(ini);
 	ini[category][key] = value;
 	const bool isValid = IniFile.write(ini);
 
