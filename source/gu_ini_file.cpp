@@ -2,54 +2,54 @@
 
 #include <gu_ini_file.hpp>
 
-namespace fs = std::filesystem;
-
-fs::path INIFile::GetFormattedFilePath(std::string fileName)
+std::filesystem::path INIFile::FormatDirectory()
 {
-	if (APIExists == nullptr) // skip if dll not being run from Reaper, i.e. when testing
-		return fs::path(fileName);
+	// remove filepath restriction when not running in Reaper, such as for testing
+	if (GetResourcePath == nullptr)
+		return std::filesystem::current_path();
 
-	fileName.erase(std::remove_if(fileName.begin(), fileName.end(),
-								  [](char c) { return !std::isalnum(c) && c != '_' && c != '\\' && c != '/'; }),
-				   fileName.end());
-
-	static constexpr const char* CONFIGFOLDER = "GUtilities";
-	static constexpr const char* CONFIGEXTENSION = ".ini";
-
-	return fs::path(GetResourcePath()) / fs::path(CONFIGFOLDER) / fs::path(fileName + CONFIGEXTENSION);
+	return std::filesystem::path(GetResourcePath()) / std::filesystem::path(CONFIGFOLDER);
 }
 
-INIFile::INIFile(const std::string& fileName) : Path(GetFormattedFilePath(fileName)) {}
+std::filesystem::path INIFile::FormatFileName(std::string fileName)
+{
+	fileName.erase(std::remove_if(fileName.begin(), fileName.end(),
+								  [](char c) { return !std::isalnum(c) && c != '\\' && c != '/'; }),
+				   fileName.end());
+
+	return std::filesystem::path(fileName + CONFIGEXTENSION);
+}
+
+INIFile::INIFile(const std::string& fileName)
+	: Directory(FormatDirectory()), FileName(FormatFileName(fileName)), IniFile(Path().string())
+{
+	if (!std::filesystem::exists(Directory))
+	{
+		std::filesystem::create_directories(Directory);
+	}
+}
 
 bool INIFile::Write(const std::string& category, const std::string& key, const std::string& value)
 {
-	const mINI::INIFile file(Path.string());
-
 	mINI::INIStructure ini;
 
-	file.read(ini);
 	ini[category][key] = value;
-	file.write(ini);
+	const bool isValid = IniFile.write(ini);
 
-	return fs::exists(Path) && fs::is_regular_file(Path);
+	return isValid;
 }
 
 bool INIFile::Read(const std::string& category, const std::string& key, std::string& value)
 {
-	const mINI::INIFile file(Path.string());
-
-	if (!std::filesystem::exists(Path))
-		return FAIL;
-
 	mINI::INIStructure ini;
 
-	file.read(ini);
+	bool isValid = IniFile.read(ini);
 	value = ini.get(category).get(key);
 
-	return value.empty() ? FAIL : PASS;
+	return isValid && !value.empty() ? PASS : FAIL;
 }
 
 bool INIFile::Delete()
 {
-	return std::filesystem::remove(Path);
+	return std::filesystem::remove(Path());
 }

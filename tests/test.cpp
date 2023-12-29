@@ -31,14 +31,13 @@ TEST_CASE("Check INI File")
 {
 	using namespace std;
 
-	const string configFileName = "testing.ini";
-	const string goodPath = std::filesystem::current_path().string() + configFileName;
+	const string fileName = "testing";
 	const string category = "fruit";
 	const string key = "tasty";
 	const string value = "yes";
 	bool success = false;
 
-	INIFile ini{goodPath};
+	INIFile ini{fileName};
 	success = ini.Write(category, key, value);
 	CHECK(success);
 
