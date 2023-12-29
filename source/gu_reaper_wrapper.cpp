@@ -305,7 +305,7 @@ MusicNotation Project::GetTempoAndTimeSignature(double timelinePos) const
 	double timePos;
 
 	GetTempoTimeSigMarker(Ptr, index, &timePos, nullptr, nullptr, &bpm, &numerator, &denominator, nullptr);
-	while (timePos > timelinePos && index != 0)
+	while (timePos > timelinePos && index > -1)
 	{
 		--index;
 		GetTempoTimeSigMarker(Ptr, index, &timePos, nullptr, nullptr, &bpm, &numerator, &denominator, nullptr);
