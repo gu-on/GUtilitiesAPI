@@ -55,7 +55,7 @@ public:
 	[[nodiscard]] int GetState() const;
 	[[nodiscard]] std::string GetName() const;
 	[[nodiscard]] std::string GetAuthor() const;
-	[[nodiscard]] static std::string ExtractFileName(const std::string& filePath);
+	[[nodiscard]] static std::string ExtractFileName(const std::string& path);
 
 	[[nodiscard]] std::string GetRegionName(const double timelinePos);
 	[[nodiscard]] std::string GetMarkerName(const double timelinePos);
@@ -89,7 +89,7 @@ public:
 	void SetName(const std::string& name) const;
 	void SetDepth(const int depth) const;
 
-	Item CreateNewItem(const std::string& filePath, double position);
+	Item CreateNewItem(const std::string& path, double position);
 
 private:
 	MediaTrack* Ptr;
@@ -108,7 +108,7 @@ public:
 	[[nodiscard]] std::string GetNotes() const;
 	[[nodiscard]] double GetPosition() const;
 
-	Take CreateNewTake(const std::string& filePath) const;
+	Take CreateNewTake(const std::string& path) const;
 	void SetPosition(double position) const;
 	void SetLength(double length) const;
 

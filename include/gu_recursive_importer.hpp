@@ -8,8 +8,9 @@
 static constexpr const char* VALID_FILE_FORMATS[] = {".WAV", ".AIFF", ".FLAC",	  ".MP3", ".OGG",
 													 ".BWF", ".W64",  ".WAVPACK", ".GIF", "MP4"};
 
-enum class MediaType : uint32_t
+enum class MediaType : int32_t
 {
+	RESET = -1,
 	ALL = 0,
 	WAV = 1 << 0,
 	AIFF = 1 << 1,
@@ -20,8 +21,7 @@ enum class MediaType : uint32_t
 	W64 = 1 << 6,
 	WAVPACK = 1 << 7,
 	GIF = 1 << 8,
-	MP4 = 1 << 9,
-	RESET = 1 << 10
+	MP4 = 1 << 9
 };
 
 inline MediaType operator|(MediaType a, MediaType b)
@@ -91,5 +91,5 @@ private:
 	static inline std::vector<std::string_view> FlagsToCheck{};
 	static inline DirectoryIterator Iterator{};
 
-	static constexpr const char* EMPTYSTRING = "";
+	static constexpr const char* EMPTY_STRING = "";
 };

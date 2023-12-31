@@ -7,6 +7,40 @@
 #include <gu_recursive_importer.hpp>
 #include <reaper_plugin_functions.h>
 
+RecursiveImporter::RecursiveImporter(std::filesystem::path path, const int flags)
+{
+	if (!std::filesystem::exists(path))
+	{
+		Reset();
+		return;
+	}
+
+	if (Flags != flags)
+	{
+		Flags = flags;
+
+		if (static_cast<int>(Flags) < 0)
+		{
+			Reset();
+			return;
+		}
+		else if (static_cast<int>(Flags) == 0)
+		{
+			CreateDefaultFlagsList();
+		}
+		else
+		{
+			CreateCustomFlagsList();
+		}
+	}
+
+	if (Path != path)
+	{
+		Path = path;
+		Iterator = DirectoryIterator(Path);
+	}
+}
+
 MediaFileInfoStats RecursiveImporter::CalculateMediaFileInfo()
 {
 	MediaFileInfoStats mediaFileInfo{};
@@ -15,6 +49,11 @@ MediaFileInfoStats RecursiveImporter::CalculateMediaFileInfo()
 	{
 		Reset();
 		return MediaFileError;
+	}
+
+	if (Flags < 0)
+	{
+		return MediaFileInfoStats{};
 	}
 
 	try
@@ -41,44 +80,18 @@ MediaFileInfoStats RecursiveImporter::CalculateMediaFileInfo()
 	return mediaFileInfo;
 }
 
-RecursiveImporter::RecursiveImporter(std::filesystem::path path, const int flags)
-{
-	if (!std::filesystem::exists(path))
-	{
-		Reset();
-		return;
-	}
-
-	if (Path != path || Flags != flags)
-	{
-		Path = path;
-		Iterator = DirectoryIterator(Path);
-
-		Flags = flags;
-
-		if (static_cast<int>(Flags) == 0)
-		{
-			CreateDefaultFlagsList();
-		}
-		else
-		{
-			CreateCustomFlagsList();
-		}
-	}
-}
-
 std::string RecursiveImporter::GetNextMediaFilePath()
 {
 	auto HandleException = [&](const std::exception& e) -> const char* {
 		Reset();
 		ShowConsoleMsg(fmt::format("Exception encountered during filesystem access - {}\n", e.what()).c_str());
-		return EMPTYSTRING;
+		return EMPTY_STRING;
 	};
 
-	if (!std::filesystem::exists(Path) || Iterator == DirectoryIterator())
+	if (!std::filesystem::exists(Path) || Iterator == DirectoryIterator() || Flags < 0)
 	{
 		Reset();
-		return EMPTYSTRING;
+		return EMPTY_STRING;
 	}
 
 	while (Iterator != DirectoryIterator() && Iterator->is_regular_file() &&
@@ -97,7 +110,7 @@ std::string RecursiveImporter::GetNextMediaFilePath()
 	if (Iterator == DirectoryIterator())
 	{
 		Reset();
-		return EMPTYSTRING;
+		return EMPTY_STRING;
 	}
 
 	std::string temp{Iterator->path().u8string()};
@@ -139,7 +152,7 @@ void RecursiveImporter::CreateCustomFlagsList()
 
 		for (const auto& name : vector)
 		{
-			if (name == EMPTYSTRING)
+			if (name == EMPTY_STRING)
 				continue;
 
 			FlagsToCheck.push_back(name);

@@ -19,5 +19,5 @@ private:
 	static inline std::filesystem::path Path{};
 	static inline DirectoryIterator Iterator{};
 
-	static constexpr const char* EMPTYSTRING = "";
+	static constexpr const char* EMPTY_STRING = "";
 };

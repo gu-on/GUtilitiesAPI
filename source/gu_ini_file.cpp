@@ -4,11 +4,11 @@
 
 std::filesystem::path INIFile::FormatDirectory()
 {
-	// remove filepath restriction when not running in Reaper, such as for testing
+	// remove path restriction when not running in Reaper, such as for testing
 	if (GetResourcePath == nullptr)
 		return std::filesystem::current_path();
 
-	return std::filesystem::path(GetResourcePath()) / std::filesystem::path(CONFIGFOLDER);
+	return std::filesystem::path(GetResourcePath()) / std::filesystem::path(CONFIG_FOLDER);
 }
 
 std::filesystem::path INIFile::FormatFileName(std::string fileName)
@@ -17,7 +17,7 @@ std::filesystem::path INIFile::FormatFileName(std::string fileName)
 								  [](char c) { return !std::isalnum(c) && c != '\\' && c != '/'; }),
 				   fileName.end());
 
-	return std::filesystem::path(fileName + CONFIGEXTENSION);
+	return std::filesystem::path(fileName + CONFIG_EXTENSION);
 }
 
 INIFile::INIFile(const std::string& fileName)

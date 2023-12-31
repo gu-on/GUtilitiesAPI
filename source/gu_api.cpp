@@ -15,7 +15,7 @@
 
 #include <version.h>
 
-void GU_GetVersion(char* versionOut, int versionOut_sz)
+void GU_GUtilitiesAPI_GetVersion(char* versionOut, int versionOut_sz)
 {
 	snprintf(versionOut, versionOut_sz, "%d.%d.%d", reaper_gutilities_VERSION);
 }
@@ -25,8 +25,7 @@ bool GU_Config_Write(const char* fileName, const char* category, const char* key
 	if (!fileName || !category || !key || !value)
 		return false;
 
-	INIFile ini{fileName};
-	return ini.Write(category, key, value);
+	return INIFile{fileName}.Write(category, key, value);
 }
 
 bool GU_Config_Read(const char* fileName, const char* category, const char* key, char* valueOut, int valueOut_sz)
@@ -125,8 +124,7 @@ void GU_WildcardParseTake(MediaItem_Take* take, const char* input, char* valueOu
 	if (!take || !input)
 		return;
 
-	WildcardParser wildcardParser{};
-	snprintf(valueOut, valueOut_sz, "%s", wildcardParser.ParseTakeName(take, input).c_str());
+	snprintf(valueOut, valueOut_sz, "%s", WildcardParser{}.ParseTakeName(take, input).c_str());
 }
 
 int GU_Filesystem_CountMediaFiles(const char* path, int flags, double* fileSizeOut)
@@ -141,8 +139,7 @@ int GU_Filesystem_CountMediaFiles(const char* path, int flags, double* fileSizeO
 		return RecursiveImporter::MediaFileError.Count;
 	}
 
-	namespace fs = std::filesystem;
-	auto mediaFileInfo = RecursiveImporter{fs::u8path(path), flags}.CalculateMediaFileInfo();
+	auto mediaFileInfo = RecursiveImporter{std::filesystem::u8path(path), flags}.CalculateMediaFileInfo();
 	*fileSizeOut = mediaFileInfo.FileSize;
 	return mediaFileInfo.Count;
 }
@@ -156,8 +153,8 @@ void GU_Filesystem_EnumerateMediaFiles(const char* path, const int flags, char* 
 	if (!path)
 		return;
 
-	namespace fs = std::filesystem;
-	snprintf(pathOut, pathOut_sz, "%s", RecursiveImporter{fs::u8path(path), flags}.GetNextMediaFilePath().c_str());
+	snprintf(pathOut, pathOut_sz, "%s",
+			 RecursiveImporter{std::filesystem::u8path(path), flags}.GetNextMediaFilePath().c_str());
 }
 
 void GU_Filesystem_FindFileInPath(const char* path, const char* fileName, char* pathOut, int pathOut_sz)
@@ -169,8 +166,8 @@ void GU_Filesystem_FindFileInPath(const char* path, const char* fileName, char* 
 	if (!path || !fileName)
 		return;
 
-	namespace fs = std::filesystem;
-	snprintf(pathOut, pathOut_sz, "%s", FileFinder{}.FindFileInDirectory(fs::u8path(path), fileName).c_str());
+	snprintf(pathOut, pathOut_sz, "%s",
+			 FileFinder{}.FindFileInDirectory(std::filesystem::u8path(path), fileName).c_str());
 }
 
 bool GU_Filesystem_PathExists(const char* path)
@@ -178,6 +175,5 @@ bool GU_Filesystem_PathExists(const char* path)
 	if (!path)
 		return false;
 
-	namespace fs = std::filesystem;
-	return fs::exists(fs::u8path(path));
+	return std::filesystem::exists(std::filesystem::u8path(path));
 }

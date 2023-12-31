@@ -16,14 +16,14 @@ public:
 	bool Delete();
 
 	INIFile() = delete;
-	explicit INIFile(const std::string& filePath);
+	explicit INIFile(const std::string& path);
 
 private:
 	std::filesystem::path FormatDirectory();
 	std::filesystem::path FormatFileName(std::string fileName);
 
-	static constexpr const char* CONFIGFOLDER = "GUtilities";
-	static constexpr const char* CONFIGEXTENSION = ".ini";
+	static constexpr const char* CONFIG_FOLDER = "GUtilities";
+	static constexpr const char* CONFIG_EXTENSION = ".ini";
 
 	const std::filesystem::path Directory{};
 	const std::filesystem::path FileName{};

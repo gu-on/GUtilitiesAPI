@@ -56,10 +56,10 @@ void Track::SetDepth(const int depth) const
 	SetMediaTrackInfo_Value(Ptr, "I_FOLDERDEPTH", depth);
 }
 
-Item Track::CreateNewItem(const std::string& filePath, const double position)
+Item Track::CreateNewItem(const std::string& path, const double position)
 {
 	Item item{AddMediaItemToTrack(Ptr)};
-	auto take = item.CreateNewTake(filePath);
+	auto take = item.CreateNewTake(path);
 	item.SetPosition(position);
 	item.SetLength(take.GetSourceLength());
 
@@ -80,12 +80,12 @@ double Item::GetPosition() const
 	return GetMediaItemInfo_Value(Ptr, "D_POSITION");
 }
 
-Take Item::CreateNewTake(const std::string& filePath) const
+Take Item::CreateNewTake(const std::string& path) const
 {
 	Take take(AddTakeToMediaItem(Ptr));
-	take.SetAudioSource(filePath);
+	take.SetAudioSource(path);
 
-	const std::string fileName{Project::ExtractFileName(filePath)};
+	const std::string fileName{Project::ExtractFileName(path)};
 	take.SetName(fileName);
 
 	return take;
@@ -103,9 +103,9 @@ void Item::SetLength(double length) const
 
 Item::Item(MediaItem* item) : Ptr((assert(item != nullptr), item)) {}
 
-PCM_source* Take::SetAudioSource(const std::string& filePath)
+PCM_source* Take::SetAudioSource(const std::string& path)
 {
-	return PCM_Source_CreateFromFile(filePath.c_str());
+	return PCM_Source_CreateFromFile(path.c_str());
 }
 
 void Take::SetName(const std::string& name)
@@ -192,11 +192,11 @@ std::string Project::GetAuthor() const
 	return outString;
 }
 
-std::string Project::ExtractFileName(const std::string& filePath)
+std::string Project::ExtractFileName(const std::string& path)
 {
 	constexpr auto delimiter = "/\\";
-	const auto pos = filePath.find_last_of(delimiter) + 1;
-	return filePath.substr(pos, filePath.length() - pos);
+	const auto pos = path.find_last_of(delimiter) + 1;
+	return path.substr(pos, path.length() - pos);
 }
 
 std::string Project::GetRegionName(const double timelinePos)
