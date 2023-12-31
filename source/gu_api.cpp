@@ -13,6 +13,13 @@
 #include <gu_recursive_importer.hpp>
 #include <gu_wildcard_parser.hpp>
 
+#include <version.h>
+
+void GU_GetVersion(char* versionOut, int versionOut_sz)
+{
+	snprintf(versionOut, versionOut_sz, "%d.%d.%d", reaper_gutilities_VERSION);
+}
+
 bool GU_Config_Write(const char* fileName, const char* category, const char* key, const char* value)
 {
 	if (!fileName || !category || !key || !value)

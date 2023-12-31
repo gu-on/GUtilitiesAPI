@@ -9,6 +9,7 @@ API Api{};
 
 void LoadPlugin()
 {
+	Api.Add({APIFUNC(GU_GetVersion), "void", "char*,int", "versionOut,versionOut_sz", "Get Version"});
 	Api.Add({APIFUNC(GU_Config_Write), "bool", "const char*,const char*,const char*,const char*", "fileName,category,key,value", "Write config file to Reaper's resource folder"});
 	Api.Add({APIFUNC(GU_Config_Read), "bool", "const char*,const char*,const char*,char*,int", "fileName,category,key,valueOut,valueOut_sz", "Read config file from Reaper's resource folder"});
 	Api.Add({APIFUNC(GU_PCM_Source_IsMono), "bool", "PCM_source*", "source", "Checks if PCM_source is mono by comparing all channels"});

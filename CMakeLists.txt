@@ -9,7 +9,7 @@ if(DEFINED ENV{VCPKG_DEFAULT_TRIPLET} AND NOT DEFINED VCPKG_TARGET_TRIPLET)
   set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}" CACHE STRING "")
 endif()
 
-project(reaper_gutilities LANGUAGES CXX)
+project(reaper_gutilities LANGUAGES CXX VERSION 0.1.0)
 
 include(CheckCompilerFlag)
 include(CheckIncludeFileCXX)

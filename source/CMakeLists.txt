@@ -22,6 +22,7 @@ add_library(
     gu_audio_source.cpp
     gu_audio_buffer.cpp
     gu_wildcard_parser.cpp
+    version.h
 )
 
 target_include_directories(
@@ -54,3 +55,9 @@ if(NOT WIN32)
   find_package(SWELL REQUIRED)
   target_link_libraries(reaper_plugin SWELL::swell)
 endif()
+
+configure_file(version.h.in version.h)
+
+target_include_directories(
+  reaper_plugin PUBLIC
+  ${PROJECT_BINARY_DIR}/source)

@@ -1,4 +1,6 @@
 #include <reaper_plugin.h>
+// Get Version
+void GU_GetVersion(char* versionOut, int versionOut_sz);
 // Write config file to Reaper's resource folder
 bool GU_Config_Write(const char* fileName, const char* category, const char* key, const char* value);
 // Read config file from Reaper's resource folder
