@@ -26,12 +26,12 @@ enum class MediaType : int32_t
 
 inline MediaType operator|(MediaType a, MediaType b)
 {
-	return static_cast<MediaType>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
+	return static_cast<MediaType>(static_cast<int32_t>(a) | static_cast<int32_t>(b));
 }
 
 inline MediaType operator&(MediaType a, MediaType b)
 {
-	return static_cast<MediaType>(static_cast<uint32_t>(a) & static_cast<uint32_t>(b));
+	return static_cast<MediaType>(static_cast<int32_t>(a) & static_cast<int32_t>(b));
 }
 
 inline MediaType& operator|=(MediaType& a, MediaType b)
