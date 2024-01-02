@@ -1,10 +1,9 @@
 # GUtilitiesAPI
 
-
 [![Build status](https://ci.appveyor.com/api/projects/status/fhnddtpnb0o085b0?svg=true)](https://ci.appveyor.com/project/gu-on/gutilitiesapi)
 [![Donate](https://img.shields.io/badge/Donate-Ko--fi-orange?logo=kofi&color=ff5f5f)](https://ko-fi.com/guonaudio)
 
-GUtilitiesAPI is a reworking of [GUtilities](https://github.com/gu-on/GUtilities/), where the backend and frontend concerns have been separated. Additionally, Mac and Linux support is now provided. 
+GUtilitiesAPI an plugin/extension for [Reaper](https://www.reaper.fm/). It is a reworking of [GUtilities](https://github.com/gu-on/GUtilities/), where the C++ backend has been separated out into a public API that is callable via ReaScript. Additionally, Mac and Linux support is now provided. 
 
 ## Installation guide
 
@@ -18,6 +17,6 @@ GUtilitiesAPI is based on [ak5k's reaper-sdk-vscode template](https://github.com
 
 ### Requirements:
 
-- [CMake](https://cmake.org/) 3.21 or newer
+- [CMake](https://cmake.org/) 3.21+
 - C++17 compiler (MSVC on Windows)
-- Python 3.6
+- [Python](https://www.python.org/) 3.6+
