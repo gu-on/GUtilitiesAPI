@@ -87,7 +87,7 @@ private:
 	// Marked 'static' to access between calls
 
 	static inline std::filesystem::path Path{};
-	static inline int Flags{};
+	static inline int Flags{std::numeric_limits<int>::min()};
 	static inline std::vector<std::string_view> FlagsToCheck{};
 	static inline DirectoryIterator Iterator{};
 

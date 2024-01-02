@@ -7,7 +7,7 @@
 #include <gu_recursive_importer.hpp>
 #include <reaper_plugin_functions.h>
 
-RecursiveImporter::RecursiveImporter(std::filesystem::path path, const int flags)
+RecursiveImporter::RecursiveImporter(const std::filesystem::path path, const int flags)
 {
 	if (!std::filesystem::exists(path))
 	{
@@ -53,7 +53,7 @@ MediaFileInfoStats RecursiveImporter::CalculateMediaFileInfo()
 
 	if (Flags < 0)
 	{
-		return MediaFileInfoStats{};
+		return mediaFileInfo;
 	}
 
 	try
