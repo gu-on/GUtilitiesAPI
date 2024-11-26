@@ -1,26 +1,27 @@
-# heavily 'inspired' by cfillions reapack/reaimgui
-
 version: "{build}-{branch}"
 
-before_build:
-  - git submodule update --init --recursive --depth 1
+# before_build:
+#   - git submodule update --init --depth 1
+
 build_script:
   - export VCPKG_OVERLAY_TRIPLETS=cmake/vcpkg-triplets
   - cmake -B build -DCMAKE_BUILD_TYPE=Release
     -DCMAKE_TOOLCHAIN_FILE=~/vcpkg/scripts/buildsystems/vcpkg.cmake
     -DVCPKG_TARGET_TRIPLET=arch-env -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$TOOLCHAIN
     -DCMAKE_OSX_ARCHITECTURES=$ARCH -DCMAKE_OSX_DEPLOYMENT_TARGET=$DEPLOY_TARGET
+    # -DRUNTIME_OPENSSL=YES
   - cmake --build build
 
 test_script:
-  - '[ "$ARCH" = "arm64" ] || ctest -C Release --test-dir build --output-on-failure'
+  # - sh: '[[ "$ARCH" = arm64 ]] || cmake --build build --target test'
+  # - cmd: 'if NOT "%ARCH%" == "arm64ec" cmake --build build --target test'
 
 for:
   - matrix: { only: [appveyor_build_worker_image: &linux Ubuntu2004] }
     cache:
       - build/vcpkg_installed -> vcpkg.json, cmake/vcpkg-triplets/arch-env.cmake
     install: |-
-      set -e
+      # set -e
 
       sudo sed -i '/arch=/! s/^deb/deb [arch=amd64,i386]/' /etc/apt/sources.list
       awk '
@@ -29,19 +30,21 @@ for:
         $2 = "[arch=armhf,arm64]";
         $3 = "http://ports.ubuntu.com/ubuntu-ports/"
       } 1' /etc/apt/sources.list | sudo tee /etc/apt/sources.list.d/ports.list > /dev/null
+      # sudo sed -i 's/apt.postgresql.org/apt-archive.postgresql.org/' /etc/apt/sources.list
 
       install-deps() {
         local arch="$1"; shift
         local native=("$@" php-cli qemu-user-binfmt)
-        local target=(
-          libboost-dev libcurl4-openssl-dev libsqlite3-dev libssl-dev
-          libxml2-dev zlib1g-dev
-        )
+        # local target=(
+        #   libboost-dev libcurl4-openssl-dev libsqlite3-dev libssl-dev
+        #   libxml2-dev zlib1g-dev
+        # )
 
         sudo dpkg --add-architecture $arch
         sudo apt-get update -qq
         sudo apt-get install -qq aptitude > /dev/null
-        sudo aptitude install -yR ${native[@]} ${target[@]/%/:$arch} > /dev/null
+        # sudo aptitude install -yR ${native[@]} ${target[@]/%/:$arch} > /dev/null
+        sudo aptitude install -yR ${native[@]} > /dev/null
       }
 
       sudo update-alternatives --set gcc /usr/bin/gcc-9
@@ -76,16 +79,29 @@ for:
     install:
       - |-
         case $ARCH in
-        arm64)  
-          export MACOSX_DEPLOYMENT_TARGET=11.0 XCODE_VERSION=14.1
+        arm64)
+          DEPLOY_TARGET=11.0
+          sudo xcode-select -s /Applications/Xcode-13.2.1.app
           ;;
-        x86_64) 
-          export MACOSX_DEPLOYMENT_TARGET=10.9 XCODE_VERSION=13.2.1
+        *)
+          DEPLOY_TARGET=10.9
+          export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.10.sdk
+          curl -fsSLO https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.10.sdk.tar.xz
+          echo 608a89db8b4be150a945871230b5ba5d4767a8500bc5fe76ddf10f5cec5ef513 MacOSX10.10.sdk.tar.xz | sha256sum -c
+          sudo tar xf MacOSX10.10.sdk.tar.xz -C /Library/Developer/CommandLineTools/SDKs
+          sudo xcode-select -s /Library/Developer/CommandLineTools
           ;;
         esac
-      - sudo xcode-select -s /Applications/Xcode-$XCODE_VERSION.app
-      # https://letsencrypt.org/docs/dst-root-ca-x3-expiration-september-2021/
-      - sudo curl -k https://curl.se/ca/cacert.pem -o /etc/ssl/cert.pem
+
+      # don't use LibXml2/SQLite3 from Mono
+      - sudo rm -r /Library/Frameworks/Mono.framework
+
+      - |-
+        if [ "$appveyor_build_worker_image" = "macos-mojave" ]; then
+          # https://letsencrypt.org/docs/dst-root-ca-x3-expiration-september-2021/
+          sudo curl -k https://curl.se/ca/cacert.pem -o /etc/ssl/cert.pem
+
+        fi
     artifacts:
       - path: build/reaper_*.dylib
 
