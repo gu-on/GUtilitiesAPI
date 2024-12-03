@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -56,7 +55,7 @@ struct MediaFileInfoStats
 class RecursiveImporter
 {
 private:
-	typedef std::filesystem::recursive_directory_iterator DirectoryIterator;
+	typedef ghc::filesystem::recursive_directory_iterator DirectoryIterator;
 
 public:
 	MediaFileInfoStats CalculateMediaFileInfo();
@@ -64,7 +63,7 @@ public:
 	static inline MediaFileInfoStats MediaFileError{-1, 0};
 
 	RecursiveImporter() = delete;
-	explicit RecursiveImporter(std::filesystem::path path, int flags);
+	explicit RecursiveImporter(ghc::filesystem::path path, int flags);
 
 private:
 	bool IsFlaggedExtension(std::string extension) const;
@@ -86,7 +85,7 @@ private:
 
 	// Marked 'static' to access between calls
 
-	static inline std::filesystem::path Path{};
+	static inline ghc::filesystem::path Path{};
 	static inline int Flags{std::numeric_limits<int>::min()};
 	static inline std::vector<std::string_view> FlagsToCheck{};
 	static inline DirectoryIterator Iterator{};

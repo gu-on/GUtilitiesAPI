@@ -1,33 +1,34 @@
 #include <WDL/wdltypes.h> // might be unnecessary in future
 
+#include <ghc/filesystem.hpp>
 #include <reaper_plugin_functions.h>
 
 #include "gu_ini_file.hpp"
 
-std::filesystem::path INIFile::FormatDirectory()
+ghc::filesystem::path INIFile::FormatDirectory()
 {
 	// remove path restriction when not running in Reaper, such as for testing
 	if (GetResourcePath == nullptr)
-		return std::filesystem::current_path();
+		return ghc::filesystem::current_path();
 
-	return std::filesystem::path(GetResourcePath()) / std::filesystem::path(CONFIG_FOLDER);
+	return ghc::filesystem::path(GetResourcePath()) / ghc::filesystem::path(CONFIG_FOLDER);
 }
 
-std::filesystem::path INIFile::FormatFileName(std::string fileName)
+ghc::filesystem::path INIFile::FormatFileName(std::string fileName)
 {
 	fileName.erase(std::remove_if(fileName.begin(), fileName.end(),
 								  [](char c) { return !std::isalnum(c) && c != '\\' && c != '/'; }),
 				   fileName.end());
 
-	return std::filesystem::path(fileName + CONFIG_EXTENSION);
+	return ghc::filesystem::path(fileName + CONFIG_EXTENSION);
 }
 
 INIFile::INIFile(const std::string& fileName)
 	: Directory(FormatDirectory()), FileName(FormatFileName(fileName)), IniFile(Path().string())
 {
-	if (!std::filesystem::exists(Directory))
+	if (!ghc::filesystem::exists(Directory))
 	{
-		std::filesystem::create_directories(Directory);
+		ghc::filesystem::create_directories(Directory);
 	}
 }
 
@@ -54,5 +55,5 @@ bool INIFile::Read(const std::string& category, const std::string& key, std::str
 
 bool INIFile::Delete()
 {
-	return std::filesystem::remove(Path());
+	return ghc::filesystem::remove(Path());
 }

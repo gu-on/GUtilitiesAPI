@@ -64,12 +64,18 @@ FetchContent_Declare(fmt
 )
 
 FetchContent_Declare(mINI
-    GIT_REPOSITORY "https://github.com/pulzed/mINI"
+    GIT_REPOSITORY "https://github.com/metayeti/mINI.git"
     GIT_TAG        "origin/master"
     SOURCE_DIR     "${PROJECT_LIB_DIR}/mINI"
 )
 
-FetchContent_MakeAvailable(reaper-sdk GSL WDL fmt mINI)
+FetchContent_Declare(filesystem
+    GIT_REPOSITORY "https://github.com/gulrak/filesystem.git"
+    GIT_TAG        "origin/master"
+    SOURCE_DIR     "${PROJECT_LIB_DIR}/filesystem"
+)
+
+FetchContent_MakeAvailable(reaper-sdk GSL WDL fmt mINI filesystem)
 
 # symlink WDL to reaper-sdk
 execute_process(
@@ -91,6 +97,7 @@ endif()
 
 set(header_paths 
     ${PROJECT_LIB_DIR}/reaper-sdk/sdk
+    ${PROJECT_LIB_DIR}/filesystem/include
     # add possible include directories for reaper plugin
     )
   

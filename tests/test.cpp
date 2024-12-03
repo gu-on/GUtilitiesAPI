@@ -2,13 +2,12 @@
 #include "doctest.h"
 
 #include <cmath>
-#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <string>
 
-#include "../include/gu_ini_file.hpp"
-#include "../include/gu_maths.hpp"
+#include "gu_ini_file.hpp"
+#include "gu_maths.hpp"
 
 TEST_CASE("Check if string is a natural number")
 {

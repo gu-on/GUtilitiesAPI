@@ -1,8 +1,8 @@
 #pragma once
 
-#include <filesystem>
 #include <string>
 
+#include <ghc/filesystem.hpp>
 #include <mini/ini.h>
 
 class INIFile final
@@ -19,15 +19,15 @@ public:
 	explicit INIFile(const std::string& path);
 
 private:
-	std::filesystem::path FormatDirectory();
-	std::filesystem::path FormatFileName(std::string fileName);
+	ghc::filesystem::path FormatDirectory();
+	ghc::filesystem::path FormatFileName(std::string fileName);
 
 	static constexpr const char* CONFIG_FOLDER = "GUtilities";
 	static constexpr const char* CONFIG_EXTENSION = ".ini";
 
-	const std::filesystem::path Directory{};
-	const std::filesystem::path FileName{};
+	const ghc::filesystem::path Directory{};
+	const ghc::filesystem::path FileName{};
 	const mINI::INIFile IniFile;
 
-	const std::filesystem::path Path() { return Directory / FileName; }
+	const ghc::filesystem::path Path() { return Directory / FileName; }
 };

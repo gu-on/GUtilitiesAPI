@@ -1,10 +1,10 @@
 #include <chrono>
-#include <filesystem>
 #include <string>
 
 #include <WDL/wdltypes.h> // might be unnecessary in future
 
 #include <fmt/core.h>
+#include <ghc/filesystem.hpp>
 #include <reaper_plugin_functions.h>
 
 #include "config.h"
@@ -140,7 +140,7 @@ int GU_Filesystem_CountMediaFiles(const char* path, int flags, double* fileSizeO
 		return RecursiveImporter::MediaFileError.Count;
 	}
 
-	auto mediaFileInfo = RecursiveImporter{std::filesystem::u8path(path), flags}.CalculateMediaFileInfo();
+	auto mediaFileInfo = RecursiveImporter{ghc::filesystem::u8path(path), flags}.CalculateMediaFileInfo();
 	*fileSizeOut = mediaFileInfo.FileSize;
 	return mediaFileInfo.Count;
 }
@@ -155,7 +155,7 @@ void GU_Filesystem_EnumerateMediaFiles(const char* path, const int flags, char* 
 		return;
 
 	snprintf(pathOut, pathOut_sz, "%s",
-			 RecursiveImporter{std::filesystem::u8path(path), flags}.GetNextMediaFilePath().c_str());
+			 RecursiveImporter{ghc::filesystem::u8path(path), flags}.GetNextMediaFilePath().c_str());
 }
 
 void GU_Filesystem_FindFileInPath(const char* path, const char* fileName, char* pathOut, int pathOut_sz)
@@ -168,7 +168,7 @@ void GU_Filesystem_FindFileInPath(const char* path, const char* fileName, char* 
 		return;
 
 	snprintf(pathOut, pathOut_sz, "%s",
-			 FileFinder{}.FindFileInDirectory(std::filesystem::u8path(path), fileName).c_str());
+			 FileFinder{}.FindFileInDirectory(ghc::filesystem::u8path(path), fileName).c_str());
 }
 
 bool GU_Filesystem_PathExists(const char* path)
@@ -176,5 +176,5 @@ bool GU_Filesystem_PathExists(const char* path)
 	if (!path)
 		return false;
 
-	return std::filesystem::exists(std::filesystem::u8path(path));
+	return ghc::filesystem::exists(ghc::filesystem::u8path(path));
 }

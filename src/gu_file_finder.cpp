@@ -1,11 +1,12 @@
 #include <WDL/wdltypes.h> // might be unnecessary in future
 
 #include <fmt/core.h>
+#include <ghc/filesystem.hpp>
 #include <reaper_plugin_functions.h>
 
 #include "gu_file_finder.hpp"
 
-std::string FileFinder::FindFileInDirectory(std::filesystem::path path, std::string_view fileName)
+std::string FileFinder::FindFileInDirectory(ghc::filesystem::path path, std::string_view fileName)
 {
 	auto HandleException = [&](const std::exception& e) -> const char* {
 		Reset();
@@ -13,7 +14,7 @@ std::string FileFinder::FindFileInDirectory(std::filesystem::path path, std::str
 		return EMPTY_STRING;
 	};
 
-	if (!std::filesystem::exists(path))
+	if (!ghc::filesystem::exists(path))
 	{
 		Reset();
 		return EMPTY_STRING;
@@ -83,5 +84,5 @@ std::string FileFinder::FindFileInDirectory(std::filesystem::path path, std::str
 
 void FileFinder::Reset()
 {
-	Path = std::filesystem::path{};
+	Path = ghc::filesystem::path{};
 }

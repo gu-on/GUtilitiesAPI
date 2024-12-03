@@ -6,13 +6,14 @@
 #include <WDL/wdltypes.h> // might be unnecessary in future
 
 #include <fmt/core.h>
+#include <ghc/filesystem.hpp>
 #include <reaper_plugin_functions.h>
 
 #include "gu_recursive_importer.hpp"
 
-RecursiveImporter::RecursiveImporter(const std::filesystem::path path, const int flags)
+RecursiveImporter::RecursiveImporter(const ghc::filesystem::path path, const int flags)
 {
-	if (!std::filesystem::exists(path))
+	if (!ghc::filesystem::exists(path))
 	{
 		Reset();
 		return;
@@ -48,7 +49,7 @@ MediaFileInfoStats RecursiveImporter::CalculateMediaFileInfo()
 {
 	MediaFileInfoStats mediaFileInfo{};
 
-	if (!std::filesystem::exists(Path))
+	if (!ghc::filesystem::exists(Path))
 	{
 		Reset();
 		return MediaFileError;
@@ -91,7 +92,8 @@ std::string RecursiveImporter::GetNextMediaFilePath()
 		return EMPTY_STRING;
 	};
 
-	if (!std::filesystem::exists(Path) || Iterator == DirectoryIterator() || Flags < 0)
+	
+	if (!ghc::filesystem::exists(Path) || Iterator == DirectoryIterator() || Flags < 0)
 	{
 		Reset();
 		return EMPTY_STRING;
@@ -141,7 +143,7 @@ bool RecursiveImporter::IsFlaggedExtension(std::string extension) const
 
 void RecursiveImporter::Reset()
 {
-	Path = std::filesystem::path{};
+	Path = ghc::filesystem::path{};
 }
 
 void RecursiveImporter::CreateCustomFlagsList()
