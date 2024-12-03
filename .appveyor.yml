@@ -169,7 +169,7 @@ deploy:
   description: ''
   force_update: true
   auth_token:
-    secure: nQU8KK/Qh1HWyQEDoNOYBFF6HpeioL+HH3Qr4B6af27E31z8BsAlIe8myc24JBfe
+    secure: Y12AsslNEvvhFOaFaBDQx2iDPuTh15b9JWLYiOgEdMrT/IzUmfSvu8EV/XDr84Pm+TRXpxeVuk8sh7TJZRExoWGJUp2GSsAIb6/vHxXp10Xd+zE6pUKvN6/ns+W8Y5n8
   artifact: /.*\.(dll|dylib|so|lua|exe|pkg|pdb)/
   on:
     APPVEYOR_REPO_TAG: true

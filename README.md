@@ -7,9 +7,9 @@ Reworking of [GUtilities](https://github.com/gu-on/GUtilities/) where the C++ ba
 
 ## Installation guide
 
-Clone the repository and submodules:
+Clone the repository:
 
-    git clone --recursive --shallow-submodules https://github.com/gu-on/GUtilitiesAPI.git
+    git clone https://github.com/gu-on/GUtilitiesAPI.git
 
 GUtilitiesAPI is based on [ak5k's reaper-sdk-vscode template](https://github.com/ak5k/reaper-sdk-vscode), which includes instructions for getting set up on the various supported platforms. 
 
@@ -17,6 +17,6 @@ GUtilitiesAPI is based on [ak5k's reaper-sdk-vscode template](https://github.com
 
 ### Requirements:
 
-- [CMake](https://cmake.org/) 3.21+
+- [CMake](https://cmake.org/) 3.15+
 - C++17 compiler (MSVC on Windows)
 - [Python](https://www.python.org/) 3.6+
