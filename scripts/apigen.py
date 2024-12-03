@@ -89,11 +89,13 @@ def GenerateCode(apiCalls):
 def RunAPIGen(mainCppFile, generatedCode):
     startBlock = [
         '#define REAPERAPI_IMPLEMENT',
+        '#include <WDL/wdltypes.h> // might be unnecessary in future',
+        ''
         '#include <reaper_plugin_functions.h>',
         '',
-        '#include <api_manager.hpp>',
-        '#include <gu_api.hpp>',
-        '#include <gu_ini_file.hpp>',
+        '#include "api_manager.hpp"',
+        '#include "gu_api.hpp"',
+        '#include "gu_ini_file.hpp"',
         '',
         'API Api{};',
         '',

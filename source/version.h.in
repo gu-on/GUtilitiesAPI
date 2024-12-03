@@ -1,7 +1,0 @@
-// the configured options and settings for Tutorial
-// clang-format off
-#define reaper_gutilities_VERSION_MAJOR @reaper_gutilities_VERSION_MAJOR@
-#define reaper_gutilities_VERSION_MINOR @reaper_gutilities_VERSION_MINOR@
-#define reaper_gutilities_VERSION_PATCH @reaper_gutilities_VERSION_PATCH@
-#define reaper_gutilities_VERSION @reaper_gutilities_VERSION_MAJOR@,@reaper_gutilities_VERSION_MINOR@,@reaper_gutilities_VERSION_PATCH@
-// clang-format on

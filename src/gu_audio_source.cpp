@@ -3,8 +3,8 @@
 
 #include <fmt/core.h>
 
-#include <gu_audio_buffer.hpp>
-#include <gu_audio_source.hpp>
+#include "gu_audio_buffer.hpp"
+#include "gu_audio_source.hpp"
 
 bool AudioSource::IsMono(const int bufferSize) const
 {

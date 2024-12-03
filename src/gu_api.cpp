@@ -2,22 +2,23 @@
 #include <filesystem>
 #include <string>
 
+#include <WDL/wdltypes.h> // might be unnecessary in future
+
 #include <fmt/core.h>
 #include <reaper_plugin_functions.h>
 
-#include <gu_api.hpp>
-#include <gu_audio_source.hpp>
-#include <gu_file_finder.hpp>
-#include <gu_ini_file.hpp>
-#include <gu_profiler.hpp>
-#include <gu_recursive_importer.hpp>
-#include <gu_wildcard_parser.hpp>
-
-#include <version.h>
+#include "config.h"
+#include "gu_api.hpp"
+#include "gu_audio_source.hpp"
+#include "gu_file_finder.hpp"
+#include "gu_ini_file.hpp"
+#include "gu_profiler.hpp"
+#include "gu_recursive_importer.hpp"
+#include "gu_wildcard_parser.hpp"
 
 void GU_GUtilitiesAPI_GetVersion(char* versionOut, int versionOut_sz)
 {
-	snprintf(versionOut, versionOut_sz, "%d.%d.%d", reaper_gutilities_VERSION);
+	snprintf(versionOut, versionOut_sz, "%d.%d.%d", PROJECT_VERSION_MAJOR, PROJECT_VERSION_MINOR, PROJECT_VERSION_PATCH);
 }
 
 bool GU_Config_Write(const char* fileName, const char* category, const char* key, const char* value)

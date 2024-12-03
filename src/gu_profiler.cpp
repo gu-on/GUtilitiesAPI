@@ -1,7 +1,9 @@
+#include <WDL/wdltypes.h> // might be unnecessary in future
+
 #include <fmt/core.h>
 #include <reaper_plugin_functions.h>
 
-#include <gu_profiler.hpp>
+#include "gu_profiler.hpp"
 
 Profiler::Profiler(std::string name)
 {

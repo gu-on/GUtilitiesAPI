@@ -1,6 +1,8 @@
+#include <WDL/wdltypes.h> // might be unnecessary in future
+
 #include <reaper_plugin_functions.h>
 
-#include <gu_ini_file.hpp>
+#include "gu_ini_file.hpp"
 
 std::filesystem::path INIFile::FormatDirectory()
 {

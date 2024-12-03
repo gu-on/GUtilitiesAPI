@@ -1,7 +1,9 @@
-#include <gu_file_finder.hpp>
+#include <WDL/wdltypes.h> // might be unnecessary in future
 
 #include <fmt/core.h>
 #include <reaper_plugin_functions.h>
+
+#include "gu_file_finder.hpp"
 
 std::string FileFinder::FindFileInDirectory(std::filesystem::path path, std::string_view fileName)
 {

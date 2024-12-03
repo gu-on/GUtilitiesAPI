@@ -3,9 +3,11 @@
 #include <string>
 #include <vector>
 
+#include <WDL/wdltypes.h> // might be unnecessary in future
+
 #include <reaper_plugin_functions.h>
 
-#include <gu_maths.hpp>
+#include "gu_maths.hpp"
 
 struct CueMarker
 {

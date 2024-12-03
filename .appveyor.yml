@@ -17,7 +17,7 @@ test_script:
   # - cmd: 'if NOT "%ARCH%" == "arm64ec" cmake --build build --target test'
 
 for:
-  - matrix: { only: [appveyor_build_worker_image: &linux Ubuntu2004] }
+  - matrix: { only: [ appveyor_build_worker_image: &linux Ubuntu1804 ] }
     cache:
       - build/vcpkg_installed -> vcpkg.json, cmake/vcpkg-triplets/arch-env.cmake
     install: |-
@@ -31,6 +31,10 @@ for:
         $3 = "http://ports.ubuntu.com/ubuntu-ports/"
       } 1' /etc/apt/sources.list | sudo tee /etc/apt/sources.list.d/ports.list > /dev/null
       # sudo sed -i 's/apt.postgresql.org/apt-archive.postgresql.org/' /etc/apt/sources.list
+
+      # downgrade Catch2 to 3.3.1 for successfully compiling with GCC 7
+      git -C ~/vcpkg fetch origin b28cddc45f5832fb46afaab11d61c9ccce50470a
+      git -C ~/vcpkg restore -s b28cddc45f5832fb46afaab11d61c9ccce50470a ports/catch2
 
       install-deps() {
         local arch="$1"; shift
@@ -47,7 +51,7 @@ for:
         sudo aptitude install -yR ${native[@]} > /dev/null
       }
 
-      sudo update-alternatives --set gcc /usr/bin/gcc-9
+      sudo update-alternatives --set gcc /usr/bin/gcc-7
       sudo apt-get install -qq --allow-downgrades libstdc++6=8.4.0-1ubuntu1~18.04 > /dev/null
 
       case $ARCH in
@@ -73,7 +77,7 @@ for:
     artifacts:
       - path: build/reaper_*.so
 
-  - matrix: { only: [ appveyor_build_worker_image: macos-monterey, appveyor_build_worker_image: macos-bigsur ] }
+  - matrix: { only: [ appveyor_build_worker_image: macos-bigsur, appveyor_build_worker_image: macos-mojave ] }
     cache:
       - build/vcpkg_installed -> vcpkg.json, cmake/vcpkg-triplets/arch-env.cmake
     install:
@@ -101,59 +105,71 @@ for:
           # https://letsencrypt.org/docs/dst-root-ca-x3-expiration-september-2021/
           sudo curl -k https://curl.se/ca/cacert.pem -o /etc/ssl/cert.pem
 
+          # update to Catch2 v3
+          git -C ~/vcpkg fetch origin 50fe35a3c3ca43ffe3b436380cf563100406459a
+          git -C ~/vcpkg restore -s 50fe35a3c3ca43ffe3b436380cf563100406459a ports/catch2
         fi
     artifacts:
       - path: build/reaper_*.dylib
 
-  - matrix: { only: [appveyor_build_worker_image: &windows Visual Studio 2022] }
+  - matrix: { only: [ appveyor_build_worker_image: &windows Visual Studio 2022 ] }
     cache:
-      - build\vcpkg_installed -> vcpkg.json
+      - build\vcpkg_installed -> vcpkg.json, cmake\vcpkg-triplets\arm64ec-windows-static.cmake
     install:
-      - if "%ARCH%" == "x64" call "%ProgramFiles%\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
-      - if "%ARCH%" == "x86" call "%ProgramFiles%\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars32.bat"
-
+      - if "%ARCH%" == "x64"     call "%ProgramFiles%\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
+      - if "%ARCH%" == "x86"     call "%ProgramFiles%\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars32.bat"
+      - if "%ARCH%" == "arm64ec" call "%ProgramFiles%\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsamd64_arm64.bat"
+      - if "%ARCH%" == "arm64ec" set CFLAGS=-arm64EC & set CXXFLAGS=-arm64EC
     build_script:
-      - cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo
+      - set VCPKG_OVERLAY_TRIPLETS=cmake\vcpkg-triplets
+      - cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
         -DVCPKG_TARGET_TRIPLET=%ARCH%-windows-static
         -DCMAKE_TOOLCHAIN_FILE=C:\Tools\vcpkg\scripts\buildsystems\vcpkg.cmake
       - cmake --build build
     artifacts:
       - path: build\reaper_*.dll
+      - path: build\reaper_*.pdb
 
 environment:
   matrix:
     - job_name: Linux ARM 64-bit
       appveyor_build_worker_image: *linux
       ARCH: aarch64
-    - job_name: Linux ARM 32-bit
-      appveyor_build_worker_image: *linux
-      ARCH: armv7l
     - job_name: macOS ARM 64-bit
-      appveyor_build_worker_image: macos-monterey
-      ARCH: arm64
-    - job_name: macOS x86 64-bit
       appveyor_build_worker_image: macos-bigsur
+      ARCH: arm64
+    - job_name: Windows x86 64-bit
+      appveyor_build_worker_image: *windows
+      ARCH: x64
+    - job_name: Windows x86 32-bit
+      appveyor_build_worker_image: *windows
+      ARCH: x86
+    - job_name: Windows ARM 64-bit EC
+      appveyor_build_worker_image: *windows
+      ARCH: arm64ec
+    - job_name: macOS x86 64-bit
+      appveyor_build_worker_image: macos-mojave
       ARCH: x86_64
+    - job_name: macOS x86 32-bit
+      appveyor_build_worker_image: macos-mojave
+      ARCH: i386
     - job_name: Linux x86 64-bit
       appveyor_build_worker_image: *linux
       ARCH: x86_64
     - job_name: Linux x86 32-bit
       appveyor_build_worker_image: *linux
       ARCH: i686
-    - job_name: Windows 64-bit
-      appveyor_build_worker_image: *windows
-      ARCH: x64
-    - job_name: Windows 32-bit
-      appveyor_build_worker_image: *windows
-      ARCH: x86
+    - job_name: Linux ARM 32-bit
+      appveyor_build_worker_image: *linux
+      ARCH: armv7l
 
 deploy:
   provider: GitHub
   draft: true
-  description: ""
+  description: ''
   force_update: true
   auth_token:
     secure: nQU8KK/Qh1HWyQEDoNOYBFF6HpeioL+HH3Qr4B6af27E31z8BsAlIe8myc24JBfe
-  artifact: /.*\.(dll|dylib|so|lua)/
+  artifact: /.*\.(dll|dylib|so|lua|exe|pkg|pdb)/
   on:
     APPVEYOR_REPO_TAG: true

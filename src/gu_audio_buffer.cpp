@@ -1,7 +1,7 @@
 #include <fmt/core.h>
 
-#include <gu_audio_buffer.hpp>
-#include <gu_maths.hpp>
+#include "gu_audio_buffer.hpp"
+#include "gu_maths.hpp"
 
 AudioBuffer::AudioBuffer(const AudioSource& source, int bufferLength, double startTime)
 {

@@ -1,4 +1,8 @@
-**/.vscode
-**/build
+.vscode/*
+!.vscode/launch.json
 **/.DS_Store
-**/Testing
+/*build*
+/WDL
+/.idea
+/.vs
+/third_party

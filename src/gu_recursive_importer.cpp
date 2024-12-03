@@ -3,9 +3,12 @@
 #include <chrono>
 #include <functional>
 
+#include <WDL/wdltypes.h> // might be unnecessary in future
+
 #include <fmt/core.h>
-#include <gu_recursive_importer.hpp>
 #include <reaper_plugin_functions.h>
+
+#include "gu_recursive_importer.hpp"
 
 RecursiveImporter::RecursiveImporter(const std::filesystem::path path, const int flags)
 {

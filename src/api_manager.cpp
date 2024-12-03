@@ -1,11 +1,13 @@
 #include <algorithm>
 #include <cstring>
 
-#include <api_manager.hpp>
+#include <WDL/wdltypes.h> // might be unnecessary in future
+
 #include <fmt/core.h>
 #include <reaper_plugin_functions.h>
 
-#include <gu_ini_file.hpp>
+#include "api_manager.hpp"
+#include "gu_ini_file.hpp"
 
 void API::Add(APIDefinition def)
 {

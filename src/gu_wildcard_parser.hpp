@@ -2,8 +2,11 @@
 
 #include <string>
 
-#include <gu_reaper_wrapper.hpp>
+#include <WDL/wdltypes.h> // might be unnecessary in future
+
 #include <reaper_plugin_functions.h>
+
+#include "gu_reaper_wrapper.hpp"
 
 class WildcardParser
 {

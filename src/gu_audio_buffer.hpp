@@ -4,7 +4,7 @@
 
 #include <reaper_plugin.h>
 
-#include <gu_audio_source.hpp>
+#include "gu_audio_source.hpp"
 
 class AudioBuffer
 {

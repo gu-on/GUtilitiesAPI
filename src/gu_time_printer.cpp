@@ -1,7 +1,7 @@
 #include <cassert>
 #include <fmt/core.h>
 
-#include <gu_time_printer.hpp>
+#include "gu_time_printer.hpp"
 
 std::tm TimePrinter::GetCurrentTime()
 {
