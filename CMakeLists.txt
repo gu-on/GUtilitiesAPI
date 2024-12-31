@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(gutilities VERSION 0.1.1 LANGUAGES C CXX)
+project(gutilitiesapi VERSION 0.1.2 LANGUAGES C CXX)
 
 find_package(Git)
 if(GIT_FOUND)
