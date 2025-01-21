@@ -68,7 +68,9 @@ public:
 	[[nodiscard]] int CountSelectedItems() const;
 
 	[[nodiscard]] std::vector<Region> GetRegions();
+	[[nodiscard]] std::vector<Marker> GetMarkers();
 	[[nodiscard]] std::string GetRegionNameByKey(const std::string& key, const double timelinePos);
+	[[nodiscard]] std::string GetMarkerNameByKey(const std::string& key, const double timelinePos);
 
 private:
 	ReaProject* Ptr;

@@ -67,6 +67,7 @@ void WildcardParser::ParseWildcardsBracketsString(std::string& input, WildcardIn
 	std::vector<std::pair<std::string, std::function<std::string(std::string)>>> wildcardReplacements =
 	{
 		{"$fx(", [&](const std::string s) { return info.take->GetFXNames(s); }},
+		{"$marker(", [&](const std::string s) { return info.project->GetMarkerNameByKey(s, info.item->GetPosition()); }},
 		{"$region(", [&](const std::string s) { return info.project->GetRegionNameByKey(s, info.item->GetPosition()); }},
 	};
 	// clang-format on

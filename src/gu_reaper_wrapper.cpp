@@ -274,18 +274,63 @@ std::vector<Region> Project::GetRegions()
 	return regions;
 }
 
-std::string Project::GetRegionNameByKey(const std::string& key, const double itemPos)
+std::vector<Marker> Project::GetMarkers()
+{
+	std::vector<Marker> markers{};
+	const int count = CountProjectMarkers(Ptr, nullptr, nullptr);
+
+	for (int i = 0; i < count; ++i)
+	{
+		bool isRegion;
+		double startPos;
+		double endPos;
+		const char* name;
+		int index;
+		EnumProjectMarkers(i, &isRegion, &startPos, &endPos, &name, &index);
+
+		if (isRegion)
+			continue;
+
+		Region region{index, name, startPos, endPos};
+		markers.push_back(region);
+	}
+
+	return markers;
+}
+
+std::string Project::GetRegionNameByKey(const std::string& key, const double timelinePos)
 {
 	std::vector<Region> regions = GetRegions();
 
 	for (const auto& region : regions)
 	{
-		if (region.EndPos <= itemPos || region.StartPos > itemPos)
+		if (region.EndPos <= timelinePos || region.StartPos > timelinePos)
 			continue;
 
 		if (std::string tag = region.GetTag(); !tag.empty())
 		{
 			if (region.GetKey() != key)
+				continue;
+
+			return tag;
+		}
+	}
+
+	return "";
+}
+
+std::string Project::GetMarkerNameByKey(const std::string& key, const double timelinePos)
+{
+	std::vector<Marker> markers = GetMarkers();
+
+	for (const auto& marker : markers)
+	{
+		if (marker.StartPos > timelinePos)
+			continue;
+
+		if (std::string tag = marker.GetTag(); !tag.empty())
+		{
+			if (marker.GetKey() != key)
 				continue;
 
 			return tag;
