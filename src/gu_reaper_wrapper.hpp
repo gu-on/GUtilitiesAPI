@@ -111,7 +111,9 @@ class Item
 {
 public:
 	[[nodiscard]] std::string GetNotes() const;
-	[[nodiscard]] double GetPosition() const;
+	[[nodiscard]] double GetStart() const;
+	[[nodiscard]] double GetLength() const;
+	[[nodiscard]] double GetEnd() const;
 
 	Take CreateNewTake(const std::string& path) const;
 	void SetPosition(double position) const;
@@ -134,6 +136,7 @@ public:
 	[[nodiscard]] std::string GetName();
 	[[nodiscard]] double GetSourceLength();
 	[[nodiscard]] std::string GetFXNames(const std::string& separator = "-");
+	[[nodiscard]] double GetSourceStart();
 
 	[[nodiscard]] Track GetTrack();
 	[[nodiscard]] Item GetItem();

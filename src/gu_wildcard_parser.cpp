@@ -67,8 +67,8 @@ void WildcardParser::ParseWildcardsBracketsString(std::string& input, WildcardIn
 	std::vector<std::pair<std::string, std::function<std::string(std::string)>>> wildcardReplacements =
 	{
 		{"$fx(", [&](const std::string s) { return info.take->GetFXNames(s); }},
-		{"$marker(", [&](const std::string s) { return info.project->GetMarkerNameByKey(s, info.item->GetPosition()); }},
-		{"$region(", [&](const std::string s) { return info.project->GetRegionNameByKey(s, info.item->GetPosition()); }},
+		{"$marker(", [&](const std::string s) { return info.project->GetMarkerNameByKey(s, info.item->GetStart()); }},
+		{"$region(", [&](const std::string s) { return info.project->GetRegionNameByKey(s, info.item->GetStart()); }},
 	};
 	// clang-format on
 
@@ -103,19 +103,19 @@ void WildcardParser::ParseWildcardsPlain(std::string& input, WildcardInfo& info)
 		{"$tracktop", [&] { return std::get<0>(info.track->GetOutermostAncestor()).GetName(); }},
 		{"$tracknumber", [&] { return std::to_string(info.track->GetNumber()); }},
 		{"$track", [&] { return info.track->GetName(); }},
-		{"$timesignature", [&] { return info.project->GetTimeSig(info.item->GetPosition()); }},
+		{"$timesignature", [&] { return info.project->GetTimeSig(info.item->GetStart()); }},
 		{"$time", [&] { return TimePrinter::PrintTime(); }},
-		{"$tempo", [&] { return std::to_string(info.project->GetTempo(info.item->GetPosition())); }},
+		{"$tempo", [&] { return std::to_string(info.project->GetTempo(info.item->GetStart())); }},
 		{"$second", [&] { return TimePrinter::PrintSeconds(); }},
-		{"$rms", [&] { return fmt::format("{:.1f}", info.source->GetRMS()); }},
-		{"$region", [&] { return info.project->GetRegionName(info.item->GetPosition()); }},
+		{"$rms", [&] { return fmt::format("{:.1f}", info.source->GetRMS(info.take->GetSourceStart(), info.take->GetSourceStart() + info.item->GetLength())); }},
+		{"$region", [&] { return info.project->GetRegionName(info.item->GetStart()); }},
 		{"$project", [&] { return info.project->GetName(); }},
-		{"$peak", [&] { return fmt::format("{:.1f}", info.source->GetPeak()); }},
+		{"$peak", [&] { return fmt::format("{:.1f}", info.source->GetPeak(info.take->GetSourceStart(), info.take->GetSourceStart() + info.item->GetLength())); }},
 		{"$monthname", [&] { return TimePrinter::PrintMonthName(); }},
 		{"$month", [&] { return TimePrinter::PrintMonth(); }},
 		{"$minute", [&] { return TimePrinter::PrintMinutes(); }},
-		{"$marker", [&] { return info.project->GetMarkerName(info.item->GetPosition()); }},
-		{"$lufs", [&] { return fmt::format("{:.1f}", info.source->GetLUFS()); }},
+		{"$marker", [&] { return info.project->GetMarkerName(info.item->GetStart()); }},
+		{"$lufs", [&] { return fmt::format("{:.1f}", info.source->GetLUFS(info.take->GetSourceStart(), info.take->GetSourceStart() + info.item->GetLength())); }},
 		{"$itemnotes", [&] { return info.item->GetNotes(); }},
 		{"$item", [&] { return info.take->GetName(); }},
 		{"$hour12", [&] { return TimePrinter::PrintHours12(); }},

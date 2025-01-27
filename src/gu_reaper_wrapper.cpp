@@ -75,9 +75,19 @@ std::string Item::GetNotes() const
 	return out;
 }
 
-double Item::GetPosition() const
+double Item::GetStart() const
 {
 	return GetMediaItemInfo_Value(Ptr, "D_POSITION");
+}
+
+double Item::GetLength() const
+{
+	return GetMediaItemInfo_Value(Ptr, "D_LENGTH");
+}
+
+double Item::GetEnd() const
+{
+	return GetStart() + GetLength();
 }
 
 Take Item::CreateNewTake(const std::string& path) const
@@ -154,6 +164,11 @@ std::string Take::GetFXNames(const std::string& separator)
 	}
 
 	return output;
+}
+
+double Take::GetSourceStart()
+{
+	return GetMediaItemTakeInfo_Value(Ptr, "D_STARTOFFS");
 }
 
 Track Take::GetTrack()
@@ -291,8 +306,8 @@ std::vector<Marker> Project::GetMarkers()
 		if (isRegion)
 			continue;
 
-		Region region{index, name, startPos, endPos};
-		markers.push_back(region);
+		Marker marker{index, name, startPos};
+		markers.push_back(marker);
 	}
 
 	return markers;
@@ -323,6 +338,11 @@ std::string Project::GetMarkerNameByKey(const std::string& key, const double tim
 {
 	std::vector<Marker> markers = GetMarkers();
 
+	if (markers.empty())
+		return "";
+
+	Marker candidate{-1, "", std::numeric_limits<double>::max()};
+
 	for (const auto& marker : markers)
 	{
 		if (marker.StartPos > timelinePos)
@@ -333,11 +353,12 @@ std::string Project::GetMarkerNameByKey(const std::string& key, const double tim
 			if (marker.GetKey() != key)
 				continue;
 
-			return tag;
+			if (std::abs(marker.StartPos - timelinePos) < std::abs(candidate.StartPos - timelinePos))
+				candidate = marker;
 		}
 	}
 
-	return "";
+	return candidate.GetTag();
 }
 
 MusicNotation Project::GetTempoAndTimeSignature(double timelinePos) const

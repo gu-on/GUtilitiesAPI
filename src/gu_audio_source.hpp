@@ -50,12 +50,12 @@ public:
 		LUFS_S
 	};
 
-	[[nodiscard]] double GetNormalization(NormalizationType type) const;
+	[[nodiscard]] double GetNormalization(NormalizationType type, double start, double end) const;
 
-	[[nodiscard]] double GetLUFS() const { return GetNormalization(NormalizationType::LUFS_I); }
-	[[nodiscard]] double GetRMS() const { return GetNormalization(NormalizationType::RMS); }
-	[[nodiscard]] double GetPeak() const { return GetNormalization(NormalizationType::PEAK); }
-	[[nodiscard]] double GetTruePeak() const { return GetNormalization(NormalizationType::TRUE_PEAK); }
+	[[nodiscard]] double GetLUFS(const double start, const double end) const { return GetNormalization(NormalizationType::LUFS_I, start, end); }
+	[[nodiscard]] double GetRMS(const double start, const double end) const { return GetNormalization(NormalizationType::RMS, start, end); }
+	[[nodiscard]] double GetPeak(const double start, const double end) const { return GetNormalization(NormalizationType::PEAK, start, end); }
+	[[nodiscard]] double GetTruePeak(const double start, const double end) const { return GetNormalization(NormalizationType::TRUE_PEAK, start, end); }
 
 	AudioSource() = delete;
 	explicit AudioSource(PCM_source* source);
