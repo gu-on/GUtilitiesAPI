@@ -1,13 +1,12 @@
 #pragma once
 
+#include <cmath>
 #include <string>
 #include <vector>
 
 #include <WDL/wdltypes.h> // might be unnecessary in future
 
 #include <reaper_plugin_functions.h>
-
-#include "gu_maths.hpp"
 
 struct CueMarker
 {
@@ -56,6 +55,8 @@ public:
 	[[nodiscard]] double GetRMS(const double start, const double end) const { return GetNormalization(NormalizationType::RMS, start, end); }
 	[[nodiscard]] double GetPeak(const double start, const double end) const { return GetNormalization(NormalizationType::PEAK, start, end); }
 	[[nodiscard]] double GetTruePeak(const double start, const double end) const { return GetNormalization(NormalizationType::TRUE_PEAK, start, end); }
+
+	[[nodiscard]] double AnaylzePitch(double start, double end, int windowSize, int overlap);
 
 	AudioSource() = delete;
 	explicit AudioSource(PCM_source* source);

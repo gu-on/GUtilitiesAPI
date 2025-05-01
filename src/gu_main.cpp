@@ -25,6 +25,7 @@ void LoadPlugin()
 	Api.Add({APIFUNC(GU_Filesystem_EnumerateMediaFiles), "void", "const char*,int,char*,int", "path,flags,pathOut,pathOut_sz", "Returns the next valid file in a directory each time this function is called with the same path. Returns an empty string if path does not contain any more valid files. Flags can be passed as an argument to determine which media files are valid. A flag with a value of -1 will reset the cache, otherwise, the following flags can be used: ALL = 0, WAV = 1, AIFF = 2, FLAC = 4, MP3 = 8, OGG = 16, BWF = 32, W64 = 64, WAVPACK = 128, GIF = 256, MP4 = 512"});
 	Api.Add({APIFUNC(GU_Filesystem_FindFileInPath), "void", "const char*,const char*,char*,int", "path,fileName,pathOut,pathOut_sz", "Returns the first found file's path from within a given path. Returns an empty string if not found"});
 	Api.Add({APIFUNC(GU_Filesystem_PathExists), "bool", "const char*", "path", "Checks if file or directory exists"});
+	Api.Add({APIFUNC(GU_PCM_Source_AnalyzePitch), "double", "PCM_source*,double,double,int,int", "source,timeStart,timeEnd,windowSize,overlap", "Analyse pitch of PCM_source for a given start and end time"});
 	Api.Register();
 }
 

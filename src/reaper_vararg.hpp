@@ -13,6 +13,7 @@ extern "C" REAPER_PLUGIN_DLL_EXPORT int REAPER_PLUGIN_ENTRYPOINT(
 }
 */
 
+#include <cstdint>
 #include <tuple>
 
 template <typename T>
@@ -23,7 +24,7 @@ struct ReaScriptAPI<R (*)(Args...)>
 {
     static const void* applyVarArg(R (*fn)(Args...), void** argv, const int argc)
     {
-        if (static_cast<size_t>(argc) < sizeof...(Args))
+        if (static_cast<std::size_t>(argc) < sizeof...(Args))
             return nullptr;
 
         const auto& args{makeTuple(argv, std::index_sequence_for<Args...>{})};
@@ -50,10 +51,10 @@ struct ReaScriptAPI<R (*)(Args...)>
     }
 
 private:
-    template <size_t I>
+    template <std::size_t I>
     using NthType = typename std::tuple_element<I, std::tuple<Args...>>::type;
 
-    template <size_t... I>
+    template <std::size_t... I>
     static auto makeTuple(void** argv, std::index_sequence<I...>)
     {
         // C++17 is amazing

@@ -7,7 +7,6 @@
 #include <reaper_plugin_functions.h>
 
 #include "api_manager.hpp"
-#include "gu_ini_file.hpp"
 
 void API::Add(APIDefinition def)
 {
