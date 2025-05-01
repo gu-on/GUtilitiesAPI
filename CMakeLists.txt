@@ -66,7 +66,7 @@ FetchContent_Declare(fmt
 
 FetchContent_Declare(mINI
     GIT_REPOSITORY "https://github.com/metayeti/mINI.git"
-    GIT_TAG        "origin/master"
+    GIT_TAG        "a5ebe269831cf7ede1a016fbfabbc2b6d7b44ec6" # 0.9.17
     SOURCE_DIR     "${PROJECT_LIB_DIR}/mINI"
 )
 
