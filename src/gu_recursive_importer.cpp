@@ -1,7 +1,5 @@
 #include <algorithm>
 #include <cctype>
-#include <chrono>
-#include <functional>
 
 #include <WDL/wdltypes.h> // might be unnecessary in future
 
