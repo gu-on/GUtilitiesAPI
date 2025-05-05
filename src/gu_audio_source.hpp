@@ -22,7 +22,7 @@ class AudioSource
 	friend class AudioBuffer;
 
 public:
-	[[nodiscard]] bool IsMono(int bufferSize = 1024) const;
+	[[nodiscard]] bool IsMono() const;
 	[[nodiscard]] double GetSampleValue(double time) const;
 	[[nodiscard]] double TimeToPeak(int bufferSize, double threshold) const;
 	[[nodiscard]] double TimeToPeakR(int bufferSize, double threshold) const;
@@ -56,7 +56,7 @@ public:
 	[[nodiscard]] double GetPeak(const double start, const double end) const { return GetNormalization(NormalizationType::PEAK, start, end); }
 	[[nodiscard]] double GetTruePeak(const double start, const double end) const { return GetNormalization(NormalizationType::TRUE_PEAK, start, end); }
 
-	[[nodiscard]] double AnaylzePitch(double start, double end, int windowSize, int overlap);
+	[[nodiscard]] double CalculatePitch(int channels, double start, double end, int windowSize, int overlap);
 
 	AudioSource() = delete;
 	explicit AudioSource(PCM_source* source);
