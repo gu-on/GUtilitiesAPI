@@ -8,7 +8,7 @@ class Maths
 {
 public:
 	[[nodiscard]] static double DB2VOL(const double dB) { return pow(10.0, 0.05 * dB); }
-	[[nodiscard]] static float DB2VOL(const float dB) { return pow(10.0f, 0.05f * dB); }
+	[[nodiscard]] static float DB2VOL(const float dB) { return powf(10.0f, 0.05f * dB); }
 	[[nodiscard]] static double VOL2DB(const double volume) { return 20.0 * log10(volume); }
 	[[nodiscard]] static float VOL2DB(const float volume) { return 20.0f * log10f(volume); }
 

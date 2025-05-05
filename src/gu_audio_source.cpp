@@ -10,26 +10,37 @@
 #include "gu_maths.hpp"
 #include "reaper_plugin_functions.h"
 
+using Direction = AudioBuffer::Direction;
+
 bool AudioSource::IsMono() const
 {
-	AudioBuffer buffer(*this, 1, 0.0);
+	static constexpr int bufferSize = 1;
+
+	AudioBuffer buffer(*this, bufferSize);
 
 	if (buffer.ChannelCount() == 1)
 		return true;
 
 	while (buffer.IsValid())
+	{
 		if (!buffer.IsMono())
 			return false;
+
+		buffer.RefillSamples();
+	}
 
 	return true;
 }
 
-double AudioSource::GetSampleValue(const double time) const
+double AudioSource::GetSampleValue(double time) const
 {
-	static constexpr int BUFFER_LENGTH = 1;
-	const AudioBuffer buffer(*this, BUFFER_LENGTH, std::clamp(time, 0.0, (GetDurationInSamples() - 1) / GetSampleRate()));
+	static constexpr int bufferSize = 128;
 
-	return buffer.GetFirstSampleValue();
+	time = std::clamp(time, 0.0, GetFinalBufferStartTime(bufferSize));
+
+	AudioBuffer buffer(*this, bufferSize, time, 0, Direction::Forward);
+
+	return buffer.SampleAt(0);
 }
 
 double AudioSource::TimeToPeak(const int bufferSize, const double threshold) const
@@ -37,19 +48,27 @@ double AudioSource::TimeToPeak(const int bufferSize, const double threshold) con
 	AudioBuffer buffer(*this, bufferSize, 0.0);
 
 	while (buffer.IsValid())
-		if (const double time = buffer.GetTimeToPeak(threshold); time > 0.0)
+	{
+		if (const double time = buffer.CalculateTimeToPeak(threshold); time > 0.0)
 			return time;
+
+		buffer.RefillSamples();
+	}
 
 	return 0;
 }
 
 double AudioSource::TimeToPeakR(const int bufferSize, const double threshold) const
 {
-	AudioBuffer buffer(*this, bufferSize, GetLengthInSeconds() - bufferSize / GetSampleRate());
+	AudioBuffer buffer(*this, bufferSize, GetFinalBufferStartTime(bufferSize), 0, Direction::Backward);
 
 	while (buffer.IsValid())
-		if (const double time = buffer.GetTimeToPeakR(threshold); time > 0.0)
-			return GetLengthInSeconds() - time;
+	{
+		if (const double time = buffer.CalculateTimeToPeak(threshold); time > 0.0)
+			return time;
+
+		buffer.RefillSamples();
+	}
 
 	return 0;
 }
@@ -59,19 +78,27 @@ double AudioSource::TimeToRMS(const int bufferSize, const double threshold) cons
 	AudioBuffer buffer(*this, bufferSize, 0.0);
 
 	while (buffer.IsValid())
-		if (const double rms = buffer.GetRMS(); rms > Maths::DB2VOL(threshold))
+	{
+		if (const double rms = Maths::VOL2DB(buffer.CalculateRMS()); rms > threshold)
 			return buffer.StartTime();
+
+		buffer.RefillSamples();
+	}
 
 	return 0;
 }
 
 double AudioSource::TimeToRMSR(const int bufferSize, const double threshold) const
 {
-	AudioBuffer buffer{*this, bufferSize, GetFinalBufferStartTime(bufferSize)};
+	AudioBuffer buffer{*this, bufferSize, GetFinalBufferStartTime(bufferSize), 0, Direction::Backward};
 
 	while (buffer.IsValid())
-		if (const double rms = buffer.GetRMSR(); rms > Maths::DB2VOL(threshold))
+	{
+		if (const double rms = Maths::VOL2DB(buffer.CalculateRMS()); rms > threshold)
 			return buffer.StartTime();
+
+		buffer.RefillSamples();
+	}
 
 	return 0;
 }
@@ -108,7 +135,7 @@ double AudioSource::GetNormalization(const NormalizationType type, const double 
 	return 20.0 * log10(CalculateNormalization(AudioPtr, static_cast<int>(type), 0, start, end)) * -1;
 }
 
-double AudioSource::CalculatePitch(int biChannels, double timeStart, double timeEnd, int windowSize, int overlap)
+double AudioSource::CalculateFrequency(int biChannels, double timeStart, double timeEnd, int windowSize, int overlap)
 {
 	static constexpr int windowMin = 1 << 6;
 	static constexpr int windowMax = 1 << 14;
@@ -129,13 +156,16 @@ double AudioSource::CalculatePitch(int biChannels, double timeStart, double time
 	overlap = std::clamp(Maths::GetNextPowerOfTwo(overlap), overlapMin, overlapMax);
 
 	// It is not necessary for bufferLength and windowSize to be the same value, it is just simpler if they are
-	AudioBuffer buffer{*this, windowSize, timeStart};
+	AudioBuffer buffer{*this, windowSize, timeStart, biChannels};
 	std::vector<double> tempBuffer(windowSize);
 	std::vector<float> audio(0);
 	while (buffer.IsValid())
 	{
-		buffer.OverwriteOutBuffer(tempBuffer, biChannels, AudioBuffer::Direction::Forward);
-		audio.insert(audio.end(), std::make_move_iterator(tempBuffer.begin()), std::make_move_iterator(tempBuffer.end()));
+		buffer.OverwriteOutBuffer(tempBuffer);
+		audio.insert(audio.end(), std::make_move_iterator(tempBuffer.begin()),
+					 std::make_move_iterator(tempBuffer.end()));
+
+		buffer.RefillSamples();
 	}
 
 	if (audio.empty())

@@ -23,6 +23,7 @@ class AudioSource
 
 public:
 	[[nodiscard]] bool IsMono() const;
+	// Gets the summed value of all channels at that point
 	[[nodiscard]] double GetSampleValue(double time) const;
 	[[nodiscard]] double TimeToPeak(int bufferSize, double threshold) const;
 	[[nodiscard]] double TimeToPeakR(int bufferSize, double threshold) const;
@@ -56,7 +57,7 @@ public:
 	[[nodiscard]] double GetPeak(const double start, const double end) const { return GetNormalization(NormalizationType::PEAK, start, end); }
 	[[nodiscard]] double GetTruePeak(const double start, const double end) const { return GetNormalization(NormalizationType::TRUE_PEAK, start, end); }
 
-	[[nodiscard]] double CalculatePitch(int channels, double start, double end, int windowSize, int overlap);
+	[[nodiscard]] double CalculateFrequency(int channels, double start, double end, int windowSize, int overlap);
 
 	AudioSource() = delete;
 	explicit AudioSource(PCM_source* source);

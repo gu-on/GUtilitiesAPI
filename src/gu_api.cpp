@@ -178,7 +178,7 @@ bool GU_Filesystem_PathExists(const char* path)
 	return ghc::filesystem::exists(ghc::filesystem::u8path(path));
 }
 
-double GU_PCM_Source_CalculatePitch(PCM_source* source, int biChannels, const double timeStart, const double timeEnd, const int windowSize, const int overlap)
+double GU_PCM_Source_CalculateFrequency(PCM_source* source, int biChannels, const double timeStart, const double timeEnd, const int windowSize, const int overlap)
 {
 #ifdef _DEBUG
 	Profiler profiler{fmt::format("GU_PCM_Source_AnalyzePitch({}, {}, {}, {})", timeStart, timeEnd, windowSize, overlap)};
@@ -187,5 +187,5 @@ double GU_PCM_Source_CalculatePitch(PCM_source* source, int biChannels, const do
 	if (!source)
 		return 0.0;
 
-	return AudioSource{source}.CalculatePitch(biChannels, timeStart, timeEnd, windowSize, overlap);
+	return AudioSource{source}.CalculateFrequency(biChannels, timeStart, timeEnd, windowSize, overlap);
 }

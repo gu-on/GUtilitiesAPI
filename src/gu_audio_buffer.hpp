@@ -1,14 +1,16 @@
 #pragma once
 
+#include <cassert>
 #include <functional>
 
 #include <reaper_plugin.h>
+#include <vector>
 
 #include "gu_audio_source.hpp"
 
 class AudioBuffer
 {
-	public:
+public:
 	enum class Direction
 	{
 		Forward,
@@ -16,16 +18,11 @@ class AudioBuffer
 	};
 
 public:
-	[[nodiscard]] double GetRMS();
-	[[nodiscard]] double GetRMSR();
-	[[nodiscard]] double GetTimeToPeak(double peakThreshold);
-	[[nodiscard]] double GetTimeToPeakR(double peakThreshold);
 	[[nodiscard]] bool IsMono();
 	[[nodiscard]] bool IsFrameInRange() const { return frame >= 0 && frame <= frameMax; }
 	[[nodiscard]] bool IsValid() const { return SamplesOut() && IsFrameInRange(); };
-	[[nodiscard]] double GetFirstSampleValue() const { return SampleAt(0); }
 	// outBuffer size MUST be at least as big as Buffer.length
-	void OverwriteOutBuffer(std::vector<double>& outBuffer, int biChannels, Direction dir);
+	void OverwriteOutBuffer(std::vector<double>& outBuffer);
 
 	[[nodiscard]] int ChannelCount() const { return Buffer.nch; }
 	// In samples
@@ -34,20 +31,25 @@ public:
 	// Start time of block relative to source, in seconds
 	[[nodiscard]] double StartTime() const { return Buffer.time_s; }
 
-	[[nodiscard]] double CalculateRMS(Direction dir);
-	[[nodiscard]] double CalculateTimeToPeak(double peakThreshold, Direction dir);
-	
-private:
-	[[nodiscard]] ReaSample SampleAt(const int index) const { return Buffer.samples[index]; }
-	[[nodiscard]] int SamplesOut() const { return Buffer.samples_out; }
-	void RefillSamples(Direction dir);
-	void Iterate(const std::function<void(int, double)>& func, Direction dir, int channelHex) const;
+	[[nodiscard]] double CalculateRMS();
+	[[nodiscard]] double CalculateTimeToPeak(double peakThreshold);
 
-	[[nodiscard]] std::vector<int> GetChannelsFromBinary(int channelHex) const;
+	// Sums and averages for a given frame across channels
+	[[nodiscard]] double SampleAt(const int frame) const;
+	void RefillSamples();
+
+private:
+	[[nodiscard]] ReaSample AbsoluteSampleAt(const int index) const { return Buffer.samples[index]; }
+	[[nodiscard]] int SamplesOut() const { return Buffer.samples_out; }
+	// func returns a bool which controls whether iteration should continue
+	void Iterate(const std::function<bool(int, double)>& func) const;
+
+	[[nodiscard]] std::vector<int> GetChannelsFromBinary(int biChannels) const;
 
 public:
 	AudioBuffer() = delete;
-	explicit AudioBuffer(const AudioSource& source, int bufferSize, double startTime);
+	explicit AudioBuffer(const AudioSource& source, int bufferSize = 1024, double startTime = 0.0, int biChannels = 0,
+						 Direction dir = Direction::Forward);
 	~AudioBuffer() { delete[] Buffer.samples; };
 
 	AudioBuffer(const AudioBuffer&) = delete;
@@ -59,7 +61,9 @@ private:
 	const AudioSource* Source{};
 	PCM_source_transfer_t Buffer{};
 
+	Direction direction;
+	std::vector<int> channelsToSum{};
+	float sumChannelCountRecip{};
 	mutable int frame{};
-	static constexpr int FRAME_MIN{0};
 	int frameMax{};
 };
