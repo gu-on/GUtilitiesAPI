@@ -2,7 +2,9 @@
 #include <cassert>
 
 #include <fmt/core.h>
+#include <iterator>
 
+#include "gu_audio_analysis.hpp"
 #include "gu_audio_buffer.hpp"
 #include "gu_audio_source.hpp"
 #include "gu_maths.hpp"
@@ -25,7 +27,7 @@ bool AudioSource::IsMono() const
 double AudioSource::GetSampleValue(const double time) const
 {
 	static constexpr int BUFFER_LENGTH = 1;
-	const AudioBuffer buffer(*this, BUFFER_LENGTH, std::clamp(time, 0.0, (GetLengthInSamples() - 1) / GetSampleRate()));
+	const AudioBuffer buffer(*this, BUFFER_LENGTH, std::clamp(time, 0.0, (GetDurationInSamples() - 1) / GetSampleRate()));
 
 	return buffer.GetFirstSampleValue();
 }
@@ -65,7 +67,7 @@ double AudioSource::TimeToRMS(const int bufferSize, const double threshold) cons
 
 double AudioSource::TimeToRMSR(const int bufferSize, const double threshold) const
 {
-	AudioBuffer buffer{*this, bufferSize, GetFinalBufferTime(bufferSize)};
+	AudioBuffer buffer{*this, bufferSize, GetFinalBufferStartTime(bufferSize)};
 
 	while (buffer.IsValid())
 		if (const double rms = buffer.GetRMSR(); rms > Maths::DB2VOL(threshold))
@@ -106,11 +108,42 @@ double AudioSource::GetNormalization(const NormalizationType type, const double 
 	return 20.0 * log10(CalculateNormalization(AudioPtr, static_cast<int>(type), 0, start, end)) * -1;
 }
 
-double AudioSource::CalculatePitch(int channels, double start, double end, int windowSize, int overlap)
+double AudioSource::CalculatePitch(int biChannels, double timeStart, double timeEnd, int windowSize, int overlap)
 {
-	AudioBuffer buffer{*this, windowSize, std::clamp(start, 0.0, (GetLengthInSamples() - 1) / GetSampleRate())};
+	static constexpr int windowMin = 1 << 6;
+	static constexpr int windowMax = 1 << 14;
+	static constexpr int overlapMin = 1;
+	static constexpr int overlapMax = 8;
 
-	return buffer.CalculatePitch(channels, end, std::clamp(overlap, 0, windowSize / 2));
+	static constexpr double err = -1.0;
+
+	timeStart = std::clamp(timeStart, 0.0, GetLengthInSeconds());
+
+	if (timeEnd <= 0.0 || timeEnd > GetLengthInSeconds())
+		timeEnd = GetLengthInSeconds();
+
+	if (Maths::IsNearlyEqual(timeStart, timeEnd) || timeEnd < timeStart)
+		return err;
+
+	windowSize = std::clamp(Maths::GetNextPowerOfTwo(windowSize), windowMin, windowMax);
+	overlap = std::clamp(Maths::GetNextPowerOfTwo(overlap), overlapMin, overlapMax);
+
+	// It is not necessary for bufferLength and windowSize to be the same value, it is just simpler if they are
+	AudioBuffer buffer{*this, windowSize, timeStart};
+	std::vector<double> tempBuffer(windowSize);
+	std::vector<float> audio(0);
+	while (buffer.IsValid())
+	{
+		buffer.OverwriteOutBuffer(tempBuffer, biChannels, AudioBuffer::Direction::Forward);
+		audio.insert(audio.end(), std::make_move_iterator(tempBuffer.begin()), std::make_move_iterator(tempBuffer.end()));
+	}
+
+	if (audio.empty())
+		return err;
+
+	AcaPitch pitch{audio, CPitchIf::kPitchTimeAcf, static_cast<int>(GetSampleRate()), windowSize, overlap};
+
+	return pitch.GetPitch();
 }
 
 AudioSource::AudioSource(PCM_source* source) : AudioPtr((assert(source != nullptr), source)) {}
