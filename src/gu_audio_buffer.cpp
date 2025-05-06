@@ -130,7 +130,10 @@ void AudioBuffer::OverwriteOutBuffer(std::vector<double>& outBuffer)
 {
 	assert(outBuffer.size() >= static_cast<size_t>(Buffer.length));
 
-	Iterate([&]([[maybe_unused]] const int index, const double value) { outBuffer[index] = value; return true; });
+	Iterate([&]([[maybe_unused]] const int index, const double value) {
+		outBuffer[index] = value;
+		return true;
+	});
 }
 
 std::vector<int> AudioBuffer::GetChannelsFromBinary(int biChannels) const
@@ -138,11 +141,14 @@ std::vector<int> AudioBuffer::GetChannelsFromBinary(int biChannels) const
 	const unsigned long maxChannels = static_cast<unsigned long>(Source->GetChannelCount());
 	std::vector<int> channels{};
 
-	if (biChannels <= 0)
-	{
+	auto FillAllChannels = [&]() {
 		for (unsigned long ch = 1; ch <= maxChannels; ch++)
 			channels.push_back(ch);
+	};
 
+	if (biChannels <= 0)
+	{
+		FillAllChannels();
 		return channels;
 	}
 
@@ -154,6 +160,9 @@ std::vector<int> AudioBuffer::GetChannelsFromBinary(int biChannels) const
 
 		channels.push_back(ch);
 	}
+
+	if (channels.empty())
+		FillAllChannels();
 
 	return channels;
 }
