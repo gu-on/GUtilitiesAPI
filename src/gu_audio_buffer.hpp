@@ -8,7 +8,6 @@
 
 class AudioBuffer
 {
-	public:
 	enum class Direction
 	{
 		Forward,
@@ -32,12 +31,13 @@ public:
 
 	[[nodiscard]] double CalculateRMS(Direction dir);
 	[[nodiscard]] double CalculateTimeToPeak(double peakThreshold, Direction dir);
-	[[nodiscard]] ReaSample SampleAt(const int index) const { return Buffer.samples[index]; }
-	void RefillSamples(Direction dir);
-	[[nodiscard]] int SamplesOut() const { return Buffer.samples_out; }
 
 private:
+	void RefillSamples(Direction dir);
 	void Iterate(const std::function<void(int)>& func, Direction dir) const;
+
+	[[nodiscard]] ReaSample SampleAt(const int index) const { return Buffer.samples[index]; }
+	[[nodiscard]] int SamplesOut() const { return Buffer.samples_out; }
 
 public:
 	AudioBuffer() = delete;

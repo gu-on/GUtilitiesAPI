@@ -33,7 +33,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_VISIBILITY_PRESET "hidden")
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # path for external 3rd party library dependencies 
 include(FetchContent)
@@ -76,13 +75,7 @@ FetchContent_Declare(filesystem
     SOURCE_DIR     "${PROJECT_LIB_DIR}/filesystem"
 )
 
-FetchContent_Declare(libACA
-    GIT_REPOSITORY "https://github.com/gu-on/libACA.git"
-    GIT_TAG        "origin/main"
-    SOURCE_DIR     "${PROJECT_LIB_DIR}/libACA"
-)
-
-FetchContent_MakeAvailable(reaper-sdk GSL WDL fmt mINI filesystem libACA)
+FetchContent_MakeAvailable(reaper-sdk GSL WDL fmt mINI filesystem)
 
 # symlink WDL to reaper-sdk
 execute_process(
@@ -163,8 +156,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   reaper-sdk
   mINI
   fmt
-  libACA
-  libFileIO
 )
 
 configure_file(

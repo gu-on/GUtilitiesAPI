@@ -1,3 +1,4 @@
+#include <chrono>
 #include <string>
 
 #include <WDL/wdltypes.h> // might be unnecessary in future
@@ -11,13 +12,13 @@
 #include "gu_audio_source.hpp"
 #include "gu_file_finder.hpp"
 #include "gu_ini_file.hpp"
+#include "gu_profiler.hpp"
 #include "gu_recursive_importer.hpp"
 #include "gu_wildcard_parser.hpp"
 
 void GU_GUtilitiesAPI_GetVersion(char* versionOut, int versionOut_sz)
 {
-	snprintf(versionOut, versionOut_sz, "%d.%d.%d", PROJECT_VERSION_MAJOR, PROJECT_VERSION_MINOR,
-			 PROJECT_VERSION_PATCH);
+	snprintf(versionOut, versionOut_sz, "%d.%d.%d", PROJECT_VERSION_MAJOR, PROJECT_VERSION_MINOR, PROJECT_VERSION_PATCH);
 }
 
 bool GU_Config_Write(const char* fileName, const char* category, const char* key, const char* value)
@@ -176,16 +177,4 @@ bool GU_Filesystem_PathExists(const char* path)
 		return false;
 
 	return ghc::filesystem::exists(ghc::filesystem::u8path(path));
-}
-
-double GU_PCM_Source_AnalyzePitch(PCM_source* source, const double timeStart, const double timeEnd, const int windowSize, const int overlap)
-{
-#ifdef _DEBUG
-	Profiler profiler{fmt::format("GU_PCM_Source_AnalyzePitch({}, {}, {}, {})", timeStart, timeEnd, windowSize, overlap)};
-#endif
-
-	if (!source)
-		return 0.0;
-
-	return AudioSource{source}.AnaylzePitch(timeStart, timeEnd, windowSize, overlap);
 }
