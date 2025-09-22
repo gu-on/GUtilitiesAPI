@@ -29,15 +29,4 @@ public:
 
 		return std::all_of(str.begin(), str.end(), [](char c) { return std::isdigit(static_cast<unsigned char>(c)); });
 	}
-
-	[[nodiscard]] static int GetNextPowerOfTwo(int value)
-	{
-		// https://graphics.stanford.edu/%7Eseander/bithacks.html#RoundUpPowerOf2
-		--value;
-		unsigned long i = 1;
-		while (i <= sizeof(int))
-			value |= value >> i++;
-
-		return ++value;
-	}
 };

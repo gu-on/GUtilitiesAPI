@@ -34,7 +34,7 @@ public:
 	[[nodiscard]] int GetChannelCount() const { return AudioPtr->GetNumChannels(); }
 	[[nodiscard]] double GetSampleRate() const { return AudioPtr->GetSampleRate(); }
 	[[nodiscard]] double GetLengthInSeconds() const { return AudioPtr->GetLength(); }
-	[[nodiscard]] int GetDurationInSamples() const
+	[[nodiscard]] int GetLengthInSamples() const
 	{
 		return static_cast<int>(std::ceil(AudioPtr->GetLength() * AudioPtr->GetSampleRate()));
 	}
@@ -63,10 +63,9 @@ public:
 
 private:
 	void GetSamples(PCM_source_transfer_t& buffer) const { AudioPtr->GetSamples(&buffer); }
-	// Time in seconds at which one full buffer of a given size can be filled.
-	[[nodiscard]] double GetFinalBufferStartTime(int bufferSize) const
+	[[nodiscard]] double GetFinalBufferTime(int bufferSize) const
 	{
-		return (GetDurationInSamples() - 1 - bufferSize) / GetSampleRate();
+		return (GetLengthInSamples() - 1 - bufferSize) / GetSampleRate();
 	}
 
 private:

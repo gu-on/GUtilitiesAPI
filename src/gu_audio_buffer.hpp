@@ -24,18 +24,17 @@ public:
 	[[nodiscard]] bool IsFrameInRange() const { return frame >= 0 && frame <= frameMax; }
 	[[nodiscard]] bool IsValid() const { return SamplesOut() && IsFrameInRange(); };
 	[[nodiscard]] double GetFirstSampleValue() const { return SampleAt(0); }
-	// outBuffer size MUST be at least as big as Buffer.length
-	void OverwriteOutBuffer(std::vector<double>& outBuffer, int biChannels, Direction dir);
 
 	[[nodiscard]] int ChannelCount() const { return Buffer.nch; }
 	// In samples
-	[[nodiscard]] int Size() const { return Buffer.length; }
+	[[nodiscard]] int Length() const { return Buffer.length; }
 	[[nodiscard]] double SampleRate() const { return Buffer.samplerate; }
 	// Start time of block relative to source, in seconds
 	[[nodiscard]] double StartTime() const { return Buffer.time_s; }
 
 	[[nodiscard]] double CalculateRMS(Direction dir);
 	[[nodiscard]] double CalculateTimeToPeak(double peakThreshold, Direction dir);
+	[[nodiscard]] double CalculatePitch(int channels, double end, int overlap);
 	
 private:
 	[[nodiscard]] ReaSample SampleAt(const int index) const { return Buffer.samples[index]; }
@@ -43,11 +42,11 @@ private:
 	void RefillSamples(Direction dir);
 	void Iterate(const std::function<void(int, double)>& func, Direction dir, int channelHex) const;
 
-	[[nodiscard]] std::vector<int> GetChannelsFromBinary(int channelHex) const;
+	[[nodiscard]] std::vector<int> GetChannelsFromHex(int channelHex) const;
 
 public:
 	AudioBuffer() = delete;
-	explicit AudioBuffer(const AudioSource& source, int bufferSize, double startTime);
+	explicit AudioBuffer(const AudioSource& source, int bufferLength, double startTime);
 	~AudioBuffer() { delete[] Buffer.samples; };
 
 	AudioBuffer(const AudioBuffer&) = delete;

@@ -1,28 +1,27 @@
 #include <algorithm>
-#include <cassert>
 #include <fmt/core.h>
 #include <functional>
 #include <vector>
 
+#include "gu_audio_analysis.hpp"
 #include "gu_audio_buffer.hpp"
 #include "gu_maths.hpp"
 
-AudioBuffer::AudioBuffer(const AudioSource& source, int bufferSize, double startTime)
+AudioBuffer::AudioBuffer(const AudioSource& source, int bufferLength, double startTime)
 {
 	Source = &source;
 
 	const double sampleRate = Source->GetSampleRate();
 	frame = static_cast<int>(std::floor(startTime * sampleRate));
-	frameMax = Source->GetDurationInSamples() - 1;
+	frameMax = Source->GetLengthInSamples() - 1;
 
 	Buffer.time_s = startTime;
 	Buffer.samplerate = sampleRate;
 	Buffer.nch = Source->GetChannelCount();
-	Buffer.length = std::clamp(bufferSize, 1, 1 << 14);
+	Buffer.length = std::clamp(bufferLength, 1, 1 << 14);
 	Buffer.samples = new ReaSample[static_cast<unsigned long long>(Buffer.length) * Buffer.nch];
 	Buffer.absolute_time_s = 0.0;
 
-	Buffer.samples_out = 0;
 	Source->GetSamples(Buffer);
 }
 
@@ -40,10 +39,9 @@ void AudioBuffer::RefillSamples(const Direction dir)
 	Source->GetSamples(Buffer);
 }
 
-void AudioBuffer::Iterate(const std::function<void(int, double)>& func, const Direction dir, int biChannels) const
+void AudioBuffer::Iterate(const std::function<void(int, double)>& func, const Direction dir, int channelHex) const
 {
-	const std::vector<int> channels = GetChannelsFromBinary(biChannels);
-	assert(!channels.empty());
+	const std::vector<int> channels = GetChannelsFromHex(channelHex);
 
 	if (dir == Direction::Forward)
 	{
@@ -56,7 +54,8 @@ void AudioBuffer::Iterate(const std::function<void(int, double)>& func, const Di
 			for (const int channel : channels)
 				value += SampleAt(sample * ChannelCount() + (channel - 1));
 
-			func(sample, value /= channels.size());
+			value /= channels.size();
+			func(sample, value);
 
 			++frame;
 		}
@@ -72,7 +71,8 @@ void AudioBuffer::Iterate(const std::function<void(int, double)>& func, const Di
 			for (const int channel : channels)
 				value += SampleAt(sample * ChannelCount() + (channel - 1));
 
-			func(sample, value /= channels.size());
+			value /= channels.size();
+			func(sample, value);
 
 			--frame;
 		}
@@ -139,8 +139,7 @@ bool AudioBuffer::IsMono()
 	std::vector<double> values{};
 
 	for (int i = 1; i <= Source->GetChannelCount(); i++)
-		Iterate([&]([[maybe_unused]] const int index, const double value) { values.push_back(value); }, dir,
-				(1 << (i - 1)));
+		Iterate([&]([[maybe_unused]] const int index, const double value) { values.push_back(value); }, dir, (1 << (i - 1)));
 
 	if (!std::equal(values.begin() + 1, values.end(), values.begin()))
 		return false;
@@ -150,29 +149,50 @@ bool AudioBuffer::IsMono()
 	return true;
 }
 
-void AudioBuffer::OverwriteOutBuffer(std::vector<double>& outBuffer, const int biChannels, const Direction dir)
+double AudioBuffer::CalculatePitch(int channels, double end, int overlap)
 {
-	assert(outBuffer.size() >= static_cast<size_t>(Buffer.length));
+	static constexpr double err = 0.0;
 
-	Iterate([&]([[maybe_unused]] const int index, const double value) { outBuffer[index] = value; }, dir,
-			biChannels);
+	if (end < Buffer.time_s)
+		return err;
 
-	RefillSamples(dir);
+	if (end <= 0.0 || end > Source->GetLengthInSeconds())
+		end = Source->GetLengthInSeconds();
+
+	if (overlap <= 0)
+		overlap = 1;
+
+	std::vector<float> tempBuffer{};
+	while (IsValid())
+	{
+		Iterate([&]([[maybe_unused]] const int index, const double value) { tempBuffer.push_back(value); },
+				Direction::Forward, channels);
+
+		RefillSamples(Direction::Forward);
+	}
+
+	if (tempBuffer.empty())
+		return err;
+
+	AcaPitch pitch{tempBuffer, CPitchIf::kPitchTimeAcf, static_cast<int>(Source->GetSampleRate()), Buffer.length,
+				   overlap};
+
+	return pitch.GetPitch();
 }
 
-std::vector<int> AudioBuffer::GetChannelsFromBinary(int biChannels) const
+std::vector<int> AudioBuffer::GetChannelsFromHex(int channelHex) const
 {
 	const unsigned long maxChannels = static_cast<unsigned long>(Source->GetChannelCount());
 	std::vector<int> channels{};
 
-	if (biChannels <= 0)
+	if (channelHex <= 0)
 		for (int ch = 1; ch == Source->GetChannelCount(); ch++)
 			channels.push_back(ch);
 
 	for (unsigned long ch = 1; ch < sizeof(int) && ch <= maxChannels; ch++)
 	{
 		int flag = 1 << (ch - 1);
-		if ((biChannels & flag) != flag)
+		if ((channelHex & flag) != flag)
 			continue;
 
 		channels.push_back(ch);

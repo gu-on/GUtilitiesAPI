@@ -35,9 +35,5 @@ void GU_Filesystem_EnumerateMediaFiles(const char* path, int flags, char* pathOu
 void GU_Filesystem_FindFileInPath(const char* path, const char* fileName, char* pathOut, int pathOut_sz);
 // Checks if file or directory exists
 bool GU_Filesystem_PathExists(const char* path);
-// Analyses pitch of PCM_source between a given start and end time.
-// biChannels represents channels to be summed, as binary, e.g. (1 << 0) + (1 << 2) will sum channels 1 and 3.
-// If biChannels is <= 0, all channels will be summed.
-// windowSize is clamped at power of two between 64 and 16384. 
-// overlap is clamped at power of two between 1 and 8.
-double GU_PCM_Source_CalculatePitch(PCM_source* source, int biChannels, double timeStart, double timeEnd, int windowSize, int overlap);
+// Analyse pitch of PCM_source for a given start and end time. Channels represents a bit
+double GU_PCM_Source_CalculatePitch(PCM_source* source, int channels, double timeStart, double timeEnd, int windowSize, int overlap);
