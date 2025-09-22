@@ -4,10 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "ghc/filesystem.hpp"
-
 static constexpr const char* VALID_FILE_FORMATS[] = {".WAV", ".AIFF", ".FLAC",	  ".MP3", ".OGG",
-													 ".BWF", ".W64",  ".WAVPACK", ".GIF", ".MP4"};
+													 ".BWF", ".W64",  ".WAVPACK", ".GIF", "MP4"};
 
 enum class MediaType : int32_t
 {
