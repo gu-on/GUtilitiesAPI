@@ -35,5 +35,5 @@ void GU_Filesystem_EnumerateMediaFiles(const char* path, int flags, char* pathOu
 void GU_Filesystem_FindFileInPath(const char* path, const char* fileName, char* pathOut, int pathOut_sz);
 // Checks if file or directory exists
 bool GU_Filesystem_PathExists(const char* path);
-// Analyse pitch of PCM_source for a given start and end time. Channels represents a bit
-double GU_PCM_Source_CalculatePitch(PCM_source* source, int channels, double timeStart, double timeEnd, int windowSize, int overlap);
+// Analyse pitch of PCM_source for a given start and end time
+double GU_PCM_Source_AnalyzePitch(PCM_source* source, double timeStart, double timeEnd, int windowSize, int overlap);

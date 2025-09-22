@@ -1,16 +1,20 @@
 #include <algorithm>
 #include <cassert>
 
+#include <AcaAll.h>
 #include <fmt/core.h>
 
+// #include "Pitch.h"
+#include "Pitch.h"
+#include "gu_audio_analysis.hpp"
 #include "gu_audio_buffer.hpp"
 #include "gu_audio_source.hpp"
 #include "gu_maths.hpp"
 #include "reaper_plugin_functions.h"
 
-bool AudioSource::IsMono() const
+bool AudioSource::IsMono(const int bufferSize) const
 {
-	AudioBuffer buffer(*this, 1, 0.0);
+	AudioBuffer buffer(*this, bufferSize, 0.0);
 
 	if (buffer.ChannelCount() == 1)
 		return true;
@@ -58,7 +62,7 @@ double AudioSource::TimeToRMS(const int bufferSize, const double threshold) cons
 
 	while (buffer.IsValid())
 		if (const double rms = buffer.GetRMS(); rms > Maths::DB2VOL(threshold))
-			return buffer.StartTime();
+			return buffer.Time();
 
 	return 0;
 }
@@ -69,7 +73,7 @@ double AudioSource::TimeToRMSR(const int bufferSize, const double threshold) con
 
 	while (buffer.IsValid())
 		if (const double rms = buffer.GetRMSR(); rms > Maths::DB2VOL(threshold))
-			return buffer.StartTime();
+			return buffer.Time();
 
 	return 0;
 }
@@ -103,14 +107,70 @@ std::vector<CueMarker> AudioSource::GetMediaCues() const
 
 double AudioSource::GetNormalization(const NormalizationType type, const double start, const double end) const
 {
-	return 20.0 * log10(CalculateNormalization(AudioPtr, static_cast<int>(type), 0, start, end)) * -1;
+	return 20 * log10(CalculateNormalization(AudioPtr, static_cast<int>(type), 0, start, end)) * -1;
 }
 
-double AudioSource::CalculatePitch(int channels, double start, double end, int windowSize, int overlap)
+double AudioSource::AnaylzePitch(double start, double end, int windowSize, int overlap)
 {
-	AudioBuffer buffer{*this, windowSize, std::clamp(start, 0.0, (GetLengthInSamples() - 1) / GetSampleRate())};
+	static constexpr double err = -1.0f;
 
-	return buffer.CalculatePitch(channels, end, std::clamp(overlap, 0, windowSize / 2));
+	if (end < start)
+		return err;
+
+	if (start < 0.0)
+		start = 0.0;
+
+	if (end <= 0.0)
+		end = this->GetLengthInSeconds();
+
+	if (windowSize <= 0)
+		windowSize = 64;
+
+	if (overlap <= 0)
+		overlap = 1;
+
+	AudioBuffer buffer{*this, windowSize, start};
+	const int endSample = static_cast<int>(end * this->GetSampleRate());
+
+	const int channelCount = this->GetChannelCount();
+	const double channelReciprocal = 1.0 / channelCount;
+
+	int sameplePos{static_cast<int>(start * this->GetSampleRate())};
+	double running{};
+	std::vector<float> audio{};
+
+	// fill audio vector by iteratively adding audio buffers
+	while (buffer.IsValid())
+	{
+		if (buffer.SamplesOut() < windowSize) // hard limits to ensure full buffers for pitch detection
+			break;
+
+		if (sameplePos + windowSize > endSample) // ensure full buffer
+			break;
+
+		for (int i = 0; i < windowSize; i++)
+		{
+			// sums and averages channels into single mono source
+			running += buffer.SampleAt(i);
+			++sameplePos;
+
+			if (i % channelCount != 0)
+				continue;
+
+			running *= channelReciprocal;
+			audio.push_back(static_cast<double>(running));
+			running = 0;
+		}
+
+		buffer.RefillSamples(AudioBuffer::Direction::Forward);
+	}
+
+	if (audio.size() <= 0)
+		return err;
+
+	AcaPitch pitch{audio, CPitchIf::kPitchTimeAcf, static_cast<int>(this->GetSampleRate()), windowSize, overlap};
+
+	return pitch.GetPitch();
 }
 
 AudioSource::AudioSource(PCM_source* source) : AudioPtr((assert(source != nullptr), source)) {}

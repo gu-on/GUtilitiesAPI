@@ -26,23 +26,18 @@ public:
 	[[nodiscard]] double GetFirstSampleValue() const { return SampleAt(0); }
 
 	[[nodiscard]] int ChannelCount() const { return Buffer.nch; }
-	// In samples
 	[[nodiscard]] int Length() const { return Buffer.length; }
 	[[nodiscard]] double SampleRate() const { return Buffer.samplerate; }
-	// Start time of block relative to source, in seconds
-	[[nodiscard]] double StartTime() const { return Buffer.time_s; }
+	[[nodiscard]] double Time() const { return Buffer.time_s; }
 
 	[[nodiscard]] double CalculateRMS(Direction dir);
 	[[nodiscard]] double CalculateTimeToPeak(double peakThreshold, Direction dir);
-	[[nodiscard]] double CalculatePitch(int channels, double end, int overlap);
-	
-private:
 	[[nodiscard]] ReaSample SampleAt(const int index) const { return Buffer.samples[index]; }
-	[[nodiscard]] int SamplesOut() const { return Buffer.samples_out; }
 	void RefillSamples(Direction dir);
-	void Iterate(const std::function<void(int, double)>& func, Direction dir, int channelHex) const;
+	[[nodiscard]] int SamplesOut() const { return Buffer.samples_out; }
 
-	[[nodiscard]] std::vector<int> GetChannelsFromHex(int channelHex) const;
+private:
+	void Iterate(const std::function<void(int)>& func, Direction dir) const;
 
 public:
 	AudioBuffer() = delete;
