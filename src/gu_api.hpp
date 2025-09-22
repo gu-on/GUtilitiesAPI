@@ -9,13 +9,13 @@ bool GU_Config_Read(const char* fileName, const char* category, const char* key,
 bool GU_PCM_Source_IsMono(PCM_source* source);
 // Gets a PCM_source's sample value at a point in time (seconds)
 double GU_PCM_Source_GetSampleValue(PCM_source* source, double time);
-// Returns duration in seconds for PCM_source from start til peak threshold is breached (dBFS). Returns -1 if invalid
+// Returns duration in seconds for PCM_source from start til peak threshold is breached. Returns -1 if invalid
 double GU_PCM_Source_TimeToPeak(PCM_source* source, int bufferSize, double threshold);
-// Returns duration in seconds for PCM_source from start til RMS threshold is breached (dBFS). Returns -1 if invalid
+// Returns duration in seconds for PCM_source from start til RMS threshold is breached. Returns -1 if invalid
 double GU_PCM_Source_TimeToRMS(PCM_source* source, int bufferSize, double threshold);
-// Returns duration in seconds for PCM_source from end til peak threshold is breached in reverse (dBFS). Returns -1 if invalid
+// Returns duration in seconds for PCM_source from end til peak threshold is breached in reverse. Returns -1 if invalid
 double GU_PCM_Source_TimeToPeakR(PCM_source* source, int bufferSize, double threshold);
-// Returns duration in seconds for PCM_source from end til RMS threshold is breached in reverse (dBFS). Returns -1 if invalid
+// Returns duration in seconds for PCM_source from end til RMS threshold is breached in reverse. Returns -1 if invalid
 double GU_PCM_Source_TimeToRMSR(PCM_source* source, int bufferSize, double threshold);
 // Checks if PCM_source has embedded Media Cue Markers
 bool GU_PCM_Source_HasRegion(PCM_source* source);
@@ -35,9 +35,9 @@ void GU_Filesystem_EnumerateMediaFiles(const char* path, int flags, char* pathOu
 void GU_Filesystem_FindFileInPath(const char* path, const char* fileName, char* pathOut, int pathOut_sz);
 // Checks if file or directory exists
 bool GU_Filesystem_PathExists(const char* path);
-// Analyses frequency (Hz) of PCM_source between a given start and end time.
+// Analyses pitch of PCM_source between a given start and end time.
 // biChannels represents channels to be summed, as binary, e.g. (1 << 0) + (1 << 2) will sum channels 1 and 3.
 // If biChannels is <= 0, all channels will be summed.
 // windowSize is clamped at power of two between 64 and 16384. 
 // overlap is clamped at power of two between 1 and 8.
-double GU_PCM_Source_CalculateFrequency(PCM_source* source, int biChannels, double timeStart, double timeEnd, int windowSize, int overlap);
+double GU_PCM_Source_CalculatePitch(PCM_source* source, int biChannels, double timeStart, double timeEnd, int windowSize, int overlap);
