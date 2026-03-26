@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.15)
 
 project(gutilitiesapi VERSION 0.1.2 LANGUAGES C CXX)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 find_package(Git)
 if(GIT_FOUND)
   execute_process(
@@ -58,7 +60,7 @@ FetchContent_Declare(GSL
 
 FetchContent_Declare(fmt
     GIT_REPOSITORY "https://github.com/fmtlib/fmt.git"
-    GIT_TAG        "origin/master"
+    GIT_TAG        "e424e3f2e607da02742f73db84873b8084fc714c"
     SOURCE_DIR     "${PROJECT_LIB_DIR}/fmt"
     EXCLUDE_FROM_ALL
 )

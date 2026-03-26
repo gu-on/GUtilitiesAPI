@@ -6,7 +6,7 @@
 
 #include "gu_file_finder.hpp"
 
-std::string FileFinder::FindFileInDirectory(ghc::filesystem::path path, std::string_view fileName)
+std::string FileFinder::FindFileInDirectory(ghc::filesystem::path inPath, std::string_view fileName)
 {
 	auto HandleException = [&](const std::exception& e) -> const char* {
 		Reset();
@@ -14,7 +14,7 @@ std::string FileFinder::FindFileInDirectory(ghc::filesystem::path path, std::str
 		return EMPTY_STRING;
 	};
 
-	if (!ghc::filesystem::exists(path))
+	if (!ghc::filesystem::is_directory(inPath) || !ghc::filesystem::exists(inPath))
 	{
 		Reset();
 		return EMPTY_STRING;
@@ -23,10 +23,10 @@ std::string FileFinder::FindFileInDirectory(ghc::filesystem::path path, std::str
 	bool startedFromPath;
 	int depth{};
 
-	if (Path != path)
+	if (Path != inPath)
 	{
-		Path = path;
-		Iterator = DirectoryIterator(path);
+		Path = inPath;
+		Iterator = DirectoryIterator(inPath);
 		startedFromPath = true;
 	}
 	else
@@ -60,8 +60,8 @@ std::string FileFinder::FindFileInDirectory(ghc::filesystem::path path, std::str
 	}
 
 	// iterator started partway through and didn't find anything - search from beginning
-	Iterator = DirectoryIterator(path);
-	while (Iterator.depth() < depth && fileName != Iterator->path().filename().u8string())
+	Iterator = DirectoryIterator(inPath);
+	while (Iterator != DirectoryIterator() && Iterator.depth() < depth && fileName != Iterator->path().filename().u8string())
 	{
 		try
 		{
@@ -73,7 +73,7 @@ std::string FileFinder::FindFileInDirectory(ghc::filesystem::path path, std::str
 		}
 	}
 
-	if (Iterator.depth() <= depth && Iterator != DirectoryIterator())
+	if (Iterator != DirectoryIterator() && Iterator.depth() <= depth)
 	{
 		return Iterator->path().u8string();
 	}
